@@ -1,5 +1,5 @@
 import { state, update, dateKey, uid } from '../store.js';
-import { esc, header, sectionLabel, segmented, icons, relDay } from '../ui.js';
+import { esc, header, sectionLabel, segmented, icons, relDay, tile } from '../ui.js';
 import { openSheet, field } from '../sheet.js';
 import { focusAfterRender } from '../app.js';
 
@@ -44,7 +44,7 @@ export function render(s) {
 
 function apptRow(a, today, isPast = false) {
   return `<div class="row" style="${isPast ? 'opacity:.55' : ''}">
-    <span class="mini-btn" style="color:var(--indigo);background:color-mix(in srgb,var(--indigo) 12%,transparent)">${icons.clock}</span>
+    ${tile('clock', 'var(--indigo)', 36)}
     <div class="grow"><div class="title">${esc(a.title)}</div><div class="meta">${relDay(a.date)}${a.time ? ` · ${esc(a.time)} Uhr` : ''}</div></div>
     ${!editMode && a.date === today ? '<span class="pill" style="--c:var(--indigo)">Heute</span>' : ''}
     ${editMode ? `<div class="ex-edit"><button type="button" class="mini-btn" data-action="editAppointment" data-id="${a.id}">${icons.pencil}</button><button type="button" class="mini-btn red" data-action="delAppointment" data-id="${a.id}">${icons.trash}</button></div>` : ''}

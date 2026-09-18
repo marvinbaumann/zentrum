@@ -22,7 +22,7 @@ export function render(s) {
     <div class="card">
       ${latest ? `
         <div class="hero" style="padding-bottom:6px">
-          <div class="grow"><div class="big" style="font-size:36px">${fmtKg(latest.kg)} <span style="font-size:18px;color:var(--text2);font-weight:600">kg</span></div><div class="muted">${relDay(latest.date)}</div></div>
+          <div class="grow"><div class="big num" style="font-size:38px">${fmtKg(latest.kg)} <span style="font-size:18px;color:var(--text2);font-weight:600">kg</span></div><div class="muted">${relDay(latest.date)}</div></div>
           ${delta(latest, prev, 'zum Vortag')}${delta(latest, weekAgo, 'zur Vorwoche')}
         </div>
         ${w.length > 1 ? weightChart(w.slice(-30)) : '<div class="note" style="padding:6px 0 14px">Ab dem zweiten Eintrag siehst du hier deinen Verlauf.</div>'}
@@ -33,7 +33,7 @@ export function render(s) {
     ${sectionLabel('Schritte')}
     <div class="card">
       <div class="hero" style="padding-bottom:8px">
-        <div class="grow"><div class="big" style="font-size:36px">${fmtNum(stepsToday)}</div><div class="muted">${goal ? (stepsToday >= goal ? 'Tagesziel erreicht 🎉' : `noch ${fmtNum(goal - stepsToday)} bis ${fmtNum(goal)}`) : 'Heute'}</div></div>
+        <div class="grow"><div class="big num" style="font-size:38px">${fmtNum(stepsToday)}</div><div class="muted">${goal ? (stepsToday >= goal ? 'Tagesziel erreicht 🎉' : `noch ${fmtNum(goal - stepsToday)} bis ${fmtNum(goal)}`) : 'Heute'}</div></div>
         <div class="inline-input"><input type="number" inputmode="numeric" value="${stepsToday || ''}" placeholder="Heute" data-change="setSteps" style="width:110px"></div>
       </div>
       ${goal ? `<div class="bar" style="--c:var(--green);margin-bottom:14px"><i style="width:${Math.min(100, stepsToday / goal * 100)}%"></i></div>` : ''}

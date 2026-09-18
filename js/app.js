@@ -5,6 +5,7 @@ import * as heute from './views/heute.js';
 import * as training from './views/training.js';
 import * as koerper from './views/koerper.js';
 import * as listen from './views/listen.js';
+import * as welcome from './views/welcome.js';
 
 const views = { heute, training, koerper, listen };
 const TABS = [
@@ -21,13 +22,16 @@ export function currentTab() {
   const h = location.hash.replace('#', '');
   return views[h] ? h : 'heute';
 }
+const activeView = () => state.settings.onboarded ? views[currentTab()] : welcome;
 
 export function focusAfterRender(selector) { pendingFocus = selector; }
 
 export function render() {
   const tab = currentTab();
-  document.getElementById('app').innerHTML = views[tab].render(state);
-  document.getElementById('tabbar').innerHTML = TABS.map(([id, name, icon]) =>
+  const view = activeView();
+  document.getElementById('app').innerHTML = view.render(state);
+  document.body.classList.toggle('no-tabs', view === welcome);
+  document.getElementById('tabbar').innerHTML = view === welcome ? '' : TABS.map(([id, name, icon]) =>
     `<a class="tab ${id === tab ? 'active' : ''}" href="#${id}">${icons[icon]}<span>${name}</span></a>`).join('');
   if (pendingFocus) { const el = document.querySelector(pendingFocus); if (el) el.focus(); pendingFocus = null; }
 }
@@ -43,7 +47,7 @@ function dispatch(kind, e) {
   const el = e.target.closest(`[data-${kind}]`);
   if (!el) return;
   const name = el.dataset[kind];
-  const fn = sheetAction(name) || views[currentTab()][kind === 'action' ? 'actions' : 'changes']?.[name] || globalActions[name];
+  const fn = sheetAction(name) || activeView()[kind === 'action' ? 'actions' : 'changes']?.[name] || globalActions[name];
   if (fn) fn(el, e);
 }
 document.addEventListener('click', e => dispatch('action', e));
@@ -52,7 +56,7 @@ document.addEventListener('submit', e => {
   const f = e.target.closest('[data-submit]');
   if (!f) return;
   e.preventDefault();
-  const fn = views[currentTab()].submits?.[f.dataset.submit];
+  const fn = activeView().submits?.[f.dataset.submit];
   if (fn) fn(f, e);
 });
 

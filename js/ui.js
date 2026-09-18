@@ -32,6 +32,14 @@ export const icons = {
   arrowRight: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg>',
   clock: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>',
   flame: '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2c1 4 5 5.5 5 10.5A5 5 0 0 1 7 12.5c0-1.2.4-2.2 1-3 .2 1.5 1 2.3 2 2.5 0-3.5-.5-6 2-10z"/></svg>',
+  pill: '<svg viewBox="0 0 24 24"><g transform="rotate(-45 12 12)"><rect x="3" y="8.5" width="18" height="7" rx="3.5" fill="none" stroke="currentColor" stroke-width="2"/><path d="M3.5 12a3.5 3.5 0 0 1 3.5-3.5H12v7H7A3.5 3.5 0 0 1 3.5 12z" fill="currentColor"/></g></svg>',
+  drop: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3s6 6.5 6 11a6 6 0 0 1-12 0c0-4.5 6-11 6-11z"/></svg>',
+  steps: '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M8.5 2.5c1.7 0 2.8 1.8 2.8 4.3 0 2-.8 4-2.4 4.2-1.5.2-2.9-1.5-3.1-3.8C5.6 4.7 6.8 2.5 8.5 2.5zM6.2 12.6c1.6-.4 3.3.4 3.7 1.9.5 1.7-.4 4.6-1.7 5.1-1.3.5-2.9-.5-3.4-2.3-.5-1.8.1-4.3 1.4-4.7zM16 6.5c1.7 0 2.9 2.2 2.7 4.7-.2 2.3-1.6 4-3.1 3.8-1.6-.2-2.4-2.2-2.4-4.2 0-2.5 1.1-4.3 2.8-4.3zM17.8 16.6c1.3.4 1.9 2.9 1.4 4.7-.5 1.8-2.1 2.8-3.4 2.3-1.3-.5-2.2-3.4-1.7-5.1.4-1.5 2.1-2.3 3.7-1.9z"/></svg>',
+  sparkles: '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l1.8 5.2L19 9l-5.2 1.8L12 16l-1.8-5.2L5 9l5.2-1.8L12 2zM5 15l.9 2.6L8.5 18.5l-2.6.9L5 22l-.9-2.6L1.5 18.5l2.6-.9L5 15zM19 14l.7 2 2 .7-2 .7-.7 2-.7-2-2-.7 2-.7.7-2z"/></svg>',
+  briefcase: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="7" width="18" height="13" rx="3"/><path d="M9 7V5a2 2 0 0 1 2-2h2a2 2 0 0 1 2 2v2M3 12h18"/></svg>',
+  home: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11l9-7 9 7v9a2 2 0 0 1-2 2h-4v-6h-6v6H5a2 2 0 0 1-2-2z"/></svg>',
+  scale: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="4"/><path d="M8 9.5a5.5 5.5 0 0 1 8 0M12 12l2-2.5"/></svg>',
+  moon: '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M20 14.5A8.5 8.5 0 0 1 9.5 4a8.5 8.5 0 1 0 10.5 10.5z"/></svg>',
   // Tabs
   sun: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg>',
   dumbbell: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6.5 6.5v11M17.5 6.5v11M3 9v6M21 9v6M6.5 12h11"/></svg>',
@@ -39,14 +47,19 @@ export const icons = {
   list: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 6h13M8 12h13M8 18h13"/><circle cx="4" cy="6" r="1" fill="currentColor"/><circle cx="4" cy="12" r="1" fill="currentColor"/><circle cx="4" cy="18" r="1" fill="currentColor"/></svg>',
 };
 
-export function ring(pct, color, size = 64, stroke = 7) {
+export function ring(pct, color, size = 64, stroke = 7, { track = null, animate = false } = {}) {
   const r = (size - stroke) / 2, c = 2 * Math.PI * r;
   const off = c * (1 - Math.max(0, Math.min(1, pct)));
-  return `<svg width="${size}" height="${size}" viewBox="0 0 ${size} ${size}">
-    <circle cx="${size / 2}" cy="${size / 2}" r="${r}" stroke="${color}" stroke-opacity=".16" stroke-width="${stroke}" fill="none"/>
+  return `<svg width="${size}" height="${size}" viewBox="0 0 ${size} ${size}" class="${animate ? 'ring-anim' : ''}">
+    <circle cx="${size / 2}" cy="${size / 2}" r="${r}" stroke="${track || color}" stroke-opacity="${track ? 1 : .16}" stroke-width="${stroke}" fill="none"/>
     <circle cx="${size / 2}" cy="${size / 2}" r="${r}" stroke="${color}" stroke-width="${stroke}" fill="none" stroke-linecap="round"
-      stroke-dasharray="${c}" stroke-dashoffset="${off}" transform="rotate(-90 ${size / 2} ${size / 2})" style="transition:stroke-dashoffset .4s"/>
+      stroke-dasharray="${c}" stroke-dashoffset="${off}" transform="rotate(-90 ${size / 2} ${size / 2})" style="--c:${c};--off:${off}"/>
   </svg>`;
+}
+
+// Getöntes Icon-Quadrat wie in den iOS-Einstellungen
+export function tile(icon, color, size = 28) {
+  return `<span class="tile" style="--c:${color};width:${size}px;height:${size}px">${icons[icon] || ''}</span>`;
 }
 
 export function check(on, color, attrs = '') {

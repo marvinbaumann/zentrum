@@ -11,9 +11,9 @@ export function addDays(k, n) { const d = parseKey(k); d.setDate(d.getDate() + n
 export function weekStart(k) { const d = parseKey(k); d.setDate(d.getDate() - ((d.getDay() + 6) % 7)); return dateKey(d); }
 
 export const AREAS = {
-  supp: { name: 'Supplements', color: 'var(--mint)' },
-  skin: { name: 'Hautroutine', color: 'var(--pink)' },
-  other: { name: 'Sonstiges', color: 'var(--blue)' },
+  supp: { name: 'Supplements', color: 'var(--mint)', icon: 'pill' },
+  skin: { name: 'Hautroutine', color: 'var(--pink)', icon: 'drop' },
+  other: { name: 'Sonstiges', color: 'var(--blue)', icon: 'sparkles' },
 };
 
 function defaultState() {
@@ -22,7 +22,7 @@ function defaultState() {
   return {
     version: 1,
     createdAt: dateKey(),
-    settings: { stepsGoal: 10000 },
+    settings: { stepsGoal: 10000, name: '', onboarded: false },
     habits: [
       { id: uid(), name: 'Vitamin D3', area: 'supp', schedule: { type: 'daily' } },
       { id: uid(), name: 'Omega-3', area: 'supp', schedule: { type: 'daily' } },

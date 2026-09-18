@@ -1,11 +1,54 @@
 import { state, update, dateKey, AREAS, uid, resetState, replaceState } from '../store.js';
-import { esc, fmtLong, relDay, ring, check, header, sectionLabel, icons, fmtNum } from '../ui.js';
+import { esc, fmtLong, relDay, ring, check, header, sectionLabel, icons, fmtNum, tile, WD_SHORT } from '../ui.js';
 import { openSheet, closeSheet, field, toggle } from '../sheet.js';
-import { dayItems, streak, bestStreak, habitStreak } from '../habits.js';
+import { dayItems, streak, bestStreak, habitStreak, isPerfectDay } from '../habits.js';
+import { addDays, weekStart } from '../store.js';
 import { focusAfterRender } from '../app.js';
 
 const WD = ['Mo', 'Di', 'Mi', 'Do', 'Fr', 'Sa', 'So'];
 const WD_IDX = [1, 2, 3, 4, 5, 6, 0];
+let firstMount = true;
+let lastPop = null;
+
+function greeting(h) {
+  if (h < 5) return 'Gute Nacht';
+  if (h < 11) return 'Guten Morgen';
+  if (h < 17) return 'Guten Tag';
+  if (h < 22) return 'Guten Abend';
+  return 'Gute Nacht';
+}
+function heroTheme(h, perfect) {
+  if (perfect) return 'linear-gradient(135deg,#2ECC71 0%,#16A085 100%)';
+  if (h < 5 || h >= 22) return 'linear-gradient(135deg,#2C3E8F 0%,#141A4A 100%)';
+  if (h < 11) return 'linear-gradient(135deg,#FF9F5A 0%,#FF5E7E 100%)';
+  if (h < 17) return 'linear-gradient(135deg,#3D8BFF 0%,#6C5CE7 100%)';
+  return 'linear-gradient(135deg,#7B4DFF 0%,#FF5FA2 100%)';
+}
+const LINES = {
+  night: ['Erholung ist auch Training.', 'Morgen ist ein neuer Tag. Schlaf gut.', 'Der Tag ist rund. Ruh dich aus.'],
+  morning: ['Ein neuer Tag, ein klarer Plan.', 'Kleine Schritte, jeden Tag. Das ist der Weg.', 'Fang mit dem Einfachsten an. Der Rest folgt.', 'Heute zählt. Nicht perfekt, nur konsequent.'],
+  day: ['Dranbleiben ist die halbe Miete.', 'Was jetzt erledigt ist, trägt dich durch den Tag.', 'Ein Punkt nach dem anderen.', 'Guter Rhythmus. Weiter so.'],
+  evening: ['Zeit, den Tag rund zu machen.', 'Was heute noch geht, geht schnell.', 'Noch ein paar Haken, dann ist Feierabend.', 'Der Abend gehört dir. Schließ den Tag sauber ab.'],
+};
+function motivation(h, d, st) {
+  if (d.total > 0 && d.done === d.total) return 'Perfekter Tag. Genau diese Konsequenz summiert sich.';
+  if (st >= 3 && d.pct < 0.5) return `${st} Tage in Folge. Halte die Serie am Leben.`;
+  if (d.pct >= 0.5 && h >= 11) return `Mehr als die Hälfte geschafft. Der Rest ist Formsache.`;
+  const pool = h < 5 || h >= 22 ? LINES.night : h < 11 ? LINES.morning : h < 17 ? LINES.day : LINES.evening;
+  const seed = parseInt(dateKey().replace(/-/g, ''), 10);
+  return pool[seed % pool.length];
+}
+function weekStrip(s, today) {
+  const ws = weekStart(today);
+  return `<div class="week">${Array.from({ length: 7 }, (_, i) => {
+    const k = addDays(ws, i);
+    const perfect = isPerfectDay(s, k);
+    const isToday = k === today, future = k > today;
+    const d = isToday ? dayItems(s, k) : null;
+    let cls = perfect ? 'perfect' : isToday ? 'today' : future ? 'future' : 'missed';
+    return `<div class="week-day ${cls}"><span class="wl">${WD_SHORT[(i + 1) % 7]}</span><span class="wd">${perfect ? icons.check : isToday ? ring(d.pct, '#fff', 26, 3.5, { track: 'rgba(255,255,255,.28)' }) : ''}</span></div>`;
+  }).join('')}</div>`;
+}
 
 export function render(s) {
   const today = dateKey();
@@ -21,28 +64,37 @@ export function render(s) {
   const upcoming = s.appointments.filter(a => a.date >= today).sort((a, b) => (a.date + a.time).localeCompare(b.date + b.time)).slice(0, 3);
   const workToday = s.lists.work.today;
   const privToday = s.lists.private.today;
+  const hour = new Date().getHours();
+  const perfect = d.total > 0 && d.done === d.total;
+  const name = (s.settings.name || '').trim();
+  const animate = firstMount; firstMount = false;
+  const pop = lastPop; lastPop = null;
 
   return `
-    ${header('Heute', fmtLong(today), `<button class="icon-btn" data-action="settings" aria-label="Einstellungen">${icons.gear}</button>`)}
+    ${header(`${greeting(hour)}${name ? `, ${name}` : ''}`, fmtLong(today), `<button class="icon-btn" data-action="settings" aria-label="Einstellungen">${icons.gear}</button>`)}
 
-    <div class="card">
-      <div class="hero">
-        <div class="ring-wrap">${ring(d.pct, d.pct >= 1 ? 'var(--green)' : 'var(--blue)', 74, 8)}<div class="ring-label">${Math.round(d.pct * 100)}%</div></div>
+    <div class="hero-card ${perfect ? 'perfect' : ''}" style="background:${heroTheme(hour, perfect)}">
+      <div class="hero-top">
+        <div class="ring-wrap">${ring(d.pct, '#fff', 84, 9, { track: 'rgba(255,255,255,.28)', animate })}<div class="ring-label">${perfect ? icons.check.replace('<svg', '<svg style="width:26px;height:26px;color:#fff"') : `${Math.round(d.pct * 100)}%`}</div></div>
         <div class="grow">
-          <div class="big">${d.done === d.total && d.total > 0 ? 'Alles erledigt' : `${d.done} von ${d.total} erledigt`}</div>
-          <div class="muted">${st > 0 ? `<span style="color:var(--orange);font-weight:600">🔥 ${st} ${st === 1 ? 'Tag' : 'Tage'} in Folge</span>` : 'Starte heute deine Serie'}${best > st ? ` · Rekord ${best}` : ''}</div>
+          <div class="hero-big">${perfect ? 'Alles erledigt' : `${d.done} von ${d.total} erledigt`}</div>
+          <div class="hero-line">${esc(motivation(hour, d, st))}</div>
         </div>
+      </div>
+      <div class="hero-bottom">
+        ${weekStrip(s, today)}
+        <div class="hero-streak">${st > 0 ? `<span class="glass">🔥 ${st} ${st === 1 ? 'Tag' : 'Tage'} in Folge</span>` : `<span class="glass">Starte heute deine Serie</span>`}${best > st ? `<span class="glass dim">Rekord ${best}</span>` : ''}</div>
       </div>
     </div>
 
     ${sectionLabel('Tages-Standards', `<button class="link-btn" data-action="manageHabits">Bearbeiten</button>`)}
     <div class="card">
       ${Object.entries(groups).map(([area, items]) => `
-        <div class="group-title"><span class="dot" style="--c:${AREAS[area]?.color || 'var(--blue)'}"></span>${esc(AREAS[area]?.name || 'Sonstiges')}</div>
-        ${items.map(r => habitRow(s, r.habit, r.done, today)).join('')}
+        <div class="group-title">${tile(AREAS[area]?.icon || 'sparkles', AREAS[area]?.color || 'var(--blue)')}${esc(AREAS[area]?.name || 'Sonstiges')}</div>
+        ${items.map(r => habitRow(s, r.habit, r.done, today, pop)).join('')}
       `).join('')}
       ${d.weekly.length ? `
-        <div class="group-title"><span class="dot" style="--c:var(--purple)"></span>Wochenziele</div>
+        <div class="group-title">${tile('sparkles', 'var(--purple)')}Wochenziele</div>
         ${d.weekly.map(w => `
           <div class="row ${w.done ? 'done' : ''}">
             ${check(w.done, AREAS[w.habit.area]?.color || 'var(--purple)', `data-action="toggleHabit" data-id="${w.habit.id}"`)}
@@ -51,7 +103,7 @@ export function render(s) {
           </div>`).join('')}
       ` : ''}
       ${d.stepsItem ? `
-        <div class="group-title"><span class="dot" style="--c:var(--green)"></span>Bewegung</div>
+        <div class="group-title">${tile('steps', 'var(--green)')}Bewegung</div>
         <div class="row ${d.stepsItem.done ? 'done' : ''}" style="flex-wrap:wrap">
           ${check(d.stepsItem.done, 'var(--green)', 'data-action="goSteps"')}
           <div class="grow"><div class="title">${fmtNum(d.stepsItem.goal)} Schritte</div><div class="meta">${d.stepsItem.done ? 'Ziel erreicht' : `${fmtNum(Math.max(0, d.stepsItem.goal - d.stepsItem.steps))} fehlen noch`}</div></div>
@@ -64,7 +116,7 @@ export function render(s) {
     ${sectionLabel('Training')}
     <div class="card">
       <a class="row link" href="#training" style="color:inherit">
-        ${check(!!trainedToday, 'var(--orange)', 'data-action="goTraining"')}
+        ${tile('dumbbell', 'var(--orange)', 36)}
         <div class="grow"><div class="title">${trainedToday ? `${esc(trainedToday.dayName)} absolviert` : nextDay ? `Nächstes Training: ${esc(nextDay.name)}` : 'Kein Trainingsplan'}</div>
         <div class="meta">${trainedToday ? `${trainedToday.entries.length} Übungen · ${summarizeSession(trainedToday)}` : lastTrainingText(s)}</div></div>
         <span class="chev">${icons.chevron}</span>
@@ -75,7 +127,7 @@ export function render(s) {
     <div class="card">
       ${upcoming.map(a => `
         <div class="row">
-          <span class="mini-btn" style="color:var(--indigo);background:color-mix(in srgb,var(--indigo) 12%,transparent)">${icons.clock}</span>
+          ${tile('clock', 'var(--indigo)', 36)}
           <div class="grow"><div class="title">${esc(a.title)}</div><div class="meta">${relDay(a.date)}${a.time ? ` · ${esc(a.time)} Uhr` : ''}</div></div>
           ${a.date === today ? '<span class="pill" style="--c:var(--indigo)">Heute</span>' : ''}
         </div>`).join('')}
@@ -93,10 +145,10 @@ export function render(s) {
   `;
 }
 
-function habitRow(s, h, done, today) {
+function habitRow(s, h, done, today, pop) {
   const hs = habitStreak(s, h, today);
   return `<div class="row ${done ? 'done' : ''}">
-    ${check(done, AREAS[h.area]?.color || 'var(--blue)', `data-action="toggleHabit" data-id="${h.id}"`)}
+    ${check(done, AREAS[h.area]?.color || 'var(--blue)', `data-action="toggleHabit" data-id="${h.id}"`).replace('class="check', pop === h.id ? 'class="check pop' : 'class="check')}
     <div class="grow"><div class="title">${esc(h.name)}</div>${h.schedule?.type === 'days' ? `<div class="meta">${h.schedule.days.map(i => WD[WD_IDX.indexOf(i)]).join(' · ')}</div>` : ''}</div>
     ${hs > 1 ? `<span class="trail">${hs}🔥</span>` : ''}
   </div>`;
@@ -137,6 +189,7 @@ function summarizeSession(se) {
 export const actions = {
   toggleHabit(el) {
     const id = el.dataset.id, today = dateKey();
+    lastPop = id;
     update(s => { const day = s.log[today] ||= {}; if (day[id]) delete day[id]; else day[id] = true; });
   },
   toggleTask(el) {
@@ -223,6 +276,7 @@ function openSettings() {
   openSheet({
     title: 'Einstellungen',
     html: `
+      ${field({ label: 'Dein Name', name: 'name', value: state.settings.name || '', placeholder: 'Für die Begrüßung', attrs: 'maxlength="30" autocapitalize="words"' })}
       ${field({ label: 'Tagesziel Schritte', name: 'stepsGoal', type: 'number', value: state.settings.stepsGoal, attrs: 'min="0" step="500" inputmode="numeric"' })}
       <div class="hint">Setze 0, um Schritte aus den Tages-Standards zu entfernen.</div>
       <div class="section-label" style="padding-left:2px">Daten</div>
@@ -234,7 +288,7 @@ function openSettings() {
       </div>
       <div class="note" style="padding:6px 2px">Alle Daten liegen nur auf diesem Gerät. Ein Backup hin und wieder lohnt sich.</div>
     `,
-    onSubmit(d) { update(s => { s.settings.stepsGoal = Math.max(0, parseInt(d.stepsGoal) || 0); }); },
+    onSubmit(d) { update(s => { s.settings.stepsGoal = Math.max(0, parseInt(d.stepsGoal) || 0); s.settings.name = (d.name || '').trim(); }); },
     actions: {
       exportData: () => { navigator.clipboard?.writeText(JSON.stringify(state)).then(() => alert('Backup in die Zwischenablage kopiert.')).catch(() => alert('Kopieren nicht möglich.')); },
       downloadData: () => {
