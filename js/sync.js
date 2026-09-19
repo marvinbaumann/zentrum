@@ -103,13 +103,15 @@ export async function importInbox() {
     const text = await fr.text();
     // Datum der Ablage (für „heute“/„gestern“ in der Datei)
     let fileDay = null;
-    if (/\b(heute|gestern|today|yesterday)\b/i.test(text)) {
+    const needsDay = /\b(heute|gestern|today|yesterday)\b/i.test(text) || text.split(/\r?\n/).some(l => l.trim().split(/[,;]\s*/).length === 2);
+    if (needsDay) {
       const cr = await gh(`/repos/${sync.owner}/${sync.repo}/commits?path=inbox/${encodeURIComponent(f.name)}&per_page=1&t=${Date.now()}`, { cache: 'no-store' });
       if (cr.ok) { const c = (await cr.json())[0]; const iso = c?.commit?.committer?.date || c?.commit?.author?.date; if (iso) { const d = new Date(iso); fileDay = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`; } }
       if (!fileDay) fileDay = dateKeyLocal();
     }
     for (const line of text.split(/\r?\n/)) {
-      const parts = line.trim().split(/[,;]\s*/);
+      let parts = line.trim().split(/[,;]\s*/);
+      if (parts.length === 2) parts = [parts[0], 'heute', parts[1]]; // Zeile ohne Datum: Tag der Übertragung
       if (parts.length < 3) continue;
       const type = parts[0].toLowerCase().trim();
       const date = normalizeDate(parts[1], fileDay);
