@@ -4,6 +4,8 @@ import { openSheet, closeSheet, field, toggle } from '../sheet.js';
 import { dayItems, streak, bestStreak, habitStreak, isPerfectDay } from '../habits.js';
 import { addDays, weekStart } from '../store.js';
 import { focusAfterRender } from '../app.js';
+import { celebrate, haptic } from '../fx.js';
+import { MONTHS } from '../ui.js';
 
 const WD = ['Mo', 'Di', 'Mi', 'Do', 'Fr', 'Sa', 'So'];
 const WD_IDX = [1, 2, 3, 4, 5, 6, 0];
@@ -17,12 +19,22 @@ function greeting(h) {
   if (h < 22) return 'Guten Abend';
   return 'Gute Nacht';
 }
-function heroTheme(h, perfect) {
-  if (perfect) return 'linear-gradient(135deg,#2ECC71 0%,#16A085 100%)';
-  if (h < 5 || h >= 22) return 'linear-gradient(135deg,#2C3E8F 0%,#141A4A 100%)';
-  if (h < 11) return 'linear-gradient(135deg,#FF9F5A 0%,#FF5E7E 100%)';
-  if (h < 17) return 'linear-gradient(135deg,#3D8BFF 0%,#6C5CE7 100%)';
-  return 'linear-gradient(135deg,#7B4DFF 0%,#FF5FA2 100%)';
+export const MOODS = {
+  auto: { name: 'Automatisch (Tageszeit)' },
+  sunrise: { name: 'Sonnenaufgang', bg: 'linear-gradient(135deg,#FF9F5A 0%,#FF5E7E 100%)' },
+  ocean: { name: 'Ozean', bg: 'linear-gradient(135deg,#3D8BFF 0%,#6C5CE7 100%)' },
+  sunset: { name: 'Abendrot', bg: 'linear-gradient(135deg,#7B4DFF 0%,#FF5FA2 100%)' },
+  forest: { name: 'Wald', bg: 'linear-gradient(135deg,#2ECC71 0%,#16A085 100%)' },
+  night: { name: 'Nacht', bg: 'linear-gradient(135deg,#2C3E8F 0%,#141A4A 100%)' },
+  graphite: { name: 'Graphit', bg: 'linear-gradient(135deg,#4B4B55 0%,#1C1C1E 100%)' },
+};
+function heroTheme(h, perfect, mood = 'auto') {
+  if (perfect) return MOODS.forest.bg;
+  if (mood !== 'auto' && MOODS[mood]) return MOODS[mood].bg;
+  if (h < 5 || h >= 22) return MOODS.night.bg;
+  if (h < 11) return MOODS.sunrise.bg;
+  if (h < 17) return MOODS.ocean.bg;
+  return MOODS.sunset.bg;
 }
 const LINES = {
   night: ['Erholung ist auch Training.', 'Morgen ist ein neuer Tag. Schlaf gut.', 'Der Tag ist rund. Ruh dich aus.'],
@@ -73,7 +85,7 @@ export function render(s) {
   return `
     ${header(`${greeting(hour)}${name ? `, ${name}` : ''}`, fmtLong(today), `<button class="icon-btn" data-action="settings" aria-label="Einstellungen">${icons.gear}</button>`)}
 
-    <div class="hero-card ${perfect ? 'perfect' : ''}" style="background:${heroTheme(hour, perfect)}">
+    <div class="hero-card tappable ${perfect ? 'perfect' : ''}" style="background:${heroTheme(hour, perfect, s.settings.heroMood)}" data-action="history" role="button" aria-label="Verlauf öffnen">
       <div class="hero-top">
         <div class="ring-wrap">${ring(d.pct, '#fff', 84, 9, { track: 'rgba(255,255,255,.28)', animate })}<div class="ring-label">${perfect ? icons.check.replace('<svg', '<svg style="width:26px;height:26px;color:#fff"') : `${Math.round(d.pct * 100)}%`}</div></div>
         <div class="grow">
@@ -190,11 +202,18 @@ export const actions = {
   toggleHabit(el) {
     const id = el.dataset.id, today = dateKey();
     lastPop = id;
+    haptic();
+    const before = isPerfectDay(state, today);
     update(s => { const day = s.log[today] ||= {}; if (day[id]) delete day[id]; else day[id] = true; });
+    if (!before && isPerfectDay(state, today)) celebrate();
   },
   toggleTask(el) {
+    haptic();
     update(s => { const t = s.lists[el.dataset.list].today.find(x => x.id === el.dataset.id); if (t) t.done = !t.done; });
   },
+  history() { openHistorySheet(); },
+  histPrev() { histMonth = shiftMonth(histMonth, -1); openHistorySheet(); },
+  histNext() { histMonth = shiftMonth(histMonth, 1); openHistorySheet(); },
   goSteps() { const inp = document.querySelector('[data-change="setSteps"]'); inp?.focus(); },
   goTraining(el, e) { e.preventDefault(); location.hash = '#training'; },
   addWorkTask() { document.querySelector('form[data-list="work"] input')?.focus(); },
@@ -205,9 +224,52 @@ export const actions = {
 export const changes = {
   setSteps(el) {
     const v = parseInt(el.value, 10);
+    const before = isPerfectDay(state, dateKey());
     update(s => { if (v > 0) s.steps[dateKey()] = v; else delete s.steps[dateKey()]; });
+    if (!before && isPerfectDay(state, dateKey())) celebrate();
   },
 };
+
+/* ---------- Monatsverlauf ---------- */
+let histMonth = null;
+function shiftMonth(ym, n) { const [y, m] = ym.split('-').map(Number); const d = new Date(y, m - 1 + n, 1); return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}`; }
+
+function openHistorySheet() {
+  const today = dateKey();
+  if (!histMonth) histMonth = today.slice(0, 7);
+  const [y, m] = histMonth.split('-').map(Number);
+  const first = new Date(y, m - 1, 1), daysInMonth = new Date(y, m, 0).getDate();
+  const lead = (first.getDay() + 6) % 7;
+  let perfectCount = 0, cells = '';
+  for (let i = 0; i < lead; i++) cells += '<span class="cal-cell empty"></span>';
+  for (let d = 1; d <= daysInMonth; d++) {
+    const k = `${histMonth}-${String(d).padStart(2, '0')}`;
+    const perfect = isPerfectDay(state, k);
+    if (perfect) perfectCount++;
+    const cls = perfect ? 'perfect' : k === today ? 'today' : k > today || k < state.createdAt ? 'future' : 'missed';
+    cells += `<span class="cal-cell ${cls}">${perfect ? icons.check : d}</span>`;
+  }
+  const st = streak(state, today), best = bestStreak(state);
+  let total = 0; for (let k = state.createdAt; k <= today; k = addDays(k, 1)) if (isPerfectDay(state, k)) total++;
+  const isCurrent = histMonth === today.slice(0, 7);
+  openSheet({
+    title: 'Verlauf',
+    html: `
+      <div class="cal-head">
+        <button type="button" class="mini-btn" data-action="histPrev">${icons.chevron.replace('<svg', '<svg style="transform:rotate(180deg)"')}</button>
+        <div class="cal-title">${MONTHS[m - 1]} ${y}</div>
+        <button type="button" class="mini-btn" data-action="histNext" ${isCurrent ? 'disabled style="opacity:.3"' : ''}>${icons.chevron}</button>
+      </div>
+      <div class="cal-grid">${WD.map(w => `<span class="cal-wd">${w}</span>`).join('')}${cells}</div>
+      <div class="stats" style="padding-top:16px">
+        <div class="stat"><div class="v">${perfectCount}</div><div class="l">Perfekt im Monat</div></div>
+        <div class="stat"><div class="v">${st}</div><div class="l">Aktuelle Serie</div></div>
+        <div class="stat"><div class="v">${best}</div><div class="l">Beste Serie</div></div>
+      </div>
+      <div class="note" style="padding:0 2px 8px">Ein Tag ist perfekt, wenn alle Tages-Standards und das Schrittziel erledigt sind. Insgesamt ${total} perfekte ${total === 1 ? 'Tag' : 'Tage'} seit dem Start.</div>`,
+    actions: { histPrev: actions.histPrev, histNext: actions.histNext },
+  });
+}
 
 export const submits = {
   addTask(f) {
@@ -278,6 +340,8 @@ function openSettings() {
     html: `
       ${field({ label: 'Dein Name', name: 'name', value: state.settings.name || '', placeholder: 'Für die Begrüßung', attrs: 'maxlength="30" autocapitalize="words"' })}
       ${field({ label: 'Tagesziel Schritte', name: 'stepsGoal', type: 'number', value: state.settings.stepsGoal, attrs: 'min="0" step="500" inputmode="numeric"' })}
+      ${field({ label: 'Stimmung der Begrüßungskarte', name: 'heroMood', value: state.settings.heroMood || 'auto', options: Object.entries(MOODS).map(([value, m]) => ({ value, label: m.name })) })}
+      <div class="mood-row">${Object.entries(MOODS).filter(([k]) => k !== 'auto').map(([k, m]) => `<span class="mood-swatch" style="background:${m.bg}" title="${m.name}"></span>`).join('')}</div>
       <div class="hint">Setze 0, um Schritte aus den Tages-Standards zu entfernen.</div>
       <div class="section-label" style="padding-left:2px">Daten</div>
       <div class="stack">
@@ -288,7 +352,7 @@ function openSettings() {
       </div>
       <div class="note" style="padding:6px 2px">Alle Daten liegen nur auf diesem Gerät. Ein Backup hin und wieder lohnt sich.</div>
     `,
-    onSubmit(d) { update(s => { s.settings.stepsGoal = Math.max(0, parseInt(d.stepsGoal) || 0); s.settings.name = (d.name || '').trim(); }); },
+    onSubmit(d) { update(s => { s.settings.stepsGoal = Math.max(0, parseInt(d.stepsGoal) || 0); s.settings.name = (d.name || '').trim(); s.settings.heroMood = MOODS[d.heroMood] ? d.heroMood : 'auto'; }); },
     actions: {
       exportData: () => { navigator.clipboard?.writeText(JSON.stringify(state)).then(() => alert('Backup in die Zwischenablage kopiert.')).catch(() => alert('Kopieren nicht möglich.')); },
       downloadData: () => {

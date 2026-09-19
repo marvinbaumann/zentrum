@@ -22,7 +22,7 @@ function defaultState() {
   return {
     version: 1,
     createdAt: dateKey(),
-    settings: { stepsGoal: 10000, name: '', onboarded: false },
+    settings: { stepsGoal: 10000, name: '', onboarded: false, heroMood: 'auto' },
     habits: [
       { id: uid(), name: 'Vitamin D3', area: 'supp', schedule: { type: 'daily' } },
       { id: uid(), name: 'Omega-3', area: 'supp', schedule: { type: 'daily' } },

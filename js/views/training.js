@@ -1,6 +1,9 @@
 import { state, update, dateKey, uid } from '../store.js';
 import { esc, header, sectionLabel, segmented, icons, relDay, fmtKg } from '../ui.js';
 import { openSheet, closeSheet, field, toggle } from '../sheet.js';
+import { celebrate, haptic } from '../fx.js';
+import { addDays, weekStart } from '../store.js';
+import { tile } from '../ui.js';
 
 let editMode = false;
 
@@ -12,11 +15,39 @@ function selectedDay(s) {
 const wTxt = w => w == null ? 'Eigengewicht' : `${fmtKg(w)} kg`;
 const lastEntry = (s, exId) => { for (const se of s.training.sessions) { const e = se.entries.find(x => x.exerciseId === exId); if (e) return { ...e, date: se.date }; } return null; };
 
+function trainingHero(s) {
+  const today = dateKey();
+  const all = s.training.sessions;
+  const trainedToday = all.find(x => x.date === today);
+  const ws = weekStart(today);
+  const thisWeek = all.filter(x => x.date >= ws).length;
+  const last28 = all.filter(x => x.date >= addDays(today, -27));
+  const levelups = last28.reduce((n, se) => n + se.entries.filter(e => e.result === 'levelup').length, 0);
+  const days = s.training.days;
+  let next = null;
+  if (days.length) { const last = all[0]; const i = last ? days.findIndex(d => d.id === last.dayId) : -1; next = days[(i + 1) % days.length]; }
+  const lastDate = all[0] ? relDay(all[0].date) : null;
+  const title = trainedToday ? `${esc(trainedToday.dayName)} absolviert` : next ? `Heute: ${esc(next.name)}` : 'Kein Plan';
+  const line = trainedToday ? 'Stark. Erholung ist jetzt Teil des Trainings.' : lastDate ? `Zuletzt ${lastDate}. Dranbleiben.` : 'Dein erstes Training wartet.';
+  return `<div class="hero-card compact" style="background:linear-gradient(135deg,#FF9F0A 0%,#FF5E3A 100%)">
+    <div class="hero-top">
+      <span class="hero-icon">${icons.dumbbell}</span>
+      <div class="grow"><div class="hero-big">${title}</div><div class="hero-line">${line}</div></div>
+    </div>
+    <div class="hero-stats">
+      <div><b>${thisWeek}</b><span>diese Woche</span></div>
+      <div><b>${last28.length}</b><span>letzte 4 Wochen</span></div>
+      <div><b>${levelups}</b><span>× Gewicht hoch</span></div>
+    </div>
+  </div>`;
+}
+
 export function render(s) {
   const day = selectedDay(s);
   const sessions = s.training.sessions.slice(0, 5);
   return `
     ${header('Training', 'Progressive Overload', `<button class="link-btn ${editMode ? 'bold' : ''}" data-action="toggleEdit">${editMode ? 'Fertig' : 'Plan bearbeiten'}</button>`)}
+    ${editMode ? '' : trainingHero(s)}
     ${s.training.days.length ? segmented(s.training.days, day?.id, 'selectDay') : ''}
     ${editMode ? `<div class="btn-row"><button class="btn btn-soft btn-sm" data-action="addDay">${icons.plus.replace('<svg', '<svg style="width:15px;height:15px"')} Tag</button>${day ? `<button class="btn btn-soft btn-sm" data-action="renameDay">Umbenennen</button><button class="btn btn-danger btn-sm" data-action="delDay">Tag löschen</button>` : ''}</div>` : ''}
 
@@ -147,6 +178,7 @@ export const actions = {
       updates.push({ id: ex.id, next: ev.next });
     }
     if (!entries.length) { alert('Trage zuerst deine Wiederholungen ein.'); return; }
+    haptic();
     const session = { id: uid(), date: dateKey(), dayId: day.id, dayName: day.name, entries };
     update(s => {
       const d = selectedDay(s);
@@ -157,6 +189,7 @@ export const actions = {
     openSheet({ title: 'Training gespeichert', html: `<div class="summary-list">${entries.map(e => `<div class="row"><div class="grow"><div class="title">${esc(e.name)}</div><div class="meta">${e.reps.join(' / ')} · ${wTxt(e.weight)}</div><div class="session-res res-${e.result}">${esc(e.message)}</div></div></div>`).join('')}</div>
       <div class="stack"><button type="button" class="btn btn-primary" data-action="__closeSheet" style="background:var(--orange)">Stark! Weiter</button></div>` });
     window.scrollTo(0, 0);
+    if (entries.some(e => e.result === 'levelup')) celebrate(['#FF9F0A', '#FF5E3A', '#FFD60A', '#FFFFFF']);
   },
 };
 

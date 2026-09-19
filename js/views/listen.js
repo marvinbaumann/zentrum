@@ -2,6 +2,7 @@ import { state, update, dateKey, uid } from '../store.js';
 import { esc, header, sectionLabel, segmented, icons, relDay, tile } from '../ui.js';
 import { openSheet, field } from '../sheet.js';
 import { focusAfterRender } from '../app.js';
+import { haptic } from '../fx.js';
 
 let tab = 'work';
 let editMode = false;
@@ -64,7 +65,7 @@ export const actions = {
   selectTab(el) { tab = el.dataset.id; editMode = false; update(() => {}); },
   toggleEdit() { editMode = !editMode; update(() => {}); },
   togglePast() { showPast = !showPast; update(() => {}); },
-  toggleTask(el) { update(s => { const t = s.lists[tab].today.find(x => x.id === el.dataset.id); if (t) t.done = !t.done; }); },
+  toggleTask(el) { haptic(); update(s => { const t = s.lists[tab].today.find(x => x.id === el.dataset.id); if (t) t.done = !t.done; }); },
   clearDone() { update(s => { s.lists[tab].today = s.lists[tab].today.filter(t => !t.done); }); },
   delTask(el) { update(s => { s.lists[tab][el.dataset.kind] = s.lists[tab][el.dataset.kind].filter(t => t.id !== el.dataset.id); }); },
   moveToToday(el) { update(s => { const L = s.lists[tab]; const i = L.ideas.findIndex(t => t.id === el.dataset.id); if (i < 0) return; const [t] = L.ideas.splice(i, 1); t.done = false; L.today.push(t); }); },

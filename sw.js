@@ -1,7 +1,7 @@
-const CACHE = 'zentrum-v2';
+const CACHE = 'zentrum-v3';
 const ASSETS = [
   './', './index.html', './styles.css', './manifest.json',
-  './js/app.js', './js/store.js', './js/ui.js', './js/sheet.js', './js/habits.js',
+  './js/app.js', './js/store.js', './js/ui.js', './js/sheet.js', './js/habits.js', './js/fx.js',
   './js/views/heute.js', './js/views/training.js', './js/views/koerper.js', './js/views/listen.js', './js/views/welcome.js',
   './icons/icon-180.png', './icons/icon-512.png'
 ];
