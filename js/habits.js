@@ -25,9 +25,15 @@ export function dayItems(s, key) {
   const goal = s.settings.stepsGoal || 0;
   const steps = s.steps[key] || 0;
   const stepsItem = goal > 0 ? { steps, goal, done: steps >= goal } : null;
-  const total = required.length + (stepsItem ? 1 : 0);
-  const done = required.filter(r => r.done).length + (stepsItem?.done ? 1 : 0);
-  return { required, weekly, stepsItem, total, done, pct: total ? done / total : 0 };
+  let trainingItem = null;
+  if (s.settings.trainingDaily !== false) {
+    const plan = (s.training?.sessions || []).find(x => x.date === key) || null;
+    const free = s.freeWorkouts?.[key] || null;
+    trainingItem = { plan, free, done: !!(plan || free) };
+  }
+  const total = required.length + (stepsItem ? 1 : 0) + (trainingItem ? 1 : 0);
+  const done = required.filter(r => r.done).length + (stepsItem?.done ? 1 : 0) + (trainingItem?.done ? 1 : 0);
+  return { required, weekly, stepsItem, trainingItem, total, done, pct: total ? done / total : 0 };
 }
 
 export const GOOD_THRESHOLD = 0.8;
@@ -84,5 +90,6 @@ export function lastActivity(s) {
   for (const k of Object.keys(s.steps || {})) consider(k);
   for (const k of Object.keys(s.checkins || {})) consider(k);
   for (const se of s.training?.sessions || []) consider(se.date);
+  for (const k of Object.keys(s.freeWorkouts || {})) consider(k);
   return last;
 }

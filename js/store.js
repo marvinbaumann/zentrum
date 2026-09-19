@@ -22,7 +22,7 @@ function defaultState() {
   return {
     version: 1,
     createdAt: dateKey(),
-    settings: { stepsGoal: 10000, name: '', onboarded: false, heroMood: 'auto', splash: true, joker: true, restSeconds: 90, weights: '2.5, 5, 7.5, 10, 12.5, 15, 17.5, 20', jumpLimit: 20 },
+    settings: { stepsGoal: 10000, name: '', onboarded: false, heroMood: 'auto', splash: true, joker: true, trainingDaily: true, restSeconds: 90, weights: '2.5, 5, 7.5, 10, 12.5, 15, 17.5, 20', jumpLimit: 20 },
     habits: [
       { id: uid(), name: 'Vitamin D3', area: 'supp', dose: '2000 IE', schedule: { type: 'daily' } },
       { id: uid(), name: 'Omega-3', area: 'supp', dose: '1000 mg', schedule: { type: 'daily' } },
@@ -48,6 +48,7 @@ function defaultState() {
       private: { today: [], ideas: [] },
     },
     appointments: [], // [{ id, date, time, title }]
+    freeWorkouts: {}, // { 'YYYY-MM-DD': { kind, minutes, note } }
     checkins: {},     // { 'YYYY-MM-DD': { valence, emotions, tags, good, note, at } }
     people: [],       // [{ id, name, intervalDays, lastContact, birthday, note }]
     vision: [],       // [{ id, caption, area, step, addedAt }] – Bilddaten liegen in IndexedDB + Daten-Repo

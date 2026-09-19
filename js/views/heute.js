@@ -6,6 +6,7 @@ import * as checkin from './checkin.js';
 import { duePeople, upcomingBirthdays, personRow, actions as peopleActions } from './people.js';
 import { openVisionManager } from './vision.js';
 import { checkMilestones } from './milestone.js';
+import { openFreeWorkout, removeFreeWorkout, workoutText } from './workout.js';
 import { addDays, weekStart } from '../store.js';
 import { focusAfterRender } from '../app.js';
 import { celebrate, haptic } from '../fx.js';
@@ -144,14 +145,14 @@ export function render(s) {
 
     ${(() => { const due = duePeople(s, 7); const bd = upcomingBirthdays(s, 14).filter(x => !due.includes(x.p)); if (!due.length && !bd.length) return ''; return `${sectionLabel('Menschen', `<a class="link-btn" href="#listen" data-action="goPeople" style="font-size:14px">Alle</a>`)}<div class="card">${due.map(p => personRow(p)).join('')}${bd.map(x => personRow(x.p)).join('')}</div>`; })()}
 
-    ${sectionLabel('Training')}
+    ${sectionLabel('Training', `<a class="link-btn" href="#training" style="font-size:14px">Zum Plan</a>`)}
     <div class="card">
-      <a class="row link" href="#training" style="color:inherit">
-        ${tile('dumbbell', 'var(--orange)', 36)}
-        <div class="grow"><div class="title">${trainedToday ? `${esc(trainedToday.dayName)} absolviert` : nextDay ? `Nächstes Training: ${esc(nextDay.name)}` : 'Kein Trainingsplan'}</div>
-        <div class="meta">${trainedToday ? `${trainedToday.entries.length} Übungen · ${summarizeSession(trainedToday)}` : lastTrainingText(s)}</div></div>
-        <span class="chev">${icons.chevron}</span>
-      </a>
+      ${d.trainingItem ? `<div class="row ${d.trainingItem.done ? 'done' : ''}">
+        ${check(d.trainingItem.done, 'var(--orange)', 'data-action="toggleTraining"')}
+        <div class="grow"><div class="title">${d.trainingItem.done ? esc(workoutText(d.trainingItem)) : 'Training heute'}</div>
+        <div class="meta">${d.trainingItem.done ? (d.trainingItem.plan ? `${d.trainingItem.plan.entries.length} Übungen · ${summarizeSession(d.trainingItem.plan)}` : 'Freies Training, zählt voll') : nextDay ? `Plan: ${esc(nextDay.name)} · oder frei eintragen` : 'Plan-Training oder frei eintragen'}</div></div>
+        ${!d.trainingItem.done ? `<button type="button" class="btn btn-tint btn-sm" style="--c:var(--orange)" data-action="freeWorkout">Frei</button>` : (d.trainingItem.free ? `<button type="button" class="mini-btn" data-action="editWorkout">${icons.pencil}</button>` : '')}
+      </div>` : `<a class="row link" href="#training" style="color:inherit">${tile('dumbbell', 'var(--orange)', 36)}<div class="grow"><div class="title">${trainedToday ? `${esc(trainedToday.dayName)} absolviert` : nextDay ? `Nächstes Training: ${esc(nextDay.name)}` : 'Kein Trainingsplan'}</div><div class="meta">${lastTrainingText(s)}</div></div><span class="chev">${icons.chevron}</span></a>`}
     </div>
 
     ${sectionLabel('Arbeit', `<button class="link-btn" data-action="addWorkTask">${icons.plus.replace('<svg', '<svg style="width:14px;height:14px;vertical-align:-2px"')} Aufgabe</button>`)}
@@ -241,6 +242,14 @@ export const actions = {
   settings() { openSettings(); },
   manageHabits() { openHabitManager(); },
   openCheckin() { checkin.openCheckin(); },
+  toggleTraining() {
+    const w = dayItems(state, dateKey()).trainingItem; if (!w) return;
+    if (w.plan) { location.hash = '#training'; return; }
+    if (w.free) { removeFreeWorkout(); return; }
+    openFreeWorkout();
+  },
+  freeWorkout() { openFreeWorkout(); },
+  editWorkout() { openFreeWorkout(state.freeWorkouts?.[dateKey()] || null); },
   goPeople(el, e) { e.preventDefault(); sessionStorage.setItem('zentrum.listTab', 'people'); location.hash = '#listen'; },
   ...peopleActions,
 };
@@ -368,6 +377,7 @@ function openSettings() {
       ${field({ label: 'Dein Name', name: 'name', value: state.settings.name || '', placeholder: 'Für die Begrüßung', attrs: 'maxlength="30" autocapitalize="words"' })}
       ${field({ label: 'Tagesziel Schritte', name: 'stepsGoal', type: 'number', value: state.settings.stepsGoal, attrs: 'min="0" step="500" inputmode="numeric"' })}
       ${field({ label: 'Stimmung der Begrüßungskarte', name: 'heroMood', value: state.settings.heroMood || 'auto', options: Object.entries(MOODS).map(([value, m]) => ({ value, label: m.name })) })}
+      ${toggle({ label: 'Training zählt täglich als Standard', name: 'trainingDaily', checked: state.settings.trainingDaily !== false })}
       ${toggle({ label: 'Joker-Tag: ein schwacher Tag pro Woche bricht die Serie nicht', name: 'joker', checked: state.settings.joker !== false })}
       ${toggle({ label: 'Startscreen beim Öffnen', name: 'splash', checked: state.settings.splash !== false })}
       <div class="stack" style="padding-top:8px"><button type="button" class="btn btn-soft" data-action="visionManager">Meine Bilder (${(state.vision || []).length})</button></div>
@@ -387,7 +397,7 @@ function openSettings() {
       </div>
       <div class="note" style="padding:6px 2px">Alle Daten liegen nur auf diesem Gerät. Ein Backup hin und wieder lohnt sich.</div>
     `,
-    onSubmit(d) { update(s => { s.settings.stepsGoal = Math.max(0, parseInt(d.stepsGoal) || 0); s.settings.name = (d.name || '').trim(); s.settings.heroMood = MOODS[d.heroMood] ? d.heroMood : 'auto'; s.settings.splash = !!d.splash; s.settings.joker = !!d.joker; }); },
+    onSubmit(d) { update(s => { s.settings.stepsGoal = Math.max(0, parseInt(d.stepsGoal) || 0); s.settings.name = (d.name || '').trim(); s.settings.heroMood = MOODS[d.heroMood] ? d.heroMood : 'auto'; s.settings.splash = !!d.splash; s.settings.joker = !!d.joker; s.settings.trainingDaily = !!d.trainingDaily; }); },
     actions: {
       syncSetup: () => openSyncSheet(),
       syncKey: () => openSheet({ title: 'Sync-Schlüssel', html: `<div class="note" style="padding:0 2px 12px">Dein Schlüssel für Kurzbefehle und Neuinstallationen. Bewahre ihn in deiner Notizen-App oder im Passwortmanager auf.</div><div class="key-box" id="key-box">${esc(sync.token)}</div><div class="stack"><button type="button" class="btn btn-primary" data-action="copyKey">Kopieren</button></div>`,
