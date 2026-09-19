@@ -2,7 +2,7 @@
 
 Ziel: definiert und muskulös, beweglich, ausdauernd, gesund. 45 bis 60 Minuten pro Tag, jeden Tag Bewegung, Garage.
 
-Deine Ausstattung: Power Rack 900 mit Kabelzug, Bench 900, Langhantel 2 m (9,75 kg, max. 160 kg), Scheiben 28 mm (2 × 2, 2 × 5, 2 × 10, 2 × 20 kg), Kurzhanteln 2 × 5, 2 × 10, 2 × 20 kg, Holzringe, Latex-Bänder, Gewichtsweste 20 kg, Trizeps-Seil, 2 D-Griffe, Apple Watch.
+Deine Ausstattung: Power Rack 900 mit Kabelzug, Bench 900, Langhantel 2 m (9,75 kg, max. 160 kg), Scheiben 28 mm (2 × 2, 2 × 5, 2 × 10, 2 × 20 kg), Kurzhanteln 2 × 5, 2 × 10, 2 × 20 kg, Gewichtsweste 20 kg, Trizeps-Seil, 2 D-Griffe, Apple Watch. Optional später: Dip-Kit fürs Rack, Bänder.
 
 **Gewichte und Beladung.** Alle Startgewichte im Plan sind mit genau dieser Ausstattung beladbar. Langhantel (Stange gerundet 10 kg) symmetrisch: 10, 14, 20, 24, 30, 34, 40, 44, 50, 54, 60, 64, 70, 74, 80, 84 kg. Kabelzug: jede Scheibenkombination, ab 2 kg in 1- bis 3-kg-Schritten. Kurzhanteln: 5, 10, 20 kg. Die App kennt Hanteln, Scheiben und Stange (Training, Zahnrad) und schlägt nur beladbare Gewichte vor. Solltest du nur eine 20-kg-Scheibe kaufen, trage in der App „2, 2, 5, 5, 10, 10, 20“ ein; dann endet die Langhantel bei 44 kg und die Startgewichte für Kniebeuge, Kreuzheben und Bankdrücken sinken auf 40 bis 44 kg.
 
@@ -54,19 +54,19 @@ Aufwärmen 8 min: Hüftkreisen, Cossack Squats 2 × 8, Tibialis Raises an der Wa
 
 ### Mittwoch – Oberkörper Push + Pull (55 min)
 
-Aufwärmen 8 min: Band Pull-aparts 2 × 15, Schulterkreisen mit Band, Dead Hang 2 × 20 s, Liegestütze 1 × 10.
+Aufwärmen 8 min: Face Pulls am Kabel 2 × 15 mit 5 kg, Schulterkreisen, Dead Hang 2 × 20 s, Liegestütze 1 × 10.
 
 | Übung | Sätze × Range | Start | Gerät | Pause |
 |---|---|---|---|---|
-| Klimmzüge | 4 × 5–10 | Eigengewicht, Band ab Satz 3 | BW | 120 s |
+| Klimmzüge | 4 × 3–10 | Eigengewicht, dann 2–3 Negative | BW | 120 s |
 | KH Bankdrücken schräg 30° | 4 × 8–12 | 2 × 20 kg | KH | 90 s |
 | Latzug am Kabel, Triangel oder Stange | 3 × 10–15 | 30 kg | Kabel | 75 s |
 | KH Schulterdrücken sitzend | 3 × 8–12 | 2 × 10 kg | KH | 90 s |
-| Ring-Dips | 3 × 8–15 | Eigengewicht | BW | 75 s |
+| Dips am Rack-Dip-Kit, bis dahin enges KH-Bankdrücken | 3 × 8–15 | Eigengewicht / 2 × 20 kg | BW | 75 s |
 | Einarmiges KH-Rudern, Bench | 3 × 8–12 je Seite | 20 kg | KH | 75 s |
 | Face Pulls am Seil | 3 × 15–20 | 10 kg | Kabel | 45 s |
 
-Warum Rudern statt Seitheben: Ohne horizontales Ziehen fehlt dem Plan der obere Rücken, und der ist für Haltung und Schultergesundheit wichtiger als ein dritter Seitheben-Satz. Seitheben bleibt im Samstags-Block. Ring-Dips: Anfangs 2 Wochen nur Stützhalten an den Ringen 3 × 20 s und Bankdips, bis die Schultern stabil sind, dann volle Dips.
+Warum Rudern statt Seitheben: Ohne horizontales Ziehen fehlt dem Plan der obere Rücken, und der ist für Haltung und Schultergesundheit wichtiger als ein dritter Seitheben-Satz. Seitheben bleibt im Samstags-Block. Klimmzüge ohne Band: saubere Wiederholungen, dann 2 bis 3 langsame Negative mit 3 bis 5 Sekunden abwärts. Der Latzug liefert das restliche Volumen.
 
 Falls 2 × 20 kg schräg zu schwer ist: Langhantel-Bankdrücken schräg mit 30 bis 40 kg, bis 2 × 15 kg Kurzhanteln da sind.
 
@@ -125,7 +125,7 @@ Die schwere Kniebeuge am Freitag ergänzt die Hypertrophie-Kniebeuge vom Montag.
 
 ## Klimmzüge von 5 auf 12
 
-Mittwoch Volumen mit Band, Freitag schwer mit Weste, Latzug am Mittwoch baut den Rücken zusätzlich auf. Ab 4 × 10 ohne Band: Weste auf 7,5 kg und zurück auf 4 × 5.
+Mittwoch Volumen mit Negativen, Freitag schwer mit Weste, Latzug am Mittwoch baut den Rücken zusätzlich auf. Ab 4 × 10 sauber: Weste auf 7,5 kg und zurück auf 4 × 5.
 
 ## Mobility täglich, Anleitungen und Fortschritt
 

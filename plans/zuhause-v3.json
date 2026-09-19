@@ -35,9 +35,9 @@
       "minutes": 55,
       "goal": "Brust, Rücken und Schultern im Gleichgewicht: vertikal ziehen, horizontal ziehen, drücken.",
       "how": [
-        "Aufwärmen 8 min: Band Pull-aparts 2×15, Schulterkreisen mit Band, Dead Hang 2×20 s, Liegestütze 1×10",
-        "Klimmzüge zuerst, solange du frisch bist; Band ab Satz 3 erlaubt",
-        "Ring-Dips die ersten 2 Wochen nur Stützhalten 3×20 s und Bankdips",
+        "Aufwärmen 8 min: Face Pulls am Kabel 2×15 mit 5 kg, Schulterkreisen, Dead Hang 2×20 s, Liegestütze 1×10",
+        "Klimmzüge zuerst: saubere Wiederholungen, wenn nichts mehr geht 2–3 langsame Negative mit 3–5 s abwärts. Kein Band nötig, der Latzug liefert das Volumen",
+        "Dips am Rack-Dip-Kit; bis es da ist enges Kurzhantel-Bankdrücken",
         "Face Pulls langsam, Schulterblätter zusammen, 15–20 Wiederholungen"
       ],
       "why": "Rudern und Face Pulls schützen die Schultern und halten die Haltung aufrecht, das fehlt in den meisten Push-lastigen Plänen."
@@ -162,7 +162,7 @@
         {
           "name": "Klimmzüge",
           "sets": 4,
-          "repMin": 5,
+          "repMin": 3,
           "repMax": 10,
           "weight": null,
           "equipment": "bw"
@@ -193,7 +193,7 @@
           "equipment": "kh"
         },
         {
-          "name": "Ring-Dips",
+          "name": "Dips (Rack-Dip-Kit) / enges KH-Bankdrücken",
           "sets": 3,
           "repMin": 8,
           "repMax": 15,
