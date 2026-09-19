@@ -34,10 +34,24 @@ export function availableWeights(s) {
   return String(s.settings.weights || '').split(/[,;\s]+/).map(x => parseFloat(x.replace(',', '.'))).filter(x => x > 0).sort((a, b) => a - b);
 }
 export const EQUIPMENT = { kh: 'Kurzhantel', lh: 'Langhantel', kabel: 'Kabelzug', bw: 'Eigengewicht' };
+function parseList(str) { return String(str || '').split(/[,;\s]+/).map(x => parseFloat(x.replace(',', '.'))).filter(x => x > 0); }
+function subsetSums(items) { let sums = new Set([0]); for (const p of items) { const next = new Set(sums); for (const v of sums) next.add(round(v + p)); sums = next; } return [...sums].sort((a, b) => a - b); }
+// Langhantel: pro Seite je ein Stück jedes Scheibenpaars, Gesamt = Stange + 2 × Seite
+export function loadableBarbell(s) {
+  const plates = parseList(s.settings.plates); const cnt = {}; plates.forEach(p => cnt[p] = (cnt[p] || 0) + 1);
+  const side = []; for (const [w, c] of Object.entries(cnt)) for (let i = 0; i < Math.floor(c / 2); i++) side.push(Number(w));
+  const bar = parseFloat(String(s.settings.barWeight ?? 10).replace(',', '.')) || 10;
+  return subsetSums(side).map(x => round(bar + 2 * x));
+}
+// Kabelzug: beliebige Kombination der Scheiben auf dem Stift
+export function loadableCable(s) { return subsetSums(parseList(s.settings.plates)).filter(x => x > 0); }
 export function nextWeight(s, cur, increment, equipment = 'kh') {
-  if (equipment && equipment !== 'kh') { const w = round(cur + (increment || 2.5)); return { w, jump: cur > 0 ? (w - cur) / cur : 0 }; }
-  const av = availableWeights(s);
-  const cand = av.find(w => w > cur + 1e-9);
+  let list = null;
+  if (equipment === 'lh') list = loadableBarbell(s);
+  else if (equipment === 'kabel') list = loadableCable(s);
+  else if (!equipment || equipment === 'kh') list = availableWeights(s);
+  const cand = list ? list.find(w => w > cur + 1e-9) : undefined;
+  if (cand == null && list && list.length && equipment !== 'kh') return { w: cur, jump: 0, maxed: true };
   const w = cand ?? round(cur + (increment || 2.5));
   return { w, jump: cur > 0 ? (w - cur) / cur : 0 };
 }
@@ -117,7 +131,7 @@ function trainingHero(s) {
   const tpl = todayTemplate(s);
   if (!next && !tpl && days.length) { const last = all[0]; const i = last ? days.findIndex(d => d.id === last.dayId) : -1; next = days[(i + 1) % days.length]; }
   const lastDate = all[0] ? relDay(all[0].date) : null;
-  const title = trainedToday ? `${esc(trainedToday.dayName)} absolviert` : freeToday ? `Heute: ${esc(freeToday.kind)} erledigt` : next ? `Heute: ${esc(next.name)}` : tpl ? `Heute: ${esc(tpl.title)}` : 'Kein Plan';
+  const title = trainedToday ? `${esc(trainedToday.dayName)} absolviert` : freeToday && !next ? `Heute: ${esc(freeToday.kind)} erledigt` : next ? `Heute: ${esc(next.name)}` : tpl ? `Heute: ${esc(tpl.title)}` : 'Kein Plan';
   const line = trainedToday || freeToday ? 'Stark. Erholung ist jetzt Teil des Trainings.' : lastDate ? `Zuletzt ${lastDate}. Dranbleiben.` : 'Dein erstes Training wartet.';
   // Wochen-Serie: aufeinanderfolgende Wochen mit mindestens einem Training
   let weeks = 0, w = ws; const weekHas = k => all.some(x => x.date >= k && x.date < addDays(k, 7));
@@ -136,13 +150,41 @@ function trainingHero(s) {
   </div>`;
 }
 
+const WD_NAMES = ['So', 'Mo', 'Di', 'Mi', 'Do', 'Fr', 'Sa'];
+function weekOverview(s) {
+  const tpl = s.training.weekTemplate; if (!tpl) return '';
+  const todayWd = new Date().getDay();
+  return `${sectionLabel('Deine Woche')}<div class="card">${[1, 2, 3, 4, 5, 6, 0].map(wd => { const t = tpl[String(wd)]; if (!t) return ''; const isPlan = t.kind === 'plan';
+    return `<div class="row link ${wd === todayWd ? 'today-row' : ''}" data-action="dayInfo" data-wd="${wd}">
+      <span class="wd-badge ${isPlan ? 'plan' : ''}">${WD_NAMES[wd]}</span>
+      <div class="grow"><div class="title">${esc(t.title)}</div><div class="meta">${t.minutes ? `${t.minutes} min · ` : ''}${isPlan ? 'Plan-Tag' : esc(t.kind)}${wd === todayWd ? ' · heute' : ''}</div></div>
+      <span class="chev">${icons.chevron}</span></div>`; }).join('')}</div>`;
+}
+export function openDayInfo(wd) {
+  const t = state.training.weekTemplate?.[String(wd)]; if (!t) return;
+  const planDay = t.kind === 'plan' ? state.training.days.find(d => d.weekday === wd || d.name === t.dayName) : null;
+  const isToday = new Date().getDay() === wd;
+  openSheet({ title: `${WD_NAMES[wd]} · ${t.title}`,
+    html: `${t.goal ? `<div class="info-block"><div class="info-label">Ziel</div><div>${esc(t.goal)}</div></div>` : ''}
+      ${t.extra ? `<div class="info-block"><div class="info-label">Zusätzlich</div><div>${esc(t.extra)}</div></div>` : ''}
+      ${t.how?.length ? `<div class="info-block"><div class="info-label">So läuft es</div><ol class="info-list">${t.how.map(x => `<li>${esc(x)}</li>`).join('')}</ol></div>` : ''}
+      ${planDay ? `<div class="info-block"><div class="info-label">Übungen</div><div class="note">${planDay.exercises.map(e => `${esc(e.name)} ${e.sets}×${e.repMin}–${e.repMax}${e.weight != null ? ` · ${fmtKg(e.weight)} kg` : ''}`).join('<br>')}</div></div>` : ''}
+      ${t.why ? `<div class="info-block"><div class="info-label">Warum</div><div class="note">${esc(t.why)}</div></div>` : ''}
+      <div class="stack">${planDay ? `<button type="button" class="btn btn-primary" data-action="openPlanDay" data-id="${planDay.id}" style="background:linear-gradient(135deg,#FF9F0A,#FF5E3A)">Plan-Tag öffnen</button>` : ''}
+        ${t.kind !== 'plan' || t.extra ? `<button type="button" class="btn ${planDay ? 'btn-soft' : 'btn-primary'}" data-action="logDay" data-wd="${wd}" ${planDay ? '' : 'style="background:linear-gradient(135deg,#FF9F0A,#FF5E3A)"'}>${isToday ? 'Heute als erledigt eintragen' : 'Als freies Training eintragen'}</button>` : ''}</div>`,
+    actions: {
+      openPlanDay: el => { closeSheet(); update(s => { s.training.selectedDay = el.dataset.id; }); location.hash = '#training'; },
+      logDay: el => { const tt = state.training.weekTemplate[el.dataset.wd]; closeSheet(); setTimeout(() => openFreeWorkout(null, { kind: tt.kind === 'plan' ? 'Spaziergang' : tt.kind, minutes: tt.kind === 'plan' ? 45 : tt.minutes, note: tt.extra || tt.title }), 320); },
+    } });
+}
+
 export function render(s) {
   const day = selectedDay(s);
   const sessions = s.training.sessions.slice(0, 5);
   return `
     ${header('Training', 'Progressive Overload', `<button class="icon-btn" data-action="trainingSettings" aria-label="Hanteln und Pause">${icons.gear}</button><button class="link-btn ${editMode ? 'bold' : ''}" data-action="toggleEdit">${editMode ? 'Fertig' : 'Plan'}</button>`)}
     ${editMode ? '' : trainingHero(s)}
-    ${editMode || todayWorkout(s).done ? '' : `<div class="stack" style="padding:0 0 14px"><button type="button" class="btn btn-soft" data-action="freeWorkout">Heute anders trainiert? Frei eintragen</button></div>`}
+    ${editMode ? '' : `<div class="stack" style="padding:0 0 14px"><button type="button" class="btn btn-soft" data-action="freeWorkout">${todayWorkout(s).done ? 'Weiteres Training eintragen' : 'Heute anders trainiert? Frei eintragen'}</button></div>`}
     ${s.training.days.length ? segmented(s.training.days, day?.id, 'selectDay') : ''}
     ${editMode ? `<div class="stack" style="padding:0 0 12px"><button class="btn btn-soft" data-action="loadTemplate">Vorlage laden: Zuhause-Plan (Entwurf 3.1, final)</button></div><div class="btn-row"><button class="btn btn-soft btn-sm" data-action="addDay">${icons.plus.replace('<svg', '<svg style="width:15px;height:15px"')} Tag</button>${day ? `<button class="btn btn-soft btn-sm" data-action="renameDay">Umbenennen</button><button class="btn btn-danger btn-sm" data-action="delDay">Tag löschen</button>` : ''}</div>` : ''}
 
@@ -154,6 +196,8 @@ export function render(s) {
     </div>
     ${day.exercises.length && !editMode ? `<div class="stack" style="padding-top:0"><button class="btn btn-primary" data-action="saveSession" style="background:linear-gradient(135deg,#FF9F0A,#FF5E3A);box-shadow:0 10px 20px -10px rgba(255,120,40,.7)">Training abschließen</button></div>` : ''}
     ` : `<div class="card"><div class="empty">Noch kein Trainingsplan. Tippe auf „Plan“ und lege einen Tag an.</div></div>`}
+
+    ${editMode ? '' : weekOverview(s)}
 
     ${sessions.length ? `
       ${sectionLabel('Letzte Trainings')}
@@ -217,9 +261,10 @@ export function evaluate(ex, reps, weight, s = state) {
   if (!sameWeight) return { result: 'hold', next: { targetReps: target, weight: ex.weight }, message: 'Anderes Gewicht als geplant, Ziel bleibt.' };
   if (minReps >= ex.repMax) {
     if (ex.weight == null) return { result: 'levelup', next: { targetReps: ex.repMax, weight: null }, message: 'Maximum erreicht! Zeit für eine schwerere Variante oder Zusatzgewicht.' };
-    const { w, jump } = nextWeight(s, ex.weight, ex.increment, ex.equipment);
+    const { w, jump, maxed } = nextWeight(s, ex.weight, ex.increment, ex.equipment);
     const limit = (parseFloat(s.settings.jumpLimit) || 20) / 100;
-    if (jump > limit && ex.repMax < ex.repMin + 12) {
+    if (maxed) return { result: 'extend', next: { targetReps: minReps + 1, weight: ex.weight, repMax: ex.repMax + 2 }, message: `Schwerer geht mit deinen Scheiben nicht. Range erweitert auf ${ex.repMin}–${ex.repMax + 2}. Zeit für mehr Scheiben.` };
+    if ((!ex.equipment || ex.equipment === 'kh') && jump > limit && ex.repMax < ex.repMin + 12) {
       return { result: 'extend', next: { targetReps: minReps + 1, weight: ex.weight, repMax: ex.repMax + 2 }, message: `Nächstes Gewicht wäre ${fmtKg(w)} kg (+${Math.round(jump * 100)} %). Range erweitert auf ${ex.repMin}–${ex.repMax + 2}, Ziel ${ex.sets} × ${minReps + 1}.` };
     }
     return { result: 'levelup', next: { targetReps: ex.repMin, weight: w }, message: `Gewicht hoch auf ${fmtKg(w)} kg · neues Ziel ${ex.sets} × ${ex.repMin}` };
@@ -245,7 +290,8 @@ export const changes = {
 
 export const actions = {
   toggleEdit() { editMode = !editMode; stopRest(); update(() => {}); },
-  freeWorkout() { const t = todayTemplate(state); openFreeWorkout(null, t && t.kind !== 'plan' ? { kind: t.kind, minutes: t.minutes, note: t.title } : null); },
+  freeWorkout() { const t = todayTemplate(state); openFreeWorkout(null, t && t.kind !== 'plan' ? { kind: t.kind, minutes: t.minutes, note: t.title } : (t?.extra ? { kind: 'Spaziergang', minutes: 45, note: t.extra } : null)); },
+  dayInfo(el) { openDayInfo(Number(el.dataset.wd)); },
   async loadTemplate() {
     if (!confirm('Den aktuellen Plan durch die Vorlage ersetzen? Dein Trainingsverlauf bleibt erhalten.')) return;
     try {
@@ -255,9 +301,10 @@ export const actions = {
         s.training.days = tpl.days.map(d => ({ id: uid(), name: d.name, weekday: d.weekday, exercises: d.exercises.map(e => ({ id: uid(), name: e.name, sets: e.sets, repMin: e.repMin, repMax: e.repMax, weight: e.weight, equipment: e.equipment || (e.weight == null ? 'bw' : 'kh'), increment: e.increment || 2.5, targetReps: e.repMin })) }));
         s.training.weekTemplate = tpl.weekTemplate;
         s.training.selectedDay = null;
+        if (tpl.equipment) { if (tpl.equipment.weights) s.settings.weights = tpl.equipment.weights; if (tpl.equipment.plates) s.settings.plates = tpl.equipment.plates; if (tpl.equipment.barWeight) s.settings.barWeight = tpl.equipment.barWeight; }
       });
       editMode = false; update(() => {});
-      alert(`„${tpl.name}“ geladen: ${tpl.days.length} Krafttage mit ${tpl.days.reduce((n, d) => n + d.exercises.length, 0)} Übungen. Die anderen Tage stehen ab jetzt auf der Heute-Seite.`);
+      alert(`„${tpl.name}“ geladen: ${tpl.days.length} Plan-Tage mit ${tpl.days.reduce((n, d) => n + d.exercises.length, 0)} Übungen, Wochenübersicht mit allen 7 Tagen, Hanteln und Scheiben eingetragen.`);
     } catch (e) { alert('Vorlage konnte nicht geladen werden. Bist du online?'); }
   },
   selectDay(el) { update(s => { s.training.selectedDay = el.dataset.id; }); },
@@ -270,10 +317,13 @@ export const actions = {
   trainingSettings() {
     openSheet({ title: 'Hanteln & Pause',
       html: `${field({ label: 'Verfügbare Gewichte (kg), mit Komma getrennt', name: 'weights', value: state.settings.weights || '', placeholder: 'z. B. 2.5, 5, 7.5, 10, 12.5, 15, 20' })}
-        <div class="hint">Beim Gewichtssprung nimmt die App das nächste Gewicht aus dieser Liste. Ist der Sprung größer als die Grenze unten, wird stattdessen die Rep-Range erweitert.</div>
+        <div class="hint">Kurzhantel-Übungen springen auf das nächste Gewicht aus dieser Liste. Ist der Sprung größer als die Grenze unten, wird stattdessen die Rep-Range erweitert.</div>
+        ${field({ label: 'Scheiben (kg), jede einzeln aufzählen', name: 'plates', value: state.settings.plates || '', placeholder: 'z. B. 2, 2, 5, 5, 10, 10, 20, 20' })}
+        ${field({ label: 'Gewicht der Langhantel (kg)', name: 'barWeight', type: 'text', value: String(state.settings.barWeight ?? 10).replace('.', ','), attrs: 'inputmode="decimal"' })}
+        <div class="hint">Langhantel-Übungen springen nur auf Gewichte, die du symmetrisch beladen kannst. Kabelzug-Übungen auf jede Scheibenkombination. Aktuell beladbar: Langhantel bis ${fmtKg(Math.max(...loadableBarbell(state)))} kg, Kabelzug bis ${fmtKg(Math.max(0, ...loadableCable(state)))} kg.</div>
         <div class="field-row">${field({ label: 'Max. Sprung (%)', name: 'jumpLimit', type: 'number', value: state.settings.jumpLimit ?? 20, attrs: 'min="5" max="100" inputmode="numeric"' })}${field({ label: 'Pause (Sekunden)', name: 'restSeconds', type: 'number', value: state.settings.restSeconds ?? 90, attrs: 'min="10" max="600" step="10" inputmode="numeric"' })}</div>
         <div class="hint">Der Pausen-Timer startet, sobald du einen Satz einträgst, und läuft über Null weiter, damit du siehst, wie lang du wirklich pausiert hast.</div>`,
-      onSubmit(d) { update(s => { s.settings.weights = d.weights; s.settings.jumpLimit = Math.max(5, parseInt(d.jumpLimit) || 20); s.settings.restSeconds = Math.max(10, parseInt(d.restSeconds) || 90); }); } });
+      onSubmit(d) { update(s => { s.settings.weights = d.weights; s.settings.plates = d.plates; s.settings.barWeight = num(d.barWeight) || 10; s.settings.jumpLimit = Math.max(5, parseInt(d.jumpLimit) || 20); s.settings.restSeconds = Math.max(10, parseInt(d.restSeconds) || 90); }); } });
   },
   addDay() {
     openSheet({ title: 'Neuer Trainingstag', html: field({ label: 'Name', name: 'name', placeholder: 'z. B. Push, Pull, Beine', autofocus: true, attrs: 'required' }),

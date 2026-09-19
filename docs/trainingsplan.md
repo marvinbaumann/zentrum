@@ -4,6 +4,8 @@ Ziel: definiert und muskulös, beweglich, ausdauernd, gesund. 45 bis 60 Minuten 
 
 Deine Ausstattung: Power Rack 900 mit Kabelzug, Bench 900, Langhantel 2 m (9,75 kg, max. 160 kg), Scheiben 28 mm (2 × 2, 2 × 5, 2 × 10, 2 × 20 kg), Kurzhanteln 2 × 5, 2 × 10, 2 × 20 kg, Holzringe, Latex-Bänder, Gewichtsweste 20 kg, Trizeps-Seil, 2 D-Griffe, Apple Watch.
 
+**Gewichte und Beladung.** Alle Startgewichte im Plan sind mit genau dieser Ausstattung beladbar. Langhantel (Stange gerundet 10 kg) symmetrisch: 10, 14, 20, 24, 30, 34, 40, 44, 50, 54, 60, 64, 70, 74, 80, 84 kg. Kabelzug: jede Scheibenkombination, ab 2 kg in 1- bis 3-kg-Schritten. Kurzhanteln: 5, 10, 20 kg. Die App kennt Hanteln, Scheiben und Stange (Training, Zahnrad) und schlägt nur beladbare Gewichte vor. Solltest du nur eine 20-kg-Scheibe kaufen, trage in der App „2, 2, 5, 5, 10, 10, 20“ ein; dann endet die Langhantel bei 44 kg und die Startgewichte für Kniebeuge, Kreuzheben und Bankdrücken sinken auf 40 bis 44 kg.
+
 Deine Basis: Jahre Hypertrophie im Gym, aktuell 5 saubere Klimmzüge, 30 Liegestütze, keine Verletzungen.
 
 ## Prinzipien
@@ -28,7 +30,7 @@ Deine Basis: Jahre Hypertrophie im Gym, aktuell 5 saubere Klimmzüge, 30 Liegest
 | **Mi** | Oberkörper: Push + Pull mit Kabelzug | 55 min |
 | **Do** | VO2max-Intervalle + Mobility | 40 min |
 | **Fr** | Ganzkörper: Kraft + Power, schwer | 50 min |
-| **Sa** | Langes Rucking + Kabel-Armblock | 60 min |
+| **Sa** | Rucking 45 min + Arme & Schultern am Kabel (fester Plan-Tag) | 60 min |
 | **So** | Mobility-Flow + Spaziergang | 40 min |
 
 Täglich zusätzlich 10.000 Schritte. Hantelrechnung: Langhantel 10 kg plus Scheiben. 50 kg heißt Stange plus 2 × 20 kg.
@@ -92,9 +94,9 @@ Schwer, engere Range, Pausen 2 bis 3 Minuten. Sicherheitsablagen setzen. Reihenf
 
 Die schwere Kniebeuge am Freitag ergänzt die Hypertrophie-Kniebeuge vom Montag. So bekommen die Beine beide Reize, Kraft und Volumen, und die Quadrizeps-Sätze steigen von 7 auf 11 pro Woche. Kreuzheben und Swings wechseln wöchentlich, in der App trägst du einfach nur die Übung ein, die dran war, die andere bleibt leer.
 
-### Samstag – Langes Rucking + Arme (60 min)
+### Samstag – Rucking + Arme & Schultern (60 min, fester Plan-Tag)
 
-45 Minuten Rucking draußen mit Weste, gern Höhenmeter. Danach 15 Minuten Kabel-Armblock:
+45 Minuten Rucking draußen mit Weste, gern Höhenmeter, als freies Training eintragen. Danach 15 Minuten Kabel-Block als Plan-Tag in der App:
 
 | Übung | Sätze × Range | Start | Gerät |
 |---|---|---|---|
@@ -124,6 +126,10 @@ Die schwere Kniebeuge am Freitag ergänzt die Hypertrophie-Kniebeuge vom Montag.
 ## Klimmzüge von 5 auf 12
 
 Mittwoch Volumen mit Band, Freitag schwer mit Weste, Latzug am Mittwoch baut den Rücken zusätzlich auf. Ab 4 × 10 ohne Band: Weste auf 7,5 kg und zurück auf 4 × 5.
+
+## Wo du die Nicht-Plan-Tage in der App findest
+
+Im Tab Training steht unter dem Plan die Karte „Deine Woche“ mit allen sieben Tagen. Ein Tipp auf einen Tag zeigt Ziel, Ablauf Schritt für Schritt, bei Plan-Tagen die Übungen, und den Grund dahinter. Von dort trägst du Rucking, Intervalle oder Mobility direkt als freies Training ein, vorausgefüllt mit Art, Dauer und Notiz. Auf der Heute-Seite öffnet ein Tipp auf die Trainingszeile dieselben Details für den aktuellen Tag.
 
 ## Wie wir weitermachen
 

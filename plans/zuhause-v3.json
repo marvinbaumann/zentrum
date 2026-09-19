@@ -4,37 +4,98 @@
     "1": {
       "title": "Unterkörper",
       "kind": "plan",
-      "dayName": "Mo · Unterkörper"
+      "dayName": "Mo · Unterkörper",
+      "minutes": 50,
+      "goal": "Beine und hintere Kette mit Volumen aufbauen: Kniebeuge, Kreuzheben, einbeinig, Hüfte, Waden, Core.",
+      "how": [
+        "Aufwärmen 8 min: Hüftkreisen, Cossack Squats 2×8, Tibialis Raises 2×20, Kniebeuge mit leerer Stange 2×10",
+        "Sicherheitsablagen im Rack knapp unter den tiefsten Punkt",
+        "Hypertrophie-Sätze mit 1–2 Wiederholungen Reserve, Pausen 75–120 s",
+        "Alle Sätze am Ziel, dann steigt das Ziel. Am Range-Maximum geht das Gewicht hoch"
+      ],
+      "why": "Zwei Beinreize pro Woche (Volumen Mo, Kraft Fr) bringen laut Galpin mehr als ein langer Beintag."
     },
     "2": {
-      "title": "Rucking Zone 2, 40 min + 10 min Mobility",
+      "title": "Rucking Zone 2 + Mobility",
       "kind": "Ausdauer",
-      "minutes": 50
+      "minutes": 50,
+      "goal": "Grundlagenausdauer, Fettstoffwechsel, Erholung zwischen den Krafttagen.",
+      "how": [
+        "40 min zügig gehen mit Weste, Start 8 kg, ab Woche 3 10 kg, gern Steigung",
+        "Puls 60–70 % vom Maximum, in der Apple Watch Zone 2",
+        "Nasenatmung möglich, du könntest dich unterhalten",
+        "Danach 10 min Mobility: Couch Stretch 2×45 s je Seite, 90/90-Hüfte 2×45 s, Waden an der Wand"
+      ],
+      "why": "150–180 min Zone 2 pro Woche sind nach Attia und Galpin der stärkste Hebel für Gesundheitsspanne und Regeneration."
     },
     "3": {
       "title": "Oberkörper Push + Pull",
       "kind": "plan",
-      "dayName": "Mi · Oberkörper"
+      "dayName": "Mi · Oberkörper",
+      "minutes": 55,
+      "goal": "Brust, Rücken und Schultern im Gleichgewicht: vertikal ziehen, horizontal ziehen, drücken.",
+      "how": [
+        "Aufwärmen 8 min: Band Pull-aparts 2×15, Schulterkreisen mit Band, Dead Hang 2×20 s, Liegestütze 1×10",
+        "Klimmzüge zuerst, solange du frisch bist; Band ab Satz 3 erlaubt",
+        "Ring-Dips die ersten 2 Wochen nur Stützhalten 3×20 s und Bankdips",
+        "Face Pulls langsam, Schulterblätter zusammen, 15–20 Wiederholungen"
+      ],
+      "why": "Rudern und Face Pulls schützen die Schultern und halten die Haltung aufrecht, das fehlt in den meisten Push-lastigen Plänen."
     },
     "4": {
-      "title": "VO2max: 4×4 Intervalle oder Swing-Runden + Mobility",
+      "title": "VO2max-Intervalle + Mobility",
       "kind": "Ausdauer",
-      "minutes": 40
+      "minutes": 40,
+      "goal": "Maximale Sauerstoffaufnahme steigern, der stärkste Einzelmarker für Langlebigkeit.",
+      "how": [
+        "Aufwärmen 8 min zügig gehen",
+        "Woche A: 4×4 min hart (Sprechen unmöglich), 3 min locker. Steigung oder Treppe mit Weste",
+        "Woche B: 10 Runden: 15 KH-Swings 20 kg + 5 Burpees, 1 min Pause. Oder 8×1 min Springseil",
+        "Danach 10 min Mobility: Sprunggelenke, Hüftbeuger, Brustwirbelsäule"
+      ],
+      "why": "Eine harte VO2max-Einheit pro Woche verbessert Herz und Mitochondrien messbar, mehr bringt kaum zusätzlich (Huberman, Attia)."
     },
     "5": {
       "title": "Kraft + Power",
       "kind": "plan",
-      "dayName": "Fr · Kraft & Power"
+      "dayName": "Fr · Kraft & Power",
+      "minutes": 55,
+      "goal": "Stark werden: schwere Grundübungen mit 5–8 Wiederholungen, Sprünge für Power.",
+      "how": [
+        "Power zuerst: Box Jumps direkt nach dem Aufwärmen",
+        "Kraftsätze mit 2 Wiederholungen Reserve, Pausen 2–3 min, Sicherheitsablagen setzen",
+        "Woche A Kreuzheben von den Ablagen, Woche B Swings + Farmer's Carry. Nur die Übung eintragen, die dran war",
+        "Klimmzüge mit Weste: erst 5 kg, ab 4×6 dann 7,5 kg"
+      ],
+      "why": "Kraft ist die Anpassung, die Hypertrophie-Programme meist auslassen. Sie macht dich belastbar und steigert langfristig auch das Muskelwachstum."
     },
     "6": {
-      "title": "Rucking 45 min + Kabel-Armblock 15 min",
-      "kind": "Spaziergang",
-      "minutes": 60
+      "title": "Rucking 45 min + Arme & Schultern am Kabel",
+      "kind": "plan",
+      "dayName": "Sa · Arme & Schultern",
+      "minutes": 60,
+      "extra": "Rucking 45 min Zone 2 mit Weste, gern Höhenmeter",
+      "goal": "Lange Zone-2-Einheit draußen, danach gezielt Arme und Schultern mit konstanter Spannung am Kabel.",
+      "how": [
+        "Erst 45 min Rucking mit Weste, Puls Zone 2, draußen",
+        "Dann 15 min Kabel-Block: Curls, Trizeps am Seil, Hammer-Curls, Seitheben, Pallof Press",
+        "Kurze Pausen 45–60 s, Sätze nahe ans Versagen",
+        "Rucking als freies Training eintragen, den Kabel-Block als Plan-Tag"
+      ],
+      "why": "Arme bekommen indirekt viel über Drücken, Ziehen und Dips. Der direkte Block am Samstag bringt sie auf 10 Sätze pro Woche, das reicht nachweislich für Wachstum."
     },
     "0": {
-      "title": "Mobility-Flow 25 min + Spaziergang",
+      "title": "Mobility-Flow + Spaziergang",
       "kind": "Mobility",
-      "minutes": 40
+      "minutes": 40,
+      "goal": "Aktive Erholung: Gelenke durchbewegen, Nervensystem runterfahren, Woche abschließen.",
+      "how": [
+        "25 min Flow: Katze-Kuh, Weltbester Stretch, 90/90-Hüfte, Couch Stretch, Brustwirbelsäulen-Rotation, Schulter-CARs, Deep Squat Hold mit leerer Stange, Dead Hang",
+        "15 min lockerer Spaziergang ohne Weste",
+        "Optional Sauna oder kalte Dusche",
+        "Kein Krafttraining, keine Intervalle"
+      ],
+      "why": "Bryan Johnson und Galpin sind sich einig: Ein fester Erholungstag ist Teil des Trainings, nicht die Pause davon."
     }
   },
   "days": [
@@ -224,7 +285,7 @@
       ]
     },
     {
-      "name": "Arme am Kabel (Sa, optional)",
+      "name": "Sa · Arme & Schultern",
       "exercises": [
         {
           "name": "Kabel-Curls",
@@ -271,7 +332,13 @@
           "equipment": "kabel",
           "increment": 2
         }
-      ]
+      ],
+      "weekday": 6
     }
-  ]
+  ],
+  "equipment": {
+    "weights": "5, 10, 20",
+    "plates": "2, 2, 5, 5, 10, 10, 20, 20",
+    "barWeight": 10
+  }
 }

@@ -7,7 +7,7 @@ import { duePeople, upcomingBirthdays, personRow, actions as peopleActions } fro
 import { openVisionManager } from './vision.js';
 import { checkMilestones } from './milestone.js';
 import { openFreeWorkout, removeFreeWorkout, workoutText } from './workout.js';
-import { todayPlanDay, todayTemplate } from './training.js';
+import { todayPlanDay, todayTemplate, openDayInfo } from './training.js';
 import { addDays, weekStart } from '../store.js';
 import { focusAfterRender } from '../app.js';
 import { celebrate, haptic } from '../fx.js';
@@ -150,8 +150,8 @@ export function render(s) {
     <div class="card">
       ${d.trainingItem ? `<div class="row ${d.trainingItem.done ? 'done' : ''}">
         ${check(d.trainingItem.done, 'var(--orange)', 'data-action="toggleTraining"')}
-        <div class="grow"><div class="title">${d.trainingItem.done ? esc(workoutText(d.trainingItem)) : 'Training heute'}</div>
-        <div class="meta">${d.trainingItem.done ? (d.trainingItem.plan ? `${d.trainingItem.plan.entries.length} Übungen · ${summarizeSession(d.trainingItem.plan)}` : 'Freies Training, zählt voll') : (() => { const pd = todayPlanDay(s), tpl = todayTemplate(s); if (pd) return `Heute: ${esc(pd.name)} · ${pd.exercises.length} Übungen`; if (tpl) return `Heute: ${esc(tpl.title)}`; return nextDay ? `Plan: ${esc(nextDay.name)} · oder frei eintragen` : 'Plan-Training oder frei eintragen'; })()}</div></div>
+        <div class="grow" data-action="todayInfo" role="button"><div class="title">${d.trainingItem.done ? esc(workoutText(d.trainingItem)) : 'Training heute'}</div>
+        <div class="meta">${d.trainingItem.done ? (d.trainingItem.plan ? `${d.trainingItem.plan.entries.length} Übungen · ${summarizeSession(d.trainingItem.plan)}` : 'Freies Training, zählt voll') : (() => { const pd = todayPlanDay(s), tpl = todayTemplate(s); if (pd) return `Heute: ${esc(tpl?.title || pd.name)}${tpl?.minutes ? ` · ${tpl.minutes} min` : ''} · Details`; if (tpl) return `Heute: ${esc(tpl.title)}${tpl.minutes ? ` · ${tpl.minutes} min` : ''} · Details`; return nextDay ? `Plan: ${esc(nextDay.name)} · oder frei eintragen` : 'Plan-Training oder frei eintragen'; })()}</div></div>
         ${!d.trainingItem.done ? `<button type="button" class="btn btn-tint btn-sm" style="--c:var(--orange)" data-action="freeWorkout">Frei</button>` : (d.trainingItem.free ? `<button type="button" class="mini-btn" data-action="editWorkout">${icons.pencil}</button>` : '')}
       </div>` : `<a class="row link" href="#training" style="color:inherit">${tile('dumbbell', 'var(--orange)', 36)}<div class="grow"><div class="title">${trainedToday ? `${esc(trainedToday.dayName)} absolviert` : nextDay ? `Nächstes Training: ${esc(nextDay.name)}` : 'Kein Trainingsplan'}</div><div class="meta">${lastTrainingText(s)}</div></div><span class="chev">${icons.chevron}</span></a>`}
     </div>
@@ -249,7 +249,8 @@ export const actions = {
     if (w.free) { removeFreeWorkout(); return; }
     const t = todayTemplate(state); openFreeWorkout(null, t && t.kind !== 'plan' ? { kind: t.kind, minutes: t.minutes, note: t.title } : null);
   },
-  freeWorkout() { const t = todayTemplate(state); openFreeWorkout(null, t && t.kind !== 'plan' ? { kind: t.kind, minutes: t.minutes, note: t.title } : null); },
+  freeWorkout() { const t = todayTemplate(state); openFreeWorkout(null, t && t.kind !== 'plan' ? { kind: t.kind, minutes: t.minutes, note: t.title } : (t?.extra ? { kind: 'Spaziergang', minutes: 45, note: t.extra } : null)); },
+  todayInfo() { if (state.training.weekTemplate) openDayInfo(new Date().getDay()); else location.hash = '#training'; },
   editWorkout() { openFreeWorkout(state.freeWorkouts?.[dateKey()] || null); },
   goPeople(el, e) { e.preventDefault(); sessionStorage.setItem('zentrum.listTab', 'people'); location.hash = '#listen'; },
   ...peopleActions,
