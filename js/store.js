@@ -77,6 +77,7 @@ export function save() {
 // Mutation + Speichern + Re-Render in einem Schritt.
 export function update(fn) {
   fn(state);
+  state.updatedAt = new Date().toISOString();
   save();
   listeners.forEach(l => l());
 }

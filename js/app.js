@@ -6,6 +6,7 @@ import * as training from './views/training.js';
 import * as koerper from './views/koerper.js';
 import * as listen from './views/listen.js';
 import * as welcome from './views/welcome.js';
+import { initSync } from './sync.js';
 
 const views = { heute, training, koerper, listen };
 const TABS = [
@@ -79,3 +80,4 @@ syncThemeColor();
 window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', syncThemeColor);
 
 render();
+initSync();

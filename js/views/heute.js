@@ -5,6 +5,7 @@ import { dayItems, streak, bestStreak, habitStreak, isPerfectDay } from '../habi
 import { addDays, weekStart } from '../store.js';
 import { focusAfterRender } from '../app.js';
 import { celebrate, haptic } from '../fx.js';
+import { sync, isConnected, connect, disconnect, push, pull, statusText } from '../sync.js';
 import { MONTHS } from '../ui.js';
 
 const WD = ['Mo', 'Di', 'Mi', 'Do', 'Fr', 'Sa', 'So'];
@@ -343,6 +344,11 @@ function openSettings() {
       ${field({ label: 'Stimmung der Begrüßungskarte', name: 'heroMood', value: state.settings.heroMood || 'auto', options: Object.entries(MOODS).map(([value, m]) => ({ value, label: m.name })) })}
       <div class="mood-row">${Object.entries(MOODS).filter(([k]) => k !== 'auto').map(([k, m]) => `<span class="mood-swatch" style="background:${m.bg}" title="${m.name}"></span>`).join('')}</div>
       <div class="hint">Setze 0, um Schritte aus den Tages-Standards zu entfernen.</div>
+      <div class="section-label" style="padding-left:2px">Cloud-Sicherung</div>
+      <div class="row" style="border-bottom:0">${tile('sparkles', isConnected() ? 'var(--green)' : 'var(--text2)', 36)}<div class="grow"><div class="title">${isConnected() ? `Verbunden mit ${esc(sync.owner)}/${esc(sync.repo)}` : 'Nicht eingerichtet'}</div><div class="meta">${esc(statusText())}</div></div></div>
+      <div class="stack" style="padding-top:0">
+        ${isConnected() ? `<button type="button" class="btn btn-soft" data-action="syncNow">Jetzt synchronisieren</button><button type="button" class="btn btn-danger" data-action="syncOff">Verbindung trennen</button>` : `<button type="button" class="btn btn-primary" data-action="syncSetup">Cloud-Sicherung einrichten</button>`}
+      </div>
       <div class="section-label" style="padding-left:2px">Daten</div>
       <div class="stack">
         <button type="button" class="btn btn-soft" data-action="exportData">Backup kopieren (JSON)</button>
@@ -354,6 +360,9 @@ function openSettings() {
     `,
     onSubmit(d) { update(s => { s.settings.stepsGoal = Math.max(0, parseInt(d.stepsGoal) || 0); s.settings.name = (d.name || '').trim(); s.settings.heroMood = MOODS[d.heroMood] ? d.heroMood : 'auto'; }); },
     actions: {
+      syncSetup: () => openSyncSheet(),
+      syncNow: async () => { await push(); openSettings(); },
+      syncOff: () => { if (confirm('Verbindung trennen? Die Daten in der Cloud bleiben erhalten, es wird nur nicht mehr synchronisiert.')) { disconnect(); openSettings(); } },
       exportData: () => { navigator.clipboard?.writeText(JSON.stringify(state)).then(() => alert('Backup in die Zwischenablage kopiert.')).catch(() => alert('Kopieren nicht möglich.')); },
       downloadData: () => {
         const blob = new Blob([JSON.stringify(state, null, 2)], { type: 'application/json' });
@@ -364,6 +373,30 @@ function openSettings() {
         f.text().then(txt => { const j = JSON.parse(txt); if (!j.habits || !j.training) throw 0; if (confirm('Aktuelle Daten mit dem Backup ersetzen?')) { replaceState(j); closeSheet(); } }).catch(() => alert('Datei konnte nicht gelesen werden.'));
       },
       resetData: () => { if (confirm('Wirklich alle Daten löschen?') && confirm('Sicher? Das kann nicht rückgängig gemacht werden.')) { resetState(); closeSheet(); } },
+    },
+  });
+}
+
+
+function openSyncSheet() {
+  openSheet({
+    title: 'Cloud-Sicherung',
+    submitLabel: 'Verbinden',
+    html: `
+      <div class="note" style="padding:2px 2px 14px">Deine Daten werden in ein <strong style="color:var(--text)">privates Repository in deinem GitHub-Konto</strong> gespeichert. Nur du hast Zugriff, die Übertragung ist verschlüsselt. Jede Änderung landet automatisch dort, und nach einer Neuinstallation ist alles sofort wieder da.</div>
+      <div class="note" style="padding:0 2px 14px"><strong style="color:var(--text)">Schlüssel erstellen:</strong> Öffne <a href="https://github.com/settings/tokens/new?description=Zentrum%20Sync&scopes=repo" target="_blank" rel="noopener">github.com/settings/tokens/new</a>, wähle bei Expiration „No expiration“, tippe auf „Generate token“ und kopiere den Schlüssel hierher.</div>
+      ${field({ label: 'Sync-Schlüssel', name: 'token', value: sync.token || '', placeholder: 'ghp_…', attrs: 'autocapitalize="off" autocorrect="off" spellcheck="false" required', autofocus: true })}
+      ${field({ label: 'Name des privaten Repositories', name: 'repo', value: sync.repo || 'zentrum-daten' })}
+      <div class="hint">Wird automatisch angelegt, falls es noch nicht existiert.</div>
+    `,
+    onSubmit(d) {
+      const btn = document.querySelector('#sheet-root button[type=submit]');
+      if (btn) { btn.disabled = true; btn.textContent = 'Verbinde …'; }
+      connect(d.token, d.repo).then(res => {
+        closeSheet();
+        setTimeout(() => alert(res === 'pulled' ? 'Verbunden. Deine gespeicherten Daten wurden aus der Cloud übernommen.' : 'Verbunden. Deine Daten werden ab jetzt automatisch gesichert.'), 300);
+      }).catch(e => { alert(e.message); if (btn) { btn.disabled = false; btn.textContent = 'Verbinden'; } });
+      return false;
     },
   });
 }
