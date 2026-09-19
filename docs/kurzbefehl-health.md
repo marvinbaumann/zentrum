@@ -4,26 +4,28 @@ Zentrum liest Dateien aus dem Ordner `inbox/` deines privaten Daten-Repositories
 
 Die App versteht in der Datei die Wörter **heute** und **gestern** sowie Datumsangaben wie `19-09-2026`, `19.09.2026` oder `2026-09-19`. Zahlen dürfen Einheiten haben („78,4 kg“).
 
-## Kurzbefehl „Zentrum Sync“ (7 Aktionen)
+## Kurzbefehl „Zentrum Sync“
 
-App „Kurzbefehle“ → „+“ → Name „Zentrum Sync“. Aktionen der Reihe nach (unten „Aktionen suchen“):
+Die Schritte holt der Kurzbefehl als fertige Tagessummen aus Apple Health („Gruppieren nach Tag“), es ist also keine Datumsrechnung nötig.
 
-1. **Health-Werte suchen** → Typ **Schritte**. Filter hinzufügen: **Startdatum** → **ist heute**. Danach **Statistik berechnen** → **Summe** (Eingabe: die Health-Werte von eben).
-2. **Health-Werte suchen** → Typ **Schritte**. Filter: **Startdatum** → **ist gestern**. Danach **Statistik berechnen** → **Summe**.
-3. **Health-Werte suchen** → Typ **Gewicht**. Sortieren nach **Startdatum**, Reihenfolge **Neueste zuerst**, **Limit** einschalten, 1. Danach **Details von Health-Wert abrufen** → **Startdatum**.
-4. **Text** mit genau drei Zeilen. Die blauen Variablen fügst du über „Variable auswählen“ ein und tippst dann die passende Aktion an:
+1. **Health-Werte suchen** → Typ **Schritte**. Filter: **Startdatum** → **ist innerhalb der letzten** → **2 Tage**. Unten **Gruppieren nach: Tag**, **Sortieren nach: Startdatum**.
+2. **Wiederholen mit jedem** (Eingabe: die Health-Werte aus 1). In die Schleife kommen zwei Aktionen:
+   - **Details von Health-Wert abrufen** → **Startdatum** von **Wiederholungsobjekt**.
+   - **Text** mit einer Zeile: `steps,` dann Variable **Startdatum**, dann `,` dann Variable **Wiederholungsobjekt**.
+3. Nach der Schleife: **Text kombinieren** → Eingabe **Ergebnisse der Wiederholung**, kombinieren mit **Neue Zeilen**.
+4. **Health-Werte suchen** → Typ **Gewicht**, **Sortieren nach Startdatum**, **Neueste zuerst**, **Beschränken** an, 1. Danach **Details von Health-Wert abrufen** → **Startdatum**.
+5. **Text** mit zwei Zeilen:
    ```
-   steps,heute,[Summe aus Schritt 1]
-   steps,gestern,[Summe aus Schritt 2]
-   weight,[Startdatum aus Schritt 3],[Health-Werte aus Schritt 3]
+   [Kombinierter Text aus 3]
+   weight,[Startdatum aus 4],[Health-Werte aus 4]
    ```
-5. **Base64-codieren** → Eingabe: der Text.
-6. **Zufallszahl** → zwischen 1 und 999999. (Nur damit jede Datei einen eigenen Namen hat.)
-7. **Inhalt von URL abrufen**:
-   - URL: `https://api.github.com/repos/marvinbaumann/zentrum-daten/contents/inbox/` und direkt dahinter die Variable **Zufallszahl** und dann `.txt`
-   - Methode: **PUT**
-   - Header: `Authorization` = `Bearer DEIN_SYNC_SCHLÜSSEL` (der Schlüssel aus den Zentrum-Einstellungen), `Accept` = `application/vnd.github+json`
-   - Textkörper: **JSON**. Zwei Felder: `message` (Text) = `health`, `content` (Text) = Variable **Base64-codiert**
+6. **Base64-codieren** → Eingabe: der Text aus 5.
+7. **Zufallszahl** zwischen 1 und 999999.
+8. **Inhalt von URL abrufen**:
+   - URL: `https://api.github.com/repos/marvinbaumann/zentrum-daten/contents/inbox/` + Variable **Zufallszahl** + `.txt`
+   - Methode **PUT**
+   - Header: `Authorization` = `Bearer DEIN_SYNC_SCHLÜSSEL`, `Accept` = `application/vnd.github+json`
+   - Textkörper **JSON**: `message` (Text) = `health`, `content` (Text) = Variable **Base64-codiert**
 
 Einmal auf „▶“ tippen, Health-Zugriff erlauben. Dann Zentrum öffnen, Tab Körper: unten steht „Letzter Import“.
 
