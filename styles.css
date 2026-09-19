@@ -455,3 +455,12 @@ body.splash-open { overflow: hidden; }
 .contact-btn svg { width: 18px; height: 18px; }
 .contact-btn:active { transform: scale(.94); }
 .key-box { font-family: ui-monospace, Menlo, monospace; font-size: 14px; background: var(--field); border-radius: 12px; padding: 12px 14px; word-break: break-all; user-select: all; -webkit-user-select: all; margin-bottom: 14px; }
+
+/* Weicher Unschärfe-Verlauf hinter der schwebenden Tab-Leiste (wie in WhatsApp) */
+.tab-fade { position: fixed; left: 0; right: 0; bottom: 0; height: calc(128px + env(safe-area-inset-bottom)); z-index: 19; pointer-events: none;
+  backdrop-filter: blur(16px) saturate(130%); -webkit-backdrop-filter: blur(16px) saturate(130%);
+  -webkit-mask-image: linear-gradient(to top, #000 0%, #000 45%, rgba(0,0,0,.6) 70%, transparent 100%); mask-image: linear-gradient(to top, #000 0%, #000 45%, rgba(0,0,0,.6) 70%, transparent 100%);
+  background: linear-gradient(to top, color-mix(in srgb, var(--bg) 70%, transparent) 0%, color-mix(in srgb, var(--bg) 35%, transparent) 55%, transparent 100%); }
+body.no-tabs .tab-fade { display: none; }
+.tabbar { background: rgba(255,255,255,.62); }
+@media (prefers-color-scheme: dark) { .tabbar { background: rgba(28,28,30,.66); } }
