@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 1024" width="1024" height="1024"><defs>
+  <linearGradient id="g" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#FFB05C"/><stop offset=".5" stop-color="#FF5E7E"/><stop offset="1" stop-color="#7B4DFF"/></linearGradient>
+  <radialGradient id="glow" cx=".5" cy=".5" r=".5"><stop offset="0" stop-color="#fff" stop-opacity=".55"/><stop offset=".45" stop-color="#fff" stop-opacity=".18"/><stop offset="1" stop-color="#fff" stop-opacity="0"/></radialGradient>
+  <radialGradient id="sun" cx=".4" cy=".35" r=".8"><stop offset="0" stop-color="#FFFFFF"/><stop offset="1" stop-color="#FFF3D6"/></radialGradient>
+  <filter id="soft" x="-50%" y="-50%" width="200%" height="200%"><feGaussianBlur stdDeviation="28"/></filter>
+</defs>
+<rect width="1024" height="1024" fill="url(#g)"/><circle cx="512" cy="560" r="430" fill="url(#glow)"/>
+    <line x1="589.6457135307562" y1="270.2222521132795" x2="613.4570656801882" y2="181.35707609468523" stroke="#fff" stroke-opacity="0.9" stroke-width="46" stroke-linecap="round"/><line x1="724.1320343559642" y1="347.86796564403573" x2="789.1858582251266" y2="282.8141417748733" stroke="#fff" stroke-opacity="0.9" stroke-width="46" stroke-linecap="round"/><line x1="801.7777478867205" y1="482.35428646924373" x2="890.6429239053148" y2="458.5429343198118" stroke="#fff" stroke-opacity="0.9" stroke-width="46" stroke-linecap="round"/><line x1="222.22225211327952" y1="482.3542864692438" x2="133.35707609468523" y2="458.5429343198118" stroke="#fff" stroke-opacity="0.9" stroke-width="46" stroke-linecap="round"/><line x1="299.8679656440358" y1="347.86796564403573" x2="234.81414177487346" y2="282.8141417748733" stroke="#fff" stroke-opacity="0.9" stroke-width="46" stroke-linecap="round"/><line x1="434.35428646924356" y1="270.2222521132796" x2="410.5429343198116" y2="181.35707609468528" stroke="#fff" stroke-opacity="0.9" stroke-width="46" stroke-linecap="round"/>
+    <circle cx="512" cy="560" r="200" fill="#fff" opacity=".35" filter="url(#soft)"/>
+    <circle cx="512" cy="560" r="186" fill="url(#sun)"/>
+    <path d="M-20 700 C 200 640, 380 760, 512 700 S 820 640, 1044 720 L 1044 1044 L -20 1044 Z" fill="#fff" fill-opacity=".22"/>
+    <path d="M-20 790 C 220 740, 380 850, 512 800 S 830 740, 1044 820 L 1044 1044 L -20 1044 Z" fill="#fff" fill-opacity=".28"/></svg>
