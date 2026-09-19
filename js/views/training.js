@@ -11,6 +11,8 @@ function selectedDay(s) {
 }
 const wTxt = w => w == null ? 'Eigengewicht' : `${fmtKg(w)} kg`;
 const round = x => Math.round(x * 100) / 100;
+// Kommazahlen aus Textfeldern lesen („12,5“ oder „12.5“)
+const num = v => parseFloat(String(v ?? '').trim().replace(',', '.'));
 
 function lastEntry(s, exId) { for (const se of s.training.sessions) { const e = se.entries.find(x => x.exerciseId === exId); if (e) return { ...e, date: se.date }; } return null; }
 function history(s, exId) { const rows = []; for (const se of s.training.sessions) { const e = se.entries.find(x => x.exerciseId === exId); if (e) rows.push({ ...e, date: se.date }); } return rows; }
@@ -164,7 +166,7 @@ function exerciseBlock(s, ex, i, n) {
     </div>
     ${!editMode ? `
     <div class="ex-sets" style="--n:${ex.sets}">
-      <label>Gewicht${ex.weight == null ? `<span class="bw">Eigengew.</span>` : `<input type="number" inputmode="decimal" step="0.5" name="w-${ex.id}" value="${ex.weight}">`}</label>
+      <label>Gewicht${ex.weight == null ? `<span class="bw">Eigengew.</span>` : `<input type="text" inputmode="decimal" autocomplete="off" name="w-${ex.id}" value="${String(ex.weight).replace('.', ',')}">`}</label>
       ${Array.from({ length: ex.sets }, (_, k) => `<label>Satz ${k + 1}<input type="number" inputmode="numeric" name="r-${ex.id}-${k}" placeholder="${last?.reps?.[k] ?? target}" data-change="setInput" data-ex="${ex.id}" data-k="${k}"></label>`).join('')}
     </div>
     <div class="ex-last">${last ? `<span>Zuletzt (${relDay(last.date)}): ${last.reps.join(' / ')} · ${wTxt(last.weight)}</span>${resultPill(last.result)}${(last.prs || []).map(p => `<span class="pill" style="--c:var(--orange)">🏆 ${esc(p)}</span>`).join('')}` : '<span>Erstes Mal. Grau sind die Zielwerte, trage deine Wiederholungen ein.</span>'}<span class="ex-live"></span></div>
@@ -217,7 +219,7 @@ export const changes = {
     startRest();
     // Live-Rekord: mehr Wiederholungen als je zuvor bei diesem Gewicht
     const day = selectedDay(state); const ex = day?.exercises.find(e => e.id === el.dataset.ex); if (!ex) return;
-    const wIn = document.querySelector(`[name="w-${ex.id}"]`); const weight = ex.weight == null ? 0 : (parseFloat(wIn?.value) || ex.weight);
+    const wIn = document.querySelector(`[name="w-${ex.id}"]`); const weight = ex.weight == null ? 0 : (num(wIn?.value) || ex.weight);
     const b = bestBefore(state, ex.id);
     const live = el.closest('.exercise')?.querySelector('.ex-live');
     if (live) live.innerHTML = (b.any && (b.repsAt[String(weight)] || 0) > 0 && v > b.repsAt[String(weight)]) ? '<span class="pill" style="--c:var(--orange)">🏆 Neuer Rekord</span>' : '';
@@ -230,7 +232,7 @@ export const actions = {
   fillLast(el) {
     const last = lastEntry(state, el.dataset.id); if (!last) return;
     last.reps.forEach((r, k) => { const i = document.querySelector(`[name="r-${el.dataset.id}-${k}"]`); if (i) i.value = r || ''; });
-    const w = document.querySelector(`[name="w-${el.dataset.id}"]`); if (w && last.weight != null) w.value = last.weight;
+    const w = document.querySelector(`[name="w-${el.dataset.id}"]`); if (w && last.weight != null) w.value = String(last.weight).replace('.', ',');
     haptic();
   },
   trainingSettings() {
@@ -281,7 +283,7 @@ export const actions = {
       if (!reps.length) continue;
       while (reps.length < ex.sets) reps.push(0);
       const wIn = document.querySelector(`[name="w-${ex.id}"]`);
-      const weight = ex.weight == null ? null : (parseFloat(wIn?.value) || ex.weight);
+      const weight = ex.weight == null ? null : (num(wIn?.value) || ex.weight);
       const ev = evaluate(ex, reps, weight, state);
       const prs = detectPRs(state, ex, reps, weight);
       entries.push({ exerciseId: ex.id, name: ex.name, weight, reps, result: ev.result, targetBefore: ex.targetReps || ex.repMin, message: ev.message, prs });
@@ -316,8 +318,8 @@ function openExerciseForm(ex) {
       </div>
       ${toggle({ label: 'Eigengewicht (ohne Zusatzgewicht)', name: 'bodyweight', checked: ex ? ex.weight == null : false })}
       <div class="field-row" style="margin-top:12px">
-        ${field({ label: 'Aktuelles Gewicht (kg)', name: 'weight', type: 'number', value: ex?.weight ?? 10, attrs: 'min="0" step="0.5" inputmode="decimal"' })}
-        ${field({ label: 'Steigerung, falls keine Hantelliste (kg)', name: 'increment', type: 'number', value: ex?.increment ?? 2.5, attrs: 'min="0" step="0.5" inputmode="decimal"' })}
+        ${field({ label: 'Aktuelles Gewicht (kg)', name: 'weight', type: 'text', value: String(ex?.weight ?? 10).replace('.', ','), attrs: 'inputmode="decimal" autocomplete="off"' })}
+        ${field({ label: 'Steigerung, falls keine Hantelliste (kg)', name: 'increment', type: 'text', value: String(ex?.increment ?? 2.5).replace('.', ','), attrs: 'inputmode="decimal" autocomplete="off"' })}
       </div>
       ${field({ label: 'Aktuelles Rep-Ziel', name: 'targetReps', type: 'number', value: ex?.targetReps ?? ex?.repMin ?? 10, attrs: 'min="1" inputmode="numeric"' })}
       <div class="hint">Das Rep-Ziel gilt für alle Sätze. Sind alle Sätze geschafft, steigt es um eins. Am Maximum der Range geht das Gewicht hoch und das Ziel zurück auf Minimum.</div>
@@ -325,8 +327,8 @@ function openExerciseForm(ex) {
     onSubmit(d) {
       const name = d.name.trim(); if (!name) return false;
       const sets = Math.max(1, parseInt(d.sets) || 3), repMin = Math.max(1, parseInt(d.repMin) || 10), repMax = Math.max(repMin, parseInt(d.repMax) || repMin);
-      const weight = d.bodyweight ? null : (parseFloat(d.weight) || 0);
-      const increment = parseFloat(d.increment) || 2.5;
+      const weight = d.bodyweight ? null : (num(d.weight) || 0);
+      const increment = num(d.increment) || 2.5;
       const targetReps = Math.min(repMax, Math.max(repMin, parseInt(d.targetReps) || repMin));
       update(s => {
         const day = selectedDay(s);

@@ -108,9 +108,9 @@ function stepsChart(days, goal) {
 export const actions = {
   addWeight() {
     openSheet({ title: 'Gewicht eintragen',
-      html: `${field({ label: 'Gewicht (kg)', name: 'kg', type: 'number', placeholder: 'z. B. 78,4', attrs: 'step="0.1" min="20" max="300" inputmode="decimal" required', autofocus: true })}${field({ label: 'Datum', name: 'date', type: 'date', value: dateKey() })}`,
+      html: `${field({ label: 'Gewicht (kg)', name: 'kg', type: 'text', placeholder: 'z. B. 78,4', attrs: 'inputmode="decimal" autocomplete="off" required', autofocus: true })}${field({ label: 'Datum', name: 'date', type: 'date', value: dateKey() })}`,
       onSubmit(d) {
-        const kg = parseFloat(String(d.kg).replace(',', '.')); if (!(kg > 0)) return false;
+        const kg = parseFloat(String(d.kg).trim().replace(',', '.')); if (!(kg > 20 && kg < 400)) { alert('Bitte ein Gewicht zwischen 20 und 400 kg eingeben, z. B. 78,4.'); return false; }
         const date = d.date || dateKey();
         update(s => { s.weight = s.weight.filter(x => x.date !== date); s.weight.push({ date, kg: Math.round(kg * 10) / 10 }); });
       } });
