@@ -329,8 +329,30 @@ function openHabitManager() {
         <div class="grow"><div class="title">${esc(h.name)}${h.dose ? `<span class="dose">${esc(h.dose)}</span>` : ''}</div><div class="meta">${scheduleText(h)}</div></div>
         <div class="ex-edit"><button type="button" class="mini-btn" data-action="editHabit" data-id="${h.id}">${icons.pencil}</button><button type="button" class="mini-btn red" data-action="delHabit" data-id="${h.id}">${icons.trash}</button></div>
       </div>`).join('') || '<div class="empty">Noch keine Standards.</div>'}
-      <div class="stack"><button type="button" class="btn btn-soft" data-action="newHabit">${icons.plus.replace('<svg', '<svg style="width:16px;height:16px"')} Neuer Standard</button></div>`,
+      <div class="stack"><button type="button" class="btn btn-soft" data-action="newHabit">${icons.plus.replace('<svg', '<svg style="width:16px;height:16px"')} Neuer Standard</button><button type="button" class="btn btn-soft" data-action="loadStandards">Vorlage laden: Supplements & Haut</button></div>`,
     actions: {
+      loadStandards: async () => {
+        if (!confirm('Supplements und Hautroutine nach Vorlage setzen? Vorhandene Standards mit gleichem Namen werden aktualisiert, Niacinamid und Vitamin C entfernt, alles andere bleibt.')) return;
+        try {
+          const r = await fetch(`plans/standards-v1.json?t=${Date.now()}`); if (!r.ok) throw new Error(r.status);
+          const tpl = await r.json();
+          update(x => {
+            const norm = n => n.toLowerCase().replace(/\s+/g, ' ').trim();
+            x.habits = x.habits.filter(h => !tpl.remove.some(rm => norm(h.name).startsWith(norm(rm))));
+            // alte Moisturizer/Vitamin D3 Einträge auf neue Namen mappen, damit die Historie erhalten bleibt
+            const alias = { 'moisturizer': 'Moisturizer abends', 'vitamin d3': 'Vitamin D3 + K2' };
+            for (const h of x.habits) { const a = alias[norm(h.name)]; if (a && !x.habits.some(o => norm(o.name) === norm(a))) h.name = a; }
+            for (const t of tpl.habits) {
+              const ex = x.habits.find(h => norm(h.name) === norm(t.name));
+              if (ex) Object.assign(ex, { dose: t.dose, area: t.area, slot: t.slot, schedule: t.schedule });
+              else x.habits.push({ id: uid(), name: t.name, dose: t.dose, area: t.area, slot: t.slot, schedule: t.schedule });
+            }
+            const order = tpl.habits.map(t => norm(t.name));
+            x.habits.sort((a, b) => { const ia = order.indexOf(norm(a.name)), ib = order.indexOf(norm(b.name)); return (ia < 0 ? 99 : ia) - (ib < 0 ? 99 : ib); });
+          });
+          openHabitManager();
+        } catch (e) { alert('Vorlage konnte nicht geladen werden. Bist du online?'); }
+      },
       editHabit: el => openHabitForm(s.habits.find(h => h.id === el.dataset.id)),
       newHabit: () => openHabitForm(null),
       delHabit: el => { if (confirm('Diesen Standard löschen? Die Historie bleibt erhalten.')) { update(x => { x.habits = x.habits.filter(h => h.id !== el.dataset.id); }); openHabitManager(); } },
