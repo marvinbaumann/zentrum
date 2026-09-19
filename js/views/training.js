@@ -10,7 +10,16 @@ let editMode = false;
 
 function selectedDay(s) {
   const days = s.training.days;
-  return days.find(d => d.id === s.training.selectedDay) || days[0] || null;
+  return days.find(d => d.id === s.training.selectedDay) || todayPlanDay(s) || days[0] || null;
+}
+// Plan-Tag, der laut Wochenvorlage heute dran ist (falls Tage einem Wochentag zugeordnet sind)
+export function todayPlanDay(s, key = dateKey()) {
+  const wd = new Date(key + 'T12:00:00').getDay();
+  return (s.training.days || []).find(d => d.weekday === wd) || null;
+}
+export function todayTemplate(s, key = dateKey()) {
+  const wd = new Date(key + 'T12:00:00').getDay();
+  return s.training.weekTemplate?.[String(wd)] || null;
 }
 const wTxt = w => w == null ? 'Eigengewicht' : `${fmtKg(w)} kg`;
 const round = x => Math.round(x * 100) / 100;
@@ -102,10 +111,11 @@ function trainingHero(s) {
   const last28 = all.filter(x => x.date >= addDays(today, -27));
   const prs = last28.reduce((n, se) => n + se.entries.reduce((m, e) => m + (e.prs?.length || 0) + (e.result === 'levelup' ? 1 : 0), 0), 0);
   const days = s.training.days;
-  let next = null;
-  if (days.length) { const last = all[0]; const i = last ? days.findIndex(d => d.id === last.dayId) : -1; next = days[(i + 1) % days.length]; }
+  let next = todayPlanDay(s);
+  const tpl = todayTemplate(s);
+  if (!next && !tpl && days.length) { const last = all[0]; const i = last ? days.findIndex(d => d.id === last.dayId) : -1; next = days[(i + 1) % days.length]; }
   const lastDate = all[0] ? relDay(all[0].date) : null;
-  const title = trainedToday ? `${esc(trainedToday.dayName)} absolviert` : freeToday ? `Heute: ${esc(freeToday.kind)} erledigt` : next ? `Heute: ${esc(next.name)}` : 'Kein Plan';
+  const title = trainedToday ? `${esc(trainedToday.dayName)} absolviert` : freeToday ? `Heute: ${esc(freeToday.kind)} erledigt` : next ? `Heute: ${esc(next.name)}` : tpl ? `Heute: ${esc(tpl.title)}` : 'Kein Plan';
   const line = trainedToday || freeToday ? 'Stark. Erholung ist jetzt Teil des Trainings.' : lastDate ? `Zuletzt ${lastDate}. Dranbleiben.` : 'Dein erstes Training wartet.';
   // Wochen-Serie: aufeinanderfolgende Wochen mit mindestens einem Training
   let weeks = 0, w = ws; const weekHas = k => all.some(x => x.date >= k && x.date < addDays(k, 7));
@@ -132,7 +142,7 @@ export function render(s) {
     ${editMode ? '' : trainingHero(s)}
     ${editMode || todayWorkout(s).done ? '' : `<div class="stack" style="padding:0 0 14px"><button type="button" class="btn btn-soft" data-action="freeWorkout">Heute anders trainiert? Frei eintragen</button></div>`}
     ${s.training.days.length ? segmented(s.training.days, day?.id, 'selectDay') : ''}
-    ${editMode ? `<div class="btn-row"><button class="btn btn-soft btn-sm" data-action="addDay">${icons.plus.replace('<svg', '<svg style="width:15px;height:15px"')} Tag</button>${day ? `<button class="btn btn-soft btn-sm" data-action="renameDay">Umbenennen</button><button class="btn btn-danger btn-sm" data-action="delDay">Tag löschen</button>` : ''}</div>` : ''}
+    ${editMode ? `<div class="stack" style="padding:0 0 12px"><button class="btn btn-soft" data-action="loadTemplate">Vorlage laden: Zuhause-Plan (Entwurf 2)</button></div><div class="btn-row"><button class="btn btn-soft btn-sm" data-action="addDay">${icons.plus.replace('<svg', '<svg style="width:15px;height:15px"')} Tag</button>${day ? `<button class="btn btn-soft btn-sm" data-action="renameDay">Umbenennen</button><button class="btn btn-danger btn-sm" data-action="delDay">Tag löschen</button>` : ''}</div>` : ''}
 
     ${day ? `
     ${sectionLabel(`${day.name} · ${day.exercises.length} Übungen`, editMode ? `<button class="link-btn" data-action="addExercise">+ Übung</button>` : '')}
@@ -233,7 +243,21 @@ export const changes = {
 
 export const actions = {
   toggleEdit() { editMode = !editMode; stopRest(); update(() => {}); },
-  freeWorkout() { openFreeWorkout(); },
+  freeWorkout() { const t = todayTemplate(state); openFreeWorkout(null, t && t.kind !== 'plan' ? { kind: t.kind, minutes: t.minutes, note: t.title } : null); },
+  async loadTemplate() {
+    if (!confirm('Den aktuellen Plan durch die Vorlage ersetzen? Dein Trainingsverlauf bleibt erhalten.')) return;
+    try {
+      const r = await fetch(`plans/zuhause-v2.json?t=${Date.now()}`); if (!r.ok) throw new Error(r.status);
+      const tpl = await r.json();
+      update(s => {
+        s.training.days = tpl.days.map(d => ({ id: uid(), name: d.name, weekday: d.weekday, exercises: d.exercises.map(e => ({ id: uid(), name: e.name, sets: e.sets, repMin: e.repMin, repMax: e.repMax, weight: e.weight, increment: 2.5, targetReps: e.repMin })) }));
+        s.training.weekTemplate = tpl.weekTemplate;
+        s.training.selectedDay = null;
+      });
+      editMode = false; update(() => {});
+      alert(`„${tpl.name}“ geladen: ${tpl.days.length} Krafttage mit ${tpl.days.reduce((n, d) => n + d.exercises.length, 0)} Übungen. Die anderen Tage stehen ab jetzt auf der Heute-Seite.`);
+    } catch (e) { alert('Vorlage konnte nicht geladen werden. Bist du online?'); }
+  },
   selectDay(el) { update(s => { s.training.selectedDay = el.dataset.id; }); },
   fillLast(el) {
     const last = lastEntry(state, el.dataset.id); if (!last) return;

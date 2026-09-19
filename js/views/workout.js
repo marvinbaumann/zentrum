@@ -20,8 +20,9 @@ export function workoutText(w) {
   return '';
 }
 
-export function openFreeWorkout(existing = null) {
-  let kind = existing?.kind || 'Kraft';
+export function openFreeWorkout(existing = null, preset = null) {
+  if (!existing && preset) existing = { kind: preset.kind, minutes: preset.minutes || '', note: preset.note || '' };
+  let kind = KINDS.includes(existing?.kind) ? existing.kind : 'Kraft';
   const render = () => `
     <div class="note" style="padding:0 2px 12px">Zählt als Training für heute, egal nach welchem Plan. Hauptsache bewegt.</div>
     <div class="chips" style="margin-bottom:16px">${KINDS.map(k => `<button type="button" class="chip ${kind === k ? 'on' : ''}" style="--c:var(--orange)" data-action="wkKind" data-k="${esc(k)}">${esc(k)}</button>`).join('')}</div>
