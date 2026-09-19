@@ -376,7 +376,7 @@ function openSettings() {
       <div class="section-label" style="padding-left:2px">Cloud-Sicherung</div>
       <div class="row" style="border-bottom:0">${tile('sparkles', isConnected() ? 'var(--green)' : 'var(--text2)', 36)}<div class="grow"><div class="title">${isConnected() ? `Verbunden mit ${esc(sync.owner)}/${esc(sync.repo)}` : 'Nicht eingerichtet'}</div><div class="meta">${esc(statusText())}</div></div></div>
       <div class="stack" style="padding-top:0">
-        ${isConnected() ? `<button type="button" class="btn btn-soft" data-action="syncNow">Jetzt synchronisieren</button><button type="button" class="btn btn-danger" data-action="syncOff">Verbindung trennen</button>` : `<button type="button" class="btn btn-primary" data-action="syncSetup">Cloud-Sicherung einrichten</button>`}
+        ${isConnected() ? `<button type="button" class="btn btn-soft" data-action="syncNow">Jetzt synchronisieren</button><button type="button" class="btn btn-soft" data-action="syncKey">Sync-Schlüssel anzeigen</button><button type="button" class="btn btn-danger" data-action="syncOff">Verbindung trennen</button>` : `<button type="button" class="btn btn-primary" data-action="syncSetup">Cloud-Sicherung einrichten</button>`}
       </div>
       <div class="section-label" style="padding-left:2px">Daten</div>
       <div class="stack">
@@ -390,6 +390,8 @@ function openSettings() {
     onSubmit(d) { update(s => { s.settings.stepsGoal = Math.max(0, parseInt(d.stepsGoal) || 0); s.settings.name = (d.name || '').trim(); s.settings.heroMood = MOODS[d.heroMood] ? d.heroMood : 'auto'; s.settings.splash = !!d.splash; s.settings.joker = !!d.joker; }); },
     actions: {
       syncSetup: () => openSyncSheet(),
+      syncKey: () => openSheet({ title: 'Sync-Schlüssel', html: `<div class="note" style="padding:0 2px 12px">Dein Schlüssel für Kurzbefehle und Neuinstallationen. Bewahre ihn in deiner Notizen-App oder im Passwortmanager auf.</div><div class="key-box" id="key-box">${esc(sync.token)}</div><div class="stack"><button type="button" class="btn btn-primary" data-action="copyKey">Kopieren</button></div>`,
+        actions: { copyKey: () => { navigator.clipboard?.writeText(sync.token).then(() => alert('Kopiert.')).catch(() => { const r = document.createRange(); r.selectNodeContents(document.getElementById('key-box')); const sel = getSelection(); sel.removeAllRanges(); sel.addRange(r); alert('Markiert. Halte den Text gedrückt und wähle „Kopieren“.'); }); } } }),
       visionManager: () => openVisionManager(),
       syncNow: async () => { await push(); openSettings(); },
       syncOff: () => { if (confirm('Verbindung trennen? Die Daten in der Cloud bleiben erhalten, es wird nur nicht mehr synchronisiert.')) { disconnect(); openSettings(); } },
