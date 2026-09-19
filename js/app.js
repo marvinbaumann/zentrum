@@ -7,6 +7,7 @@ import * as koerper from './views/koerper.js';
 import * as listen from './views/listen.js';
 import * as welcome from './views/welcome.js';
 import { initSync } from './sync.js';
+import { showSplash } from './views/splash.js';
 
 const views = { heute, training, koerper, listen };
 const TABS = [
@@ -61,9 +62,12 @@ document.addEventListener('submit', e => {
   if (fn) fn(f, e);
 });
 
-// Neuer Tag während die App offen ist → neu rendern.
+// Neuer Tag während die App offen ist → neu rendern. Nach längerer Pause → Startscreen.
+let hiddenAt = 0;
 document.addEventListener('visibilitychange', () => {
-  if (document.visibilityState === 'visible' && dateKey() !== lastDay) { lastDay = dateKey(); render(); }
+  if (document.visibilityState === 'hidden') { hiddenAt = Date.now(); return; }
+  if (dateKey() !== lastDay) { lastDay = dateKey(); render(); }
+  if (state.settings.onboarded && state.settings.splash !== false && hiddenAt && Date.now() - hiddenAt > 2 * 60 * 60 * 1000) showSplash(state);
 });
 
 if ('serviceWorker' in navigator && (location.protocol === 'https:' || location.hostname === 'localhost' || location.hostname === '127.0.0.1')) {
@@ -81,3 +85,4 @@ window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', syn
 
 render();
 initSync();
+if (state.settings.onboarded && state.settings.splash !== false) showSplash(state);

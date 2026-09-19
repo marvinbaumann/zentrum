@@ -342,7 +342,8 @@ function openSettings() {
       ${field({ label: 'Dein Name', name: 'name', value: state.settings.name || '', placeholder: 'Für die Begrüßung', attrs: 'maxlength="30" autocapitalize="words"' })}
       ${field({ label: 'Tagesziel Schritte', name: 'stepsGoal', type: 'number', value: state.settings.stepsGoal, attrs: 'min="0" step="500" inputmode="numeric"' })}
       ${field({ label: 'Stimmung der Begrüßungskarte', name: 'heroMood', value: state.settings.heroMood || 'auto', options: Object.entries(MOODS).map(([value, m]) => ({ value, label: m.name })) })}
-      <div class="mood-row">${Object.entries(MOODS).filter(([k]) => k !== 'auto').map(([k, m]) => `<span class="mood-swatch" style="background:${m.bg}" title="${m.name}"></span>`).join('')}</div>
+      ${toggle({ label: 'Startscreen beim Öffnen', name: 'splash', checked: state.settings.splash !== false })}
+      <div class="mood-row" style="margin-top:12px">${Object.entries(MOODS).filter(([k]) => k !== 'auto').map(([k, m]) => `<span class="mood-swatch" style="background:${m.bg}" title="${m.name}"></span>`).join('')}</div>
       <div class="hint">Setze 0, um Schritte aus den Tages-Standards zu entfernen.</div>
       <div class="section-label" style="padding-left:2px">Cloud-Sicherung</div>
       <div class="row" style="border-bottom:0">${tile('sparkles', isConnected() ? 'var(--green)' : 'var(--text2)', 36)}<div class="grow"><div class="title">${isConnected() ? `Verbunden mit ${esc(sync.owner)}/${esc(sync.repo)}` : 'Nicht eingerichtet'}</div><div class="meta">${esc(statusText())}</div></div></div>
@@ -358,7 +359,7 @@ function openSettings() {
       </div>
       <div class="note" style="padding:6px 2px">Alle Daten liegen nur auf diesem Gerät. Ein Backup hin und wieder lohnt sich.</div>
     `,
-    onSubmit(d) { update(s => { s.settings.stepsGoal = Math.max(0, parseInt(d.stepsGoal) || 0); s.settings.name = (d.name || '').trim(); s.settings.heroMood = MOODS[d.heroMood] ? d.heroMood : 'auto'; }); },
+    onSubmit(d) { update(s => { s.settings.stepsGoal = Math.max(0, parseInt(d.stepsGoal) || 0); s.settings.name = (d.name || '').trim(); s.settings.heroMood = MOODS[d.heroMood] ? d.heroMood : 'auto'; s.settings.splash = !!d.splash; }); },
     actions: {
       syncSetup: () => openSyncSheet(),
       syncNow: async () => { await push(); openSettings(); },
