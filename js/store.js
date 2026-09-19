@@ -22,11 +22,11 @@ function defaultState() {
   return {
     version: 1,
     createdAt: dateKey(),
-    settings: { stepsGoal: 10000, name: '', onboarded: false, heroMood: 'auto', splash: true },
+    settings: { stepsGoal: 10000, name: '', onboarded: false, heroMood: 'auto', splash: true, joker: true, restSeconds: 90, weights: '2.5, 5, 7.5, 10, 12.5, 15, 17.5, 20', jumpLimit: 20 },
     habits: [
-      { id: uid(), name: 'Vitamin D3', area: 'supp', schedule: { type: 'daily' } },
-      { id: uid(), name: 'Omega-3', area: 'supp', schedule: { type: 'daily' } },
-      { id: uid(), name: 'Magnesium', area: 'supp', schedule: { type: 'daily' } },
+      { id: uid(), name: 'Vitamin D3', area: 'supp', dose: '2000 IE', schedule: { type: 'daily' } },
+      { id: uid(), name: 'Omega-3', area: 'supp', dose: '1000 mg', schedule: { type: 'daily' } },
+      { id: uid(), name: 'Magnesium', area: 'supp', dose: '400 mg', schedule: { type: 'daily' } },
       { id: uid(), name: 'Moisturizer', area: 'skin', schedule: { type: 'daily' } },
       { id: uid(), name: 'Sonnenschutz', area: 'skin', schedule: { type: 'daily' } },
       { id: uid(), name: 'Retinal', area: 'skin', schedule: { type: 'weekly', times: 3 } },
@@ -48,6 +48,9 @@ function defaultState() {
       private: { today: [], ideas: [] },
     },
     appointments: [], // [{ id, date, time, title }]
+    checkins: {},     // { 'YYYY-MM-DD': { valence, emotions, tags, good, note, at } }
+    people: [],       // [{ id, name, intervalDays, lastContact, birthday, note }]
+    vision: [],       // [{ id, caption, area, step, addedAt }] – Bilddaten liegen in IndexedDB + Daten-Repo
   };
 }
 
@@ -59,6 +62,7 @@ function load() {
       // Fehlende Felder ergänzen (schema-tolerant)
       const d = defaultState();
       for (const k of Object.keys(d)) if (s[k] === undefined) s[k] = d[k];
+      for (const k of Object.keys(d.settings)) if (s.settings[k] === undefined) s.settings[k] = d.settings[k];
       return s;
     }
   } catch (e) { console.warn('State konnte nicht geladen werden', e); }

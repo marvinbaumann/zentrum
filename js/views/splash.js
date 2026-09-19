@@ -1,7 +1,8 @@
 // Herzlicher Startscreen: erscheint beim Öffnen, verschwindet mit einem Tipp oder nach ein paar Sekunden.
 import { dateKey } from '../store.js';
 import { esc } from '../ui.js';
-import { streak } from '../habits.js';
+import { streak, lastActivity } from '../habits.js';
+import { parseKey } from '../store.js';
 
 const LINES = {
   morning: [
@@ -34,8 +35,8 @@ const LINES = {
 function bucket(h) { return h < 5 || h >= 22 ? 'night' : h < 11 ? 'morning' : h < 17 ? 'day' : 'evening'; }
 function greeting(h) { return h < 5 || h >= 22 ? 'Gute Nacht' : h < 11 ? 'Guten Morgen' : h < 17 ? 'Hallo' : 'Guten Abend'; }
 
-export function showSplash(s) {
-  if (document.querySelector('.splash')) return;
+export function showSplash(s, onDone) {
+  if (document.querySelector('.splash')) { onDone?.(); return; }
   const h = new Date().getHours();
   const b = bucket(h);
   const pool = LINES[b];
@@ -44,6 +45,11 @@ export function showSplash(s) {
   const st = streak(s);
   if (st >= 3 && seed % 3 === 0) line = `${st} Tage in Folge. Das bist du, jeden Tag aufs Neue.`;
   const name = (s.settings.name || '').trim();
+  // Willkommen zurück nach einer Pause von drei oder mehr Tagen, ohne Vorwurf
+  const last = lastActivity(s);
+  const away = last ? Math.round((parseKey(dateKey()) - parseKey(last)) / 864e5) : 0;
+  let greet = `${esc(greeting(h))}${name ? `,<br>${esc(name)}.` : '.'}`;
+  if (away >= 3) { greet = `Willkommen zurück${name ? `,<br>${esc(name)}.` : '.'}`; line = 'Schön, dass du wieder da bist. Heute zählt einfach wieder, ganz ohne Rückblick.'; }
 
   const el = document.createElement('div');
   el.className = 'splash';
@@ -52,7 +58,7 @@ export function showSplash(s) {
   el.innerHTML = `
     <div class="welcome-glow"></div>
     <div class="splash-body">
-      <div class="splash-greet">${esc(greeting(h))}${name ? `,<br>${esc(name)}.` : '.'}</div>
+      <div class="splash-greet">${greet}</div>
       <div class="splash-line">${esc(line)}</div>
     </div>
     <div class="splash-hint">Tippen zum Starten</div>`;
@@ -64,6 +70,7 @@ export function showSplash(s) {
     el.classList.add('out');
     document.body.classList.remove('splash-open');
     setTimeout(() => el.remove(), 450);
+    onDone?.();
   };
   el.addEventListener('click', close);
   el.addEventListener('touchend', e => { e.preventDefault(); close(); }, { passive: false });

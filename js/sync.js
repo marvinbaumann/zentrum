@@ -1,6 +1,7 @@
 // Cloud-Sync: Der komplette Zustand liegt als JSON-Datei in einem privaten GitHub-Repository.
 // Jede Änderung wird nach kurzer Pause hochgeladen, beim Öffnen wird der neueste Stand geholt.
-import { state, replaceState, onChange } from './store.js';
+import { state, replaceState, onChange, update } from './store.js';
+import { imgGet, imgPut, imgKeys, blobToBase64 } from './images.js';
 
 const KEY = 'zentrum.sync';
 const API = 'https://api.github.com';
@@ -72,13 +73,88 @@ export async function push(force = false) {
 export async function pull() {
   if (!isConnected() || sync.busy) return false;
   sync.busy = true;
+  let changed = false;
   try {
     const remote = await fetchRemote();
-    if (remote?.state?.habits && (remote.state.updatedAt || '') > (state.updatedAt || '')) { applyRemote(remote.state); sync.lastSync = new Date().toISOString(); sync.error = null; return true; }
+    if (remote?.state?.habits && (remote.state.updatedAt || '') > (state.updatedAt || '')) { applyRemote(remote.state); sync.lastSync = new Date().toISOString(); changed = true; }
     sync.error = null;
   } catch (e) { sync.error = e.message; }
   finally { sync.busy = false; persist(); document.dispatchEvent(new Event('sync:update')); }
-  return false;
+  try { if (await importInbox()) changed = true; } catch (e) { console.warn('Inbox', e); }
+  try { await syncVisionImages(); } catch (e) { console.warn('Bilder', e); }
+  return changed;
+}
+
+/* ---------- Posteingang: Dateien, die der Kurzbefehl ablegt (inbox/*.txt) ----------
+   Zeilenformat: typ,datum,wert   z. B.  steps,2026-09-19,8432  oder  weight,2026-09-19,78.4 */
+export async function importInbox() {
+  if (!isConnected()) return false;
+  const r = await gh(`/repos/${sync.owner}/${sync.repo}/contents/inbox?t=${Date.now()}`, { cache: 'no-store' });
+  if (r.status === 404) return false;
+  if (!r.ok) throw new Error(`Inbox ${r.status}`);
+  const files = (await r.json()).filter(f => f.type === 'file');
+  if (!files.length) return false;
+  const steps = {}, weight = {};
+  const processed = [];
+  for (const f of files) {
+    const fr = await gh(`/repos/${sync.owner}/${sync.repo}/contents/${encodeURIComponent('inbox/' + f.name)}?t=${Date.now()}`, { headers: { Accept: 'application/vnd.github.raw+json' }, cache: 'no-store' });
+    if (!fr.ok) continue;
+    const text = await fr.text();
+    for (const line of text.split(/\r?\n/)) {
+      const parts = line.trim().split(/[,;]\s*/);
+      if (parts.length < 3) continue;
+      const type = parts[0].toLowerCase().trim(); const date = normalizeDate(parts[1]); const val = parseFloat(String(parts[2]).trim().replace(',', '.'));
+      if (!date || !(val >= 0)) continue;
+      if (type.startsWith('step') || type.startsWith('schritt')) steps[date] = Math.max(steps[date] || 0, Math.round(val));
+      if (type.startsWith('weight') || type.startsWith('gewicht')) weight[date] = Math.round(val * 10) / 10;
+    }
+    processed.push(f);
+  }
+  const any = Object.keys(steps).length || Object.keys(weight).length;
+  if (any) update(s => {
+    for (const [d, v] of Object.entries(steps)) if (v > 0) s.steps[d] = v;
+    for (const [d, kg] of Object.entries(weight)) if (kg > 20 && kg < 400) { s.weight = s.weight.filter(x => x.date !== d); s.weight.push({ date: d, kg }); }
+    s.lastImport = new Date().toISOString();
+  });
+  for (const f of processed) {
+    await gh(`/repos/${sync.owner}/${sync.repo}/contents/${encodeURIComponent('inbox/' + f.name)}`, { method: 'DELETE', body: JSON.stringify({ message: 'verarbeitet', sha: f.sha }) });
+  }
+  return !!any;
+}
+function normalizeDate(t) {
+  t = String(t).trim();
+  let m = t.match(/^(\d{4})-(\d{2})-(\d{2})/); if (m) return `${m[1]}-${m[2]}-${m[3]}`;
+  m = t.match(/^(\d{1,2})\.(\d{1,2})\.(\d{4})/); if (m) return `${m[3]}-${m[2].padStart(2, '0')}-${m[1].padStart(2, '0')}`;
+  const d = new Date(t); if (!isNaN(d)) return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+  return null;
+}
+
+/* ---------- Bilder: lokal in IndexedDB, Kopie im Daten-Repo unter vision/<id>.jpg ---------- */
+export async function uploadImage(id, blob) {
+  if (!isConnected()) return;
+  const path = `/repos/${sync.owner}/${sync.repo}/contents/vision/${id}.jpg`;
+  const existing = await gh(`${path}?t=${Date.now()}`, { cache: 'no-store' });
+  const sha = existing.ok ? (await existing.json()).sha : undefined;
+  const r = await gh(path, { method: 'PUT', body: JSON.stringify({ message: `Bild ${id}`, content: await blobToBase64(blob), ...(sha ? { sha } : {}) }) });
+  if (!r.ok) throw new Error(`Bild-Upload fehlgeschlagen (${r.status})`);
+}
+export async function deleteRemoteImage(id) {
+  if (!isConnected()) return;
+  const path = `/repos/${sync.owner}/${sync.repo}/contents/vision/${id}.jpg`;
+  const existing = await gh(`${path}?t=${Date.now()}`, { cache: 'no-store' });
+  if (!existing.ok) return;
+  const { sha } = await existing.json();
+  await gh(path, { method: 'DELETE', body: JSON.stringify({ message: `Bild ${id} gelöscht`, sha }) });
+}
+// Fehlende Bilder (z. B. nach Neuinstallation) aus dem Repo holen, lokale ohne Kopie hochladen.
+export async function syncVisionImages() {
+  if (!isConnected() || !state.vision?.length) return;
+  const local = new Set(await imgKeys());
+  for (const v of state.vision) {
+    if (local.has(v.id)) continue;
+    const r = await gh(`/repos/${sync.owner}/${sync.repo}/contents/vision/${v.id}.jpg?t=${Date.now()}`, { headers: { Accept: 'application/vnd.github.raw+json' }, cache: 'no-store' });
+    if (r.ok) { await imgPut(v.id, await r.blob()); document.dispatchEvent(new Event('images:update')); }
+  }
 }
 
 let timer = null;

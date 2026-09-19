@@ -39,6 +39,18 @@ export function openSheet({ title, html, submitLabel = 'Sichern', onSubmit = nul
   if (first) setTimeout(() => first.focus(), 320);
 }
 
+// Inhalt eines offenen Sheets austauschen, ohne es neu einzublenden (kein Flackern bei Schritt-Wechseln).
+export function updateSheet({ html, actions = {} }) {
+  const root = document.getElementById('sheet-root');
+  const form = root.querySelector('#sheet-form');
+  if (!form || !root.classList.contains('open')) return false;
+  sheetActions = actions;
+  form.innerHTML = html;
+  const first = form.querySelector('[data-autofocus]');
+  if (first) setTimeout(() => first.focus(), 50);
+  return true;
+}
+
 export function closeSheet() {
   const root = document.getElementById('sheet-root');
   root.classList.remove('open');

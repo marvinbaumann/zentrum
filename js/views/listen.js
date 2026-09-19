@@ -3,8 +3,9 @@ import { esc, header, sectionLabel, segmented, icons, relDay, tile } from '../ui
 import { openSheet, field } from '../sheet.js';
 import { focusAfterRender } from '../app.js';
 import { haptic } from '../fx.js';
+import { section as peopleSection, actions as peopleActions } from './people.js';
 
-let tab = 'work';
+let tab = sessionStorage.getItem('zentrum.listTab') || 'work';
 let editMode = false;
 let showPast = false;
 
@@ -12,12 +13,13 @@ const COLORS = { work: 'var(--indigo)', private: 'var(--teal)' };
 
 export function render(s) {
   const today = dateKey();
+  if (tab === 'people') return renderPeople(s);
   const L = s.lists[tab];
   const apps = [...s.appointments].sort((a, b) => (a.date + (a.time || '')).localeCompare(b.date + (b.time || '')));
   const upcoming = apps.filter(a => a.date >= today), past = apps.filter(a => a.date < today).reverse();
   return `
     ${header('Listen', tab === 'work' ? 'Arbeit' : 'Privat', `<button class="link-btn ${editMode ? 'bold' : ''}" data-action="toggleEdit">${editMode ? 'Fertig' : 'Bearbeiten'}</button>`)}
-    ${segmented([{ id: 'work', name: 'Arbeit' }, { id: 'private', name: 'Privat' }], tab, 'selectTab')}
+    ${segmented(TABS, tab, 'selectTab')}
 
     ${tab === 'work' ? `
       ${sectionLabel('Termine', `<button class="link-btn" data-action="addAppointment">+ Termin</button>`)}
@@ -43,6 +45,17 @@ export function render(s) {
   `;
 }
 
+const TABS = [{ id: 'work', name: 'Arbeit' }, { id: 'private', name: 'Privat' }, { id: 'people', name: 'Menschen' }];
+
+function renderPeople(s) {
+  return `
+    ${header('Listen', 'Wichtige Menschen', `<button class="link-btn ${editMode ? 'bold' : ''}" data-action="toggleEdit">${editMode ? 'Fertig' : 'Bearbeiten'}</button>`)}
+    ${segmented(TABS, tab, 'selectTab')}
+    ${sectionLabel('Regelmäßig melden', `<button class="link-btn" data-action="addPerson">+ Person</button>`)}
+    <div class="card">${peopleSection(s, editMode)}</div>
+    <div class="card pad"><div class="note">Ein Tipp auf „Kontakt gehabt“ setzt den Zähler zurück. Wer fällig ist, erscheint automatisch auf der Heute-Seite.</div></div>`;
+}
+
 function apptRow(a, today, isPast = false) {
   return `<div class="row" style="${isPast ? 'opacity:.55' : ''}">
     ${tile('clock', 'var(--indigo)', 36)}
@@ -62,7 +75,7 @@ function taskRow(kind, t) {
 }
 
 export const actions = {
-  selectTab(el) { tab = el.dataset.id; editMode = false; update(() => {}); },
+  selectTab(el) { tab = el.dataset.id; sessionStorage.setItem('zentrum.listTab', tab); editMode = false; update(() => {}); },
   toggleEdit() { editMode = !editMode; update(() => {}); },
   togglePast() { showPast = !showPast; update(() => {}); },
   toggleTask(el) { haptic(); update(s => { const t = s.lists[tab].today.find(x => x.id === el.dataset.id); if (t) t.done = !t.done; }); },
@@ -77,6 +90,7 @@ export const actions = {
   addAppointment() { openAppointmentForm(null); },
   editAppointment(el) { openAppointmentForm(state.appointments.find(a => a.id === el.dataset.id)); },
   delAppointment(el) { if (confirm('Termin löschen?')) update(s => { s.appointments = s.appointments.filter(a => a.id !== el.dataset.id); }); },
+  ...peopleActions,
 };
 
 export const submits = {

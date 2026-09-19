@@ -1,7 +1,11 @@
 import { state, update, dateKey, AREAS, uid, resetState, replaceState } from '../store.js';
 import { esc, fmtLong, relDay, ring, check, header, sectionLabel, icons, fmtNum, tile, WD_SHORT } from '../ui.js';
 import { openSheet, closeSheet, field, toggle } from '../sheet.js';
-import { dayItems, streak, bestStreak, habitStreak, isPerfectDay } from '../habits.js';
+import { dayItems, streak, streakInfo, bestStreak, habitStreak, isPerfectDay, dayLevel } from '../habits.js';
+import * as checkin from './checkin.js';
+import { duePeople, upcomingBirthdays, personRow, actions as peopleActions } from './people.js';
+import { openVisionManager } from './vision.js';
+import { checkMilestones } from './milestone.js';
 import { addDays, weekStart } from '../store.js';
 import { focusAfterRender } from '../app.js';
 import { celebrate, haptic } from '../fx.js';
@@ -45,6 +49,7 @@ const LINES = {
 };
 function motivation(h, d, st) {
   if (d.total > 0 && d.done === d.total) return 'Perfekter Tag. Genau diese Konsequenz summiert sich.';
+  if (d.total > 0 && d.pct >= 0.8) return `${d.done} von ${d.total} erledigt. Die Serie bleibt, auch wenn nicht alles perfekt ist.`;
   if (st >= 3 && d.pct < 0.5) return `${st} Tage in Folge. Halte die Serie am Leben.`;
   if (d.pct >= 0.5 && h >= 11) return `Mehr als die Hälfte geschafft. Der Rest ist Formsache.`;
   const pool = h < 5 || h >= 22 ? LINES.night : h < 11 ? LINES.morning : h < 17 ? LINES.day : LINES.evening;
@@ -53,13 +58,16 @@ function motivation(h, d, st) {
 }
 function weekStrip(s, today) {
   const ws = weekStart(today);
+  const jokers = streakInfo(s, today).jokerDays;
+  const jokerSet = new Set(Object.values(jokers));
   return `<div class="week">${Array.from({ length: 7 }, (_, i) => {
     const k = addDays(ws, i);
-    const perfect = isPerfectDay(s, k);
+    const level = dayLevel(s, k);
     const isToday = k === today, future = k > today;
     const d = isToday ? dayItems(s, k) : null;
-    let cls = perfect ? 'perfect' : isToday ? 'today' : future ? 'future' : 'missed';
-    return `<div class="week-day ${cls}"><span class="wl">${WD_SHORT[(i + 1) % 7]}</span><span class="wd">${perfect ? icons.check : isToday ? ring(d.pct, '#fff', 26, 3.5, { track: 'rgba(255,255,255,.28)' }) : ''}</span></div>`;
+    let cls = level === 'perfect' ? 'perfect' : level === 'good' && !isToday ? 'good' : isToday ? 'today' : future ? 'future' : jokerSet.has(k) ? 'joker' : 'missed';
+    const inner = cls === 'perfect' ? icons.check : cls === 'good' ? icons.check : cls === 'joker' ? '★' : isToday ? ring(d.pct, '#fff', 26, 3.5, { track: 'rgba(255,255,255,.28)' }) : '';
+    return `<div class="week-day ${cls}" title="${cls === 'joker' ? 'Joker-Tag' : ''}"><span class="wl">${WD_SHORT[(i + 1) % 7]}</span><span class="wd">${inner}</span></div>`;
   }).join('')}</div>`;
 }
 
@@ -69,7 +77,10 @@ export function render(s) {
   const st = streak(s, today);
   const best = bestStreak(s);
   const groups = {};
-  for (const r of d.required) (groups[r.habit.area] ||= []).push(r);
+  const slotOrder = { am: 0, '': 1, undefined: 1, pm: 2 };
+  for (const r of [...d.required].sort((a, b) => (slotOrder[a.habit.slot] ?? 1) - (slotOrder[b.habit.slot] ?? 1))) (groups[r.habit.area] ||= []).push(r);
+  const slotItems = d.required.filter(r => r.habit.slot === 'am' || r.habit.slot === 'pm');
+  const slotSummary = slotItems.length ? ['am', 'pm'].map(sl => { const items = d.required.filter(r => r.habit.slot === sl); if (!items.length) return ''; const open = items.filter(r => !r.done); return `<span class="slot-chip ${open.length ? '' : 'done'}">${sl === 'am' ? '☀️' : '🌙'} ${sl === 'am' ? 'Morgens' : 'Abends'} ${items.length - open.length}/${items.length}</span>`; }).join('') : '';
 
   const trainedToday = s.training.sessions.find(x => x.date === today);
   const nextDay = nextTrainingDay(s);
@@ -79,6 +90,7 @@ export function render(s) {
   const privToday = s.lists.private.today;
   const hour = new Date().getHours();
   const perfect = d.total > 0 && d.done === d.total;
+  const good = !perfect && d.total > 0 && d.pct >= 0.8;
   const name = (s.settings.name || '').trim();
   const animate = firstMount; firstMount = false;
   const pop = lastPop; lastPop = null;
@@ -90,18 +102,19 @@ export function render(s) {
       <div class="hero-top">
         <div class="ring-wrap">${ring(d.pct, '#fff', 84, 9, { track: 'rgba(255,255,255,.28)', animate })}<div class="ring-label">${perfect ? icons.check.replace('<svg', '<svg style="width:26px;height:26px;color:#fff"') : `${Math.round(d.pct * 100)}%`}</div></div>
         <div class="grow">
-          <div class="hero-big">${perfect ? 'Alles erledigt' : `${d.done} von ${d.total} erledigt`}</div>
+          <div class="hero-big">${perfect ? 'Alles erledigt' : good ? 'Guter Tag' : `${d.done} von ${d.total} erledigt`}</div>
           <div class="hero-line">${esc(motivation(hour, d, st))}</div>
         </div>
       </div>
       <div class="hero-bottom">
         ${weekStrip(s, today)}
-        <div class="hero-streak">${st > 0 ? `<span class="glass">🔥 ${st} ${st === 1 ? 'Tag' : 'Tage'} in Folge</span>` : `<span class="glass">Starte heute deine Serie</span>`}${best > st ? `<span class="glass dim">Rekord ${best}</span>` : ''}</div>
+        <div class="hero-streak">${st > 0 ? `<span class="glass">🔥 ${st} ${st === 1 ? 'Tag' : 'Tage'} in Folge</span>` : `<span class="glass">Starte heute deine Serie</span>`}${best > st ? `<span class="glass dim">Rekord ${best}</span>` : ''}${s.settings.joker !== false ? `<span class="glass dim" title="Ein schwacher Tag pro Woche bricht die Serie nicht">★ Joker</span>` : ''}</div>
       </div>
     </div>
 
     ${sectionLabel('Tages-Standards', `<button class="link-btn" data-action="manageHabits">Bearbeiten</button>`)}
     <div class="card">
+      ${slotSummary ? `<div class="slot-row">${slotSummary}</div>` : ''}
       ${Object.entries(groups).map(([area, items]) => `
         <div class="group-title">${tile(AREAS[area]?.icon || 'sparkles', AREAS[area]?.color || 'var(--blue)')}${esc(AREAS[area]?.name || 'Sonstiges')}</div>
         ${items.map(r => habitRow(s, r.habit, r.done, today, pop)).join('')}
@@ -125,6 +138,11 @@ export function render(s) {
         </div>` : ''}
       ${!d.required.length && !d.weekly.length && !d.stepsItem ? `<div class="empty">Noch keine Standards. Tippe auf „Bearbeiten“.</div>` : ''}
     </div>
+
+    ${sectionLabel('Abend-Check-in')}
+    ${checkin.card(s)}
+
+    ${(() => { const due = duePeople(s, 7); const bd = upcomingBirthdays(s, 14).filter(x => !due.includes(x.p)); if (!due.length && !bd.length) return ''; return `${sectionLabel('Menschen', `<a class="link-btn" href="#listen" data-action="goPeople" style="font-size:14px">Alle</a>`)}<div class="card">${due.map(p => personRow(p)).join('')}${bd.map(x => personRow(x.p)).join('')}</div>`; })()}
 
     ${sectionLabel('Training')}
     <div class="card">
@@ -162,7 +180,7 @@ function habitRow(s, h, done, today, pop) {
   const hs = habitStreak(s, h, today);
   return `<div class="row ${done ? 'done' : ''}">
     ${check(done, AREAS[h.area]?.color || 'var(--blue)', `data-action="toggleHabit" data-id="${h.id}"`).replace('class="check', pop === h.id ? 'class="check pop' : 'class="check')}
-    <div class="grow"><div class="title">${esc(h.name)}</div>${h.schedule?.type === 'days' ? `<div class="meta">${h.schedule.days.map(i => WD[WD_IDX.indexOf(i)]).join(' · ')}</div>` : ''}</div>
+    <div class="grow"><div class="title">${esc(h.name)}${h.dose ? `<span class="dose">${esc(h.dose)}</span>` : ''}</div>${h.schedule?.type === 'days' || h.slot ? `<div class="meta">${[h.slot === 'am' ? 'Morgens' : h.slot === 'pm' ? 'Abends' : '', h.schedule?.type === 'days' ? h.schedule.days.map(i => WD[WD_IDX.indexOf(i)]).join(' · ') : ''].filter(Boolean).join(' · ')}</div>` : ''}</div>
     ${hs > 1 ? `<span class="trail">${hs}🔥</span>` : ''}
   </div>`;
 }
@@ -205,8 +223,10 @@ export const actions = {
     lastPop = id;
     haptic();
     const before = isPerfectDay(state, today);
+    const stBefore = streak(state, today);
     update(s => { const day = s.log[today] ||= {}; if (day[id]) delete day[id]; else day[id] = true; });
     if (!before && isPerfectDay(state, today)) celebrate();
+    checkMilestones(stBefore);
   },
   toggleTask(el) {
     haptic();
@@ -220,14 +240,19 @@ export const actions = {
   addWorkTask() { document.querySelector('form[data-list="work"] input')?.focus(); },
   settings() { openSettings(); },
   manageHabits() { openHabitManager(); },
+  openCheckin() { checkin.openCheckin(); },
+  goPeople(el, e) { e.preventDefault(); sessionStorage.setItem('zentrum.listTab', 'people'); location.hash = '#listen'; },
+  ...peopleActions,
 };
 
 export const changes = {
   setSteps(el) {
     const v = parseInt(el.value, 10);
     const before = isPerfectDay(state, dateKey());
+    const stBefore = streak(state, dateKey());
     update(s => { if (v > 0) s.steps[dateKey()] = v; else delete s.steps[dateKey()]; });
     if (!before && isPerfectDay(state, dateKey())) celebrate();
+    checkMilestones(stBefore);
   },
 };
 
@@ -290,7 +315,7 @@ function openHabitManager() {
     html: `
       ${s.habits.map(h => `<div class="row">
         <span class="dot" style="--c:${AREAS[h.area]?.color || 'var(--blue)'}"></span>
-        <div class="grow"><div class="title">${esc(h.name)}</div><div class="meta">${scheduleText(h)}</div></div>
+        <div class="grow"><div class="title">${esc(h.name)}${h.dose ? `<span class="dose">${esc(h.dose)}</span>` : ''}</div><div class="meta">${scheduleText(h)}</div></div>
         <div class="ex-edit"><button type="button" class="mini-btn" data-action="editHabit" data-id="${h.id}">${icons.pencil}</button><button type="button" class="mini-btn red" data-action="delHabit" data-id="${h.id}">${icons.trash}</button></div>
       </div>`).join('') || '<div class="empty">Noch keine Standards.</div>'}
       <div class="stack"><button type="button" class="btn btn-soft" data-action="newHabit">${icons.plus.replace('<svg', '<svg style="width:16px;height:16px"')} Neuer Standard</button></div>`,
@@ -305,8 +330,8 @@ function openHabitManager() {
 function scheduleText(h) {
   const t = h.schedule?.type;
   if (t === 'weekly') return `${h.schedule.times}× pro Woche`;
-  if (t === 'days') return h.schedule.days.map(i => WD[WD_IDX.indexOf(i)]).join(', ');
-  return 'Täglich';
+  const base = t === 'days' ? h.schedule.days.map(i => WD[WD_IDX.indexOf(i)]).join(', ') : 'Täglich';
+  return h.slot ? `${base} · ${h.slot === 'am' ? 'Morgens' : 'Abends'}` : base;
 }
 
 function openHabitForm(h) {
@@ -315,8 +340,8 @@ function openHabitForm(h) {
     title: h ? 'Standard bearbeiten' : 'Neuer Standard',
     html: `
       ${field({ label: 'Name', name: 'name', value: h?.name || '', placeholder: 'z. B. Vitamin D3', autofocus: !h, attrs: 'required' })}
-      ${field({ label: 'Bereich', name: 'area', value: h?.area || 'supp', options: Object.entries(AREAS).map(([value, a]) => ({ value, label: a.name })) })}
-      ${field({ label: 'Rhythmus', name: 'type', value: sc.type, options: [{ value: 'daily', label: 'Täglich' }, { value: 'days', label: 'Bestimmte Wochentage' }, { value: 'weekly', label: 'X-mal pro Woche (flexibel)' }] })}
+      <div class="field-row" style="grid-template-columns:1fr 1fr">${field({ label: 'Bereich', name: 'area', value: h?.area || 'supp', options: Object.entries(AREAS).map(([value, a]) => ({ value, label: a.name })) })}${field({ label: 'Dosis (optional)', name: 'dose', value: h?.dose || '', placeholder: 'z. B. 400 mg' , attrs: 'maxlength="20"' })}</div>
+      <div class="field-row">${field({ label: 'Rhythmus', name: 'type', value: sc.type, options: [{ value: 'daily', label: 'Täglich' }, { value: 'days', label: 'Bestimmte Wochentage' }, { value: 'weekly', label: 'X-mal pro Woche (flexibel)' }] })}${field({ label: 'Zeitfenster', name: 'slot', value: h?.slot || '', options: [{ value: '', label: 'Jederzeit' }, { value: 'am', label: 'Morgens' }, { value: 'pm', label: 'Abends' }] })}</div>
       <div class="field"><span>Wochentage (nur bei „Bestimmte Wochentage“)</span><div class="daypicker">${WD.map((w, i) => `<label><input type="checkbox" name="days[]" value="${WD_IDX[i]}" ${(sc.days || []).includes(WD_IDX[i]) ? 'checked' : ''}><span>${w}</span></label>`).join('')}</div></div>
       ${field({ label: 'Wie oft pro Woche (nur bei „X-mal pro Woche“)', name: 'times', type: 'number', value: sc.times || 3, attrs: 'min="1" max="7" inputmode="numeric"' })}
     `,
@@ -327,8 +352,9 @@ function openHabitForm(h) {
         : { type: 'daily' };
       if (schedule.type === 'days' && !schedule.days.length) { alert('Bitte mindestens einen Wochentag wählen.'); return false; }
       update(s => {
-        if (h) { const x = s.habits.find(y => y.id === h.id); Object.assign(x, { name, area: d.area, schedule }); }
-        else s.habits.push({ id: uid(), name, area: d.area, schedule });
+        const dose = (d.dose || '').trim(); const slot = d.slot === 'am' || d.slot === 'pm' ? d.slot : '';
+        if (h) { const x = s.habits.find(y => y.id === h.id); Object.assign(x, { name, area: d.area, schedule, dose, slot }); }
+        else s.habits.push({ id: uid(), name, area: d.area, schedule, dose, slot });
       });
       setTimeout(openHabitManager, 300);
     },
@@ -342,7 +368,9 @@ function openSettings() {
       ${field({ label: 'Dein Name', name: 'name', value: state.settings.name || '', placeholder: 'Für die Begrüßung', attrs: 'maxlength="30" autocapitalize="words"' })}
       ${field({ label: 'Tagesziel Schritte', name: 'stepsGoal', type: 'number', value: state.settings.stepsGoal, attrs: 'min="0" step="500" inputmode="numeric"' })}
       ${field({ label: 'Stimmung der Begrüßungskarte', name: 'heroMood', value: state.settings.heroMood || 'auto', options: Object.entries(MOODS).map(([value, m]) => ({ value, label: m.name })) })}
+      ${toggle({ label: 'Joker-Tag: ein schwacher Tag pro Woche bricht die Serie nicht', name: 'joker', checked: state.settings.joker !== false })}
       ${toggle({ label: 'Startscreen beim Öffnen', name: 'splash', checked: state.settings.splash !== false })}
+      <div class="stack" style="padding-top:8px"><button type="button" class="btn btn-soft" data-action="visionManager">Meine Bilder (${(state.vision || []).length})</button></div>
       <div class="mood-row" style="margin-top:12px">${Object.entries(MOODS).filter(([k]) => k !== 'auto').map(([k, m]) => `<span class="mood-swatch" style="background:${m.bg}" title="${m.name}"></span>`).join('')}</div>
       <div class="hint">Setze 0, um Schritte aus den Tages-Standards zu entfernen.</div>
       <div class="section-label" style="padding-left:2px">Cloud-Sicherung</div>
@@ -359,9 +387,10 @@ function openSettings() {
       </div>
       <div class="note" style="padding:6px 2px">Alle Daten liegen nur auf diesem Gerät. Ein Backup hin und wieder lohnt sich.</div>
     `,
-    onSubmit(d) { update(s => { s.settings.stepsGoal = Math.max(0, parseInt(d.stepsGoal) || 0); s.settings.name = (d.name || '').trim(); s.settings.heroMood = MOODS[d.heroMood] ? d.heroMood : 'auto'; s.settings.splash = !!d.splash; }); },
+    onSubmit(d) { update(s => { s.settings.stepsGoal = Math.max(0, parseInt(d.stepsGoal) || 0); s.settings.name = (d.name || '').trim(); s.settings.heroMood = MOODS[d.heroMood] ? d.heroMood : 'auto'; s.settings.splash = !!d.splash; s.settings.joker = !!d.joker; }); },
     actions: {
       syncSetup: () => openSyncSheet(),
+      visionManager: () => openVisionManager(),
       syncNow: async () => { await push(); openSettings(); },
       syncOff: () => { if (confirm('Verbindung trennen? Die Daten in der Cloud bleiben erhalten, es wird nur nicht mehr synchronisiert.')) { disconnect(); openSettings(); } },
       exportData: () => { navigator.clipboard?.writeText(JSON.stringify(state)).then(() => alert('Backup in die Zwischenablage kopiert.')).catch(() => alert('Kopieren nicht möglich.')); },

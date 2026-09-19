@@ -30,22 +30,38 @@ export function dayItems(s, key) {
   return { required, weekly, stepsItem, total, done, pct: total ? done / total : 0 };
 }
 
-export function isPerfectDay(s, key) {
-  const d = dayItems(s, key);
-  return d.total > 0 && d.done === d.total;
-}
+export const GOOD_THRESHOLD = 0.8;
 
-// Serie perfekter Tage bis heute (heute zählt, sobald erledigt; sonst ab gestern).
-export function streak(s, key = dateKey()) {
-  let n = 0, k = key;
-  if (!isPerfectDay(s, k)) k = addDays(k, -1);
-  while (k >= s.createdAt && isPerfectDay(s, k)) { n++; k = addDays(k, -1); if (n > 5000) break; }
-  return n;
+// Tagesstufe: 'perfect' (alles), 'good' (≥ 80 %), 'partial' (etwas), 'none'
+export function dayLevel(s, key) {
+  const d = dayItems(s, key);
+  if (!d.total) return 'none';
+  if (d.done === d.total) return 'perfect';
+  if (d.pct >= GOOD_THRESHOLD) return 'good';
+  return d.done > 0 ? 'partial' : 'none';
 }
+export function isPerfectDay(s, key) { return dayLevel(s, key) === 'perfect'; }
+export function isGoodDay(s, key) { const l = dayLevel(s, key); return l === 'perfect' || l === 'good'; }
+
+// Serie: aufeinanderfolgende gute oder perfekte Tage. Ein Joker pro Woche fängt einen
+// schwachen Tag auf, ohne die Serie zu brechen (nicht für heute, heute ist noch offen).
+export function streakInfo(s, key = dateKey()) {
+  let n = 0, k = key, jokers = {};
+  if (!isGoodDay(s, k)) k = addDays(k, -1);
+  while (k >= s.createdAt) {
+    if (isGoodDay(s, k)) { n++; }
+    else if (s.settings.joker !== false && !jokers[weekStart(k)] && n > 0) { jokers[weekStart(k)] = k; }
+    else break;
+    k = addDays(k, -1);
+    if (n > 5000) break;
+  }
+  return { n, jokerDays: jokers };
+}
+export function streak(s, key = dateKey()) { return streakInfo(s, key).n; }
 
 export function bestStreak(s) {
-  let best = 0, cur = 0, k = s.createdAt, today = dateKey();
-  while (k <= today) { if (isPerfectDay(s, k)) { cur++; best = Math.max(best, cur); } else cur = 0; k = addDays(k, 1); }
+  let best = 0, k = s.createdAt, today = dateKey();
+  while (k <= today) { best = Math.max(best, streakInfo(s, k).n); k = addDays(k, 1); }
   return best;
 }
 
@@ -58,4 +74,15 @@ export function habitStreak(s, h, key = dateKey()) {
     n++; k = addDays(k, -1); if (n > 5000) break;
   }
   return n;
+}
+
+// Letzter Tag mit irgendeiner Aktivität (Haken, Schritte, Check-in, Training)
+export function lastActivity(s) {
+  let last = null;
+  const consider = k => { if (k && (!last || k > last)) last = k; };
+  for (const k of Object.keys(s.log || {})) if (Object.keys(s.log[k]).length) consider(k);
+  for (const k of Object.keys(s.steps || {})) consider(k);
+  for (const k of Object.keys(s.checkins || {})) consider(k);
+  for (const se of s.training?.sessions || []) consider(se.date);
+  return last;
 }

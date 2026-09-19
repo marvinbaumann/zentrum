@@ -8,6 +8,7 @@ import * as listen from './views/listen.js';
 import * as welcome from './views/welcome.js';
 import { initSync } from './sync.js';
 import { showSplash } from './views/splash.js';
+import { showVision } from './views/vision.js';
 
 const views = { heute, training, koerper, listen };
 const TABS = [
@@ -67,7 +68,7 @@ let hiddenAt = 0;
 document.addEventListener('visibilitychange', () => {
   if (document.visibilityState === 'hidden') { hiddenAt = Date.now(); return; }
   if (dateKey() !== lastDay) { lastDay = dateKey(); render(); }
-  if (state.settings.onboarded && state.settings.splash !== false && hiddenAt && Date.now() - hiddenAt > 2 * 60 * 60 * 1000) showSplash(state);
+  if (state.settings.onboarded && hiddenAt && Date.now() - hiddenAt > 2 * 60 * 60 * 1000) startScreens();
 });
 
 if ('serviceWorker' in navigator && (location.protocol === 'https:' || location.hostname === 'localhost' || location.hostname === '127.0.0.1')) {
@@ -85,4 +86,9 @@ window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', syn
 
 render();
 initSync();
-if (state.settings.onboarded && state.settings.splash !== false) showSplash(state);
+function startScreens() {
+  if (state.settings.splash !== false) showSplash(state, () => showVision(state));
+  else showVision(state);
+}
+if (state.settings.onboarded) startScreens();
+document.addEventListener('images:update', () => {});
