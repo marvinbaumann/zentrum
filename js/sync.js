@@ -97,13 +97,23 @@ export async function importInbox() {
   const steps = {}, weight = {};
   const processed = [];
   for (const f of files) {
-    const fr = await gh(`/repos/${sync.owner}/${sync.repo}/contents/${encodeURIComponent('inbox/' + f.name)}?t=${Date.now()}`, { headers: { Accept: 'application/vnd.github.raw+json' }, cache: 'no-store' });
+    const path = encodeURIComponent('inbox/' + f.name);
+    const fr = await gh(`/repos/${sync.owner}/${sync.repo}/contents/${path}?t=${Date.now()}`, { headers: { Accept: 'application/vnd.github.raw+json' }, cache: 'no-store' });
     if (!fr.ok) continue;
     const text = await fr.text();
+    // Datum der Ablage (für „heute“/„gestern“ in der Datei)
+    let fileDay = null;
+    if (/\b(heute|gestern|today|yesterday)\b/i.test(text)) {
+      const cr = await gh(`/repos/${sync.owner}/${sync.repo}/commits?path=inbox/${encodeURIComponent(f.name)}&per_page=1&t=${Date.now()}`, { cache: 'no-store' });
+      if (cr.ok) { const c = (await cr.json())[0]; const iso = c?.commit?.committer?.date || c?.commit?.author?.date; if (iso) { const d = new Date(iso); fileDay = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`; } }
+      if (!fileDay) fileDay = dateKeyLocal();
+    }
     for (const line of text.split(/\r?\n/)) {
       const parts = line.trim().split(/[,;]\s*/);
       if (parts.length < 3) continue;
-      const type = parts[0].toLowerCase().trim(); const date = normalizeDate(parts[1]); const val = parseFloat(String(parts[2]).trim().replace(',', '.'));
+      const type = parts[0].toLowerCase().trim();
+      const date = normalizeDate(parts[1], fileDay);
+      const val = parseNum(parts.slice(2).join(','));
       if (!date || !(val >= 0)) continue;
       if (type.startsWith('step') || type.startsWith('schritt')) steps[date] = Math.max(steps[date] || 0, Math.round(val));
       if (type.startsWith('weight') || type.startsWith('gewicht')) weight[date] = Math.round(val * 10) / 10;
@@ -121,12 +131,28 @@ export async function importInbox() {
   }
   return !!any;
 }
-function normalizeDate(t) {
+function dateKeyLocal(d = new Date()) { return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`; }
+function shiftDay(k, n) { const [y, m, d] = k.split('-').map(Number); const x = new Date(y, m - 1, d + n); return dateKeyLocal(x); }
+// Versteht: heute/gestern, 2026-09-19, 19-09-2026, 19.09.2026, 19/09/2026, jeweils auch mit Uhrzeit dahinter
+function normalizeDate(t, fileDay) {
   t = String(t).trim();
-  let m = t.match(/^(\d{4})-(\d{2})-(\d{2})/); if (m) return `${m[1]}-${m[2]}-${m[3]}`;
-  m = t.match(/^(\d{1,2})\.(\d{1,2})\.(\d{4})/); if (m) return `${m[3]}-${m[2].padStart(2, '0')}-${m[1].padStart(2, '0')}`;
-  const d = new Date(t); if (!isNaN(d)) return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+  const low = t.toLowerCase();
+  if (/^(heute|today)\b/.test(low)) return fileDay || dateKeyLocal();
+  if (/^(gestern|yesterday)\b/.test(low)) return shiftDay(fileDay || dateKeyLocal(), -1);
+  let m = t.match(/^(\d{4})-(\d{1,2})-(\d{1,2})/); if (m) return `${m[1]}-${m[2].padStart(2, '0')}-${m[3].padStart(2, '0')}`;
+  m = t.match(/^(\d{1,2})[.\/-](\d{1,2})[.\/-](\d{4})/); if (m) return `${m[3]}-${m[2].padStart(2, '0')}-${m[1].padStart(2, '0')}`;
+  const d = new Date(t); if (!isNaN(d)) return dateKeyLocal(d);
   return null;
+}
+// Zahlen wie „8432“, „8.432“, „78,4 kg“, „78.4“, „8432,0“ robust lesen
+function parseNum(t) {
+  let s = String(t).replace(/[^\d.,-]/g, '');
+  if (!s) return NaN;
+  const hasDot = s.includes('.'), hasComma = s.includes(',');
+  if (hasDot && hasComma) { if (s.lastIndexOf(',') > s.lastIndexOf('.')) s = s.replace(/\./g, '').replace(',', '.'); else s = s.replace(/,/g, ''); }
+  else if (hasComma) s = s.replace(',', '.');
+  else if (hasDot && /^\d{1,3}(\.\d{3})+$/.test(s)) s = s.replace(/\./g, '');
+  return parseFloat(s);
 }
 
 /* ---------- Bilder: lokal in IndexedDB, Kopie im Daten-Repo unter vision/<id>.jpg ---------- */
