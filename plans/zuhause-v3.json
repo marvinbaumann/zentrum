@@ -1,0 +1,45 @@
+{
+  "name": "Zuhause – Entwurf 3 (Rack & Kabelzug)",
+  "weekTemplate": {
+    "1": { "title": "Unterkörper", "kind": "plan", "dayName": "Mo · Unterkörper" },
+    "2": { "title": "Rucking Zone 2, 40 min + 10 min Mobility", "kind": "Ausdauer", "minutes": 50 },
+    "3": { "title": "Oberkörper Push + Pull", "kind": "plan", "dayName": "Mi · Oberkörper" },
+    "4": { "title": "VO2max: 4×4 Intervalle oder Swing-Runden + Mobility", "kind": "Ausdauer", "minutes": 40 },
+    "5": { "title": "Kraft + Power", "kind": "plan", "dayName": "Fr · Kraft & Power" },
+    "6": { "title": "Rucking 45 min + Kabel-Armblock 15 min", "kind": "Spaziergang", "minutes": 60 },
+    "0": { "title": "Mobility-Flow 25 min + Spaziergang", "kind": "Mobility", "minutes": 40 }
+  },
+  "days": [
+    { "name": "Mo · Unterkörper", "weekday": 1, "exercises": [
+      { "name": "Langhantel-Kniebeuge (Rack)", "sets": 4, "repMin": 8, "repMax": 12, "weight": 50, "equipment": "lh", "increment": 4 },
+      { "name": "Rumänisches Kreuzheben (LH)", "sets": 4, "repMin": 8, "repMax": 12, "weight": 60, "equipment": "lh", "increment": 4 },
+      { "name": "Bulgarian Split Squat (je Seite)", "sets": 3, "repMin": 8, "repMax": 12, "weight": 10, "equipment": "kh" },
+      { "name": "Hip Thrust (KH auf Hüfte)", "sets": 3, "repMin": 10, "repMax": 15, "weight": 20, "equipment": "kh" },
+      { "name": "Wadenheben einbeinig", "sets": 3, "repMin": 12, "repMax": 20, "weight": null, "equipment": "bw" },
+      { "name": "Hängende Beinheber (Rack)", "sets": 3, "repMin": 8, "repMax": 15, "weight": null, "equipment": "bw" }
+    ]},
+    { "name": "Mi · Oberkörper", "weekday": 3, "exercises": [
+      { "name": "Klimmzüge", "sets": 4, "repMin": 5, "repMax": 10, "weight": null, "equipment": "bw" },
+      { "name": "KH Bankdrücken schräg 30°", "sets": 4, "repMin": 8, "repMax": 12, "weight": 20, "equipment": "kh" },
+      { "name": "Latzug (Kabel)", "sets": 3, "repMin": 10, "repMax": 15, "weight": 30, "equipment": "kabel", "increment": 2 },
+      { "name": "KH Schulterdrücken sitzend", "sets": 3, "repMin": 8, "repMax": 12, "weight": 10, "equipment": "kh" },
+      { "name": "Ring-Dips", "sets": 3, "repMin": 8, "repMax": 15, "weight": null, "equipment": "bw" },
+      { "name": "Face Pulls (Seil)", "sets": 3, "repMin": 15, "repMax": 20, "weight": 10, "equipment": "kabel", "increment": 2 },
+      { "name": "Kabel-Seitheben einarmig", "sets": 3, "repMin": 12, "repMax": 15, "weight": 4, "equipment": "kabel", "increment": 2 }
+    ]},
+    { "name": "Fr · Kraft & Power", "weekday": 5, "exercises": [
+      { "name": "Langhantel-Bankdrücken flach (Rack)", "sets": 4, "repMin": 5, "repMax": 8, "weight": 50, "equipment": "lh", "increment": 4 },
+      { "name": "Klimmzüge mit Weste", "sets": 4, "repMin": 3, "repMax": 6, "weight": null, "equipment": "bw" },
+      { "name": "Kreuzheben von den Ablagen (LH)", "sets": 4, "repMin": 5, "repMax": 8, "weight": 60, "equipment": "lh", "increment": 4 },
+      { "name": "KH-Swings", "sets": 4, "repMin": 12, "repMax": 15, "weight": 20, "equipment": "kh" },
+      { "name": "Farmer's Carry (Meter)", "sets": 3, "repMin": 40, "repMax": 40, "weight": 20, "equipment": "kh" },
+      { "name": "Box Jumps / Sprungkniebeugen", "sets": 3, "repMin": 5, "repMax": 5, "weight": null, "equipment": "bw" }
+    ]},
+    { "name": "Arme am Kabel (Sa, optional)", "exercises": [
+      { "name": "Kabel-Curls", "sets": 3, "repMin": 10, "repMax": 15, "weight": 14, "equipment": "kabel", "increment": 2 },
+      { "name": "Trizeps am Seil", "sets": 3, "repMin": 10, "repMax": 15, "weight": 14, "equipment": "kabel", "increment": 2 },
+      { "name": "Hammer-Curls am Seil", "sets": 2, "repMin": 10, "repMax": 15, "weight": 10, "equipment": "kabel", "increment": 2 },
+      { "name": "Kabel-Seitheben", "sets": 2, "repMin": 12, "repMax": 15, "weight": 4, "equipment": "kabel", "increment": 2 }
+    ]}
+  ]
+}

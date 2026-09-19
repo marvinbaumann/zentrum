@@ -1,6 +1,6 @@
 const CACHE = 'zentrum-v3';
 const ASSETS = [
-  './', './index.html', './styles.css', './manifest.json', './greetings.json', './plans/zuhause-v2.json',
+  './', './index.html', './styles.css', './manifest.json', './greetings.json', './plans/zuhause-v2.json', './plans/zuhause-v3.json',
   './js/app.js', './js/store.js', './js/ui.js', './js/sheet.js', './js/habits.js', './js/fx.js', './js/sync.js',
   './js/views/heute.js', './js/views/training.js', './js/views/koerper.js', './js/views/listen.js', './js/views/welcome.js', './js/views/splash.js', './js/views/checkin.js', './js/views/vision.js', './js/views/people.js', './js/views/milestone.js', './js/views/workout.js', './js/images.js',
   './icons/sun-180.png', './icons/sun-512.png'

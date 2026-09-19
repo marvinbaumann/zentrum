@@ -1,0 +1,87 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 620" width="1000" height="620" font-family="-apple-system, Helvetica, Arial, sans-serif">
+  <defs>
+    <pattern id="tile" width="20" height="20" patternUnits="userSpaceOnUse"><rect width="20" height="20" fill="#2b2b2e"/><path d="M0 0H20V20" fill="none" stroke="#3a3a3e" stroke-width="1"/></pattern>
+    <pattern id="eva" width="24" height="24" patternUnits="userSpaceOnUse"><rect width="24" height="24" fill="#4a4a50"/><path d="M0 0H24V24" fill="none" stroke="#5a5a60" stroke-width="1"/></pattern>
+  </defs>
+  <rect width="1000" height="620" fill="#F2F2F7"/>
+  <text x="40" y="40" font-size="22" font-weight="700" fill="#1C1C1E">Garage, Trainingsecke: 7,46 m × 3,95 m (Maßstab 1 m = 100 px)</text>
+  <text x="40" y="64" font-size="13" fill="#6e6e73">Vorschlag zur Aufstellung. Wand oben und links, offene Seite rechts. Rucking und Intervalle finden draußen statt.</text>
+
+  <!-- Garagenfläche 7.46 x 3.95 m -->
+  <g transform="translate(40,90)">
+    <rect x="0" y="0" width="746" height="395" fill="#d9d9de" stroke="#1C1C1E" stroke-width="3"/>
+    <text x="373" y="-8" text-anchor="middle" font-size="12" fill="#6e6e73">7,46 m (Wand)</text>
+    <text x="-8" y="200" text-anchor="middle" font-size="12" fill="#6e6e73" transform="rotate(-90 -8 200)">3,95 m</text>
+
+    <!-- Trainingszone Gummi 4.0 x 3.5 m -->
+    <rect x="10" y="10" width="400" height="350" fill="url(#tile)" stroke="#111" stroke-width="1"/>
+    <text x="210" y="352" text-anchor="middle" font-size="11" fill="#c7c7cc">Zone A: Gummifliesen 4,0 × 3,5 m (später)</text>
+
+    <!-- EVA Zone 3.3 x 3.5 m -->
+    <rect x="410" y="10" width="326" height="350" fill="url(#eva)" stroke="#111" stroke-width="1"/>
+    <text x="573" y="352" text-anchor="middle" font-size="11" fill="#d1d1d6">Zone B: Puzzlematten für Mobility und Kettlebell (später)</text>
+
+    <!-- Rack 900: 1.20 x 1.35 m an der Wand oben links -->
+    <g transform="translate(30,20)">
+      <rect x="0" y="0" width="120" height="135" fill="#111" stroke="#FF9F0A" stroke-width="3" rx="4"/>
+      <line x1="0" y1="0" x2="120" y2="0" stroke="#FF9F0A" stroke-width="6"/>
+      <text x="60" y="60" text-anchor="middle" font-size="12" font-weight="700" fill="#fff">Rack 900</text>
+      <text x="60" y="76" text-anchor="middle" font-size="10" fill="#ddd">1,20 × 1,35 m</text>
+      <text x="60" y="90" text-anchor="middle" font-size="10" fill="#ddd">Klimmzug, Seilzug, Dips</text>
+    </g>
+    <!-- Bank im Rack, herausziehbar -->
+    <g transform="translate(70,70)">
+      <rect x="0" y="0" width="40" height="125" fill="#3a3a3e" stroke="#fff" stroke-width="1.5" rx="6"/>
+      <text x="20" y="70" text-anchor="middle" font-size="10" fill="#fff" transform="rotate(-90 20 70)">Bench 900</text>
+    </g>
+    <!-- Scheiben/Langhantel an der Wand -->
+    <g transform="translate(160,20)">
+      <rect x="0" y="0" width="90" height="30" fill="#48484a" stroke="#fff" stroke-width="1" rx="3"/>
+      <text x="45" y="19" text-anchor="middle" font-size="10" fill="#fff">Scheiben + Langhantel</text>
+    </g>
+    <!-- Hantelablage -->
+    <g transform="translate(160,60)">
+      <rect x="0" y="0" width="90" height="34" fill="#48484a" stroke="#fff" stroke-width="1" rx="3"/>
+      <text x="45" y="14" text-anchor="middle" font-size="10" fill="#fff">Kurzhanteln</text>
+      <text x="45" y="27" text-anchor="middle" font-size="9" fill="#ddd">5 / 10 / 20 / 25 kg</text>
+    </g>
+    <!-- Kettlebell + Weste -->
+    <g transform="translate(260,20)">
+      <circle cx="18" cy="18" r="16" fill="#48484a" stroke="#fff" stroke-width="1"/>
+      <text x="18" y="22" text-anchor="middle" font-size="9" fill="#fff">KB</text>
+      <rect x="44" y="4" width="60" height="28" fill="#48484a" stroke="#fff" stroke-width="1" rx="3"/>
+      <text x="74" y="22" text-anchor="middle" font-size="9" fill="#fff">Weste, Bänder</text>
+    </g>
+
+    <!-- Freie Hantelfläche -->
+    <g transform="translate(170,120)">
+      <rect x="0" y="0" width="220" height="200" fill="none" stroke="#FF9F0A" stroke-width="1.5" stroke-dasharray="6 4" rx="6"/>
+      <text x="110" y="95" text-anchor="middle" font-size="12" font-weight="600" fill="#FFB340">Freie Fläche 2,2 × 2,0 m</text>
+      <text x="110" y="112" text-anchor="middle" font-size="10" fill="#e5e5ea">Kurzhantel-Übungen, Swings, Carries</text>
+    </g>
+
+    <!-- Mobility -->
+    <g transform="translate(440,40)">
+      <rect x="0" y="0" width="200" height="80" fill="#3a3a3e" stroke="#30B0C7" stroke-width="1.5" rx="6"/>
+      <text x="100" y="35" text-anchor="middle" font-size="12" font-weight="600" fill="#7FD5E4">Matte 2,0 × 0,8 m</text>
+      <text x="100" y="52" text-anchor="middle" font-size="10" fill="#e5e5ea">Mobility, Core, Hip Thrust</text>
+    </g>
+    <!-- Kettlebell-Zone -->
+    <g transform="translate(440,150)">
+      <rect x="0" y="0" width="260" height="170" fill="none" stroke="#30B0C7" stroke-width="1.5" stroke-dasharray="6 4" rx="6"/>
+      <text x="130" y="80" text-anchor="middle" font-size="12" font-weight="600" fill="#7FD5E4">Intervall-Zone 2,6 × 1,7 m</text>
+      <text x="130" y="97" text-anchor="middle" font-size="10" fill="#e5e5ea">Kettlebell-Runden, Springseil, Burpees</text>
+    </g>
+
+    <!-- Laufweg -->
+    <text x="373" y="385" text-anchor="middle" font-size="11" fill="#6e6e73">↓ offene Seite, Laufweg und Tor ↓</text>
+  </g>
+
+  <!-- Legende -->
+  <g transform="translate(40,520)" font-size="12" fill="#1C1C1E">
+    <rect x="0" y="0" width="14" height="14" fill="#111" stroke="#FF9F0A" stroke-width="2"/><text x="20" y="12">Rack 900 mit Bench 900, Seilzug, Dip-Kit, Klimmzugstange</text>
+    <rect x="0" y="22" width="14" height="14" fill="url(#tile)"/><text x="20" y="34">Zone A, Gummifliesen: Rack, Bank, Hanteln. Etwa 14 m², 250 bis 300 €, kann warten</text>
+    <rect x="0" y="44" width="14" height="14" fill="url(#eva)"/><text x="20" y="56">Zone B, Puzzlematten: Mobility und Intervalle. Etwa 12 m², 120 bis 170 €, kann warten</text>
+    <text x="0" y="82" fill="#6e6e73">Rack an die Wand, Bank steht im Rack und wird für Kurzhantel-Übungen 1 m nach vorn gezogen. Alles Weitere an der oberen Wand, damit die Mitte frei bleibt.</text>
+  </g>
+</svg>

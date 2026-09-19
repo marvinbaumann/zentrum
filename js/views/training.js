@@ -33,7 +33,9 @@ function history(s, exId) { const rows = []; for (const se of s.training.session
 export function availableWeights(s) {
   return String(s.settings.weights || '').split(/[,;\s]+/).map(x => parseFloat(x.replace(',', '.'))).filter(x => x > 0).sort((a, b) => a - b);
 }
-export function nextWeight(s, cur, increment) {
+export const EQUIPMENT = { kh: 'Kurzhantel', lh: 'Langhantel', kabel: 'Kabelzug', bw: 'Eigengewicht' };
+export function nextWeight(s, cur, increment, equipment = 'kh') {
+  if (equipment && equipment !== 'kh') { const w = round(cur + (increment || 2.5)); return { w, jump: cur > 0 ? (w - cur) / cur : 0 }; }
   const av = availableWeights(s);
   const cand = av.find(w => w > cur + 1e-9);
   const w = cand ?? round(cur + (increment || 2.5));
@@ -142,7 +144,7 @@ export function render(s) {
     ${editMode ? '' : trainingHero(s)}
     ${editMode || todayWorkout(s).done ? '' : `<div class="stack" style="padding:0 0 14px"><button type="button" class="btn btn-soft" data-action="freeWorkout">Heute anders trainiert? Frei eintragen</button></div>`}
     ${s.training.days.length ? segmented(s.training.days, day?.id, 'selectDay') : ''}
-    ${editMode ? `<div class="stack" style="padding:0 0 12px"><button class="btn btn-soft" data-action="loadTemplate">Vorlage laden: Zuhause-Plan (Entwurf 2)</button></div><div class="btn-row"><button class="btn btn-soft btn-sm" data-action="addDay">${icons.plus.replace('<svg', '<svg style="width:15px;height:15px"')} Tag</button>${day ? `<button class="btn btn-soft btn-sm" data-action="renameDay">Umbenennen</button><button class="btn btn-danger btn-sm" data-action="delDay">Tag löschen</button>` : ''}</div>` : ''}
+    ${editMode ? `<div class="stack" style="padding:0 0 12px"><button class="btn btn-soft" data-action="loadTemplate">Vorlage laden: Zuhause-Plan (Entwurf 3, Rack & Kabelzug)</button></div><div class="btn-row"><button class="btn btn-soft btn-sm" data-action="addDay">${icons.plus.replace('<svg', '<svg style="width:15px;height:15px"')} Tag</button>${day ? `<button class="btn btn-soft btn-sm" data-action="renameDay">Umbenennen</button><button class="btn btn-danger btn-sm" data-action="delDay">Tag löschen</button>` : ''}</div>` : ''}
 
     ${day ? `
     ${sectionLabel(`${day.name} · ${day.exercises.length} Übungen`, editMode ? `<button class="link-btn" data-action="addExercise">+ Übung</button>` : '')}
@@ -170,7 +172,7 @@ function exerciseBlock(s, ex, i, n) {
     <div class="ex-head">
       <div class="grow">
         <button type="button" class="ex-name" data-action="history" data-id="${ex.id}">${esc(ex.name)}</button>
-        <div class="ex-target">Ziel: <b>${ex.sets} × ${target}</b> · ${wTxt(ex.weight)} <span style="color:var(--text3)">·</span> Range ${ex.repMin}–${ex.repMax}</div>
+        <div class="ex-target">Ziel: <b>${ex.sets} × ${target}</b> · ${wTxt(ex.weight)}${ex.equipment && ex.equipment !== 'bw' && ex.weight != null ? ` <span class="eq">${EQUIPMENT[ex.equipment] || ''}</span>` : ''} <span style="color:var(--text3)">·</span> Range ${ex.repMin}–${ex.repMax}</div>
       </div>
       ${editMode ? `<div class="ex-edit">
         ${i > 0 ? `<button type="button" class="mini-btn" data-action="moveEx" data-id="${ex.id}" data-dir="-1">${icons.up}</button>` : ''}
@@ -215,7 +217,7 @@ export function evaluate(ex, reps, weight, s = state) {
   if (!sameWeight) return { result: 'hold', next: { targetReps: target, weight: ex.weight }, message: 'Anderes Gewicht als geplant, Ziel bleibt.' };
   if (minReps >= ex.repMax) {
     if (ex.weight == null) return { result: 'levelup', next: { targetReps: ex.repMax, weight: null }, message: 'Maximum erreicht! Zeit für eine schwerere Variante oder Zusatzgewicht.' };
-    const { w, jump } = nextWeight(s, ex.weight, ex.increment);
+    const { w, jump } = nextWeight(s, ex.weight, ex.increment, ex.equipment);
     const limit = (parseFloat(s.settings.jumpLimit) || 20) / 100;
     if (jump > limit && ex.repMax < ex.repMin + 12) {
       return { result: 'extend', next: { targetReps: minReps + 1, weight: ex.weight, repMax: ex.repMax + 2 }, message: `Nächstes Gewicht wäre ${fmtKg(w)} kg (+${Math.round(jump * 100)} %). Range erweitert auf ${ex.repMin}–${ex.repMax + 2}, Ziel ${ex.sets} × ${minReps + 1}.` };
@@ -247,10 +249,10 @@ export const actions = {
   async loadTemplate() {
     if (!confirm('Den aktuellen Plan durch die Vorlage ersetzen? Dein Trainingsverlauf bleibt erhalten.')) return;
     try {
-      const r = await fetch(`plans/zuhause-v2.json?t=${Date.now()}`); if (!r.ok) throw new Error(r.status);
+      const r = await fetch(`plans/zuhause-v3.json?t=${Date.now()}`); if (!r.ok) throw new Error(r.status);
       const tpl = await r.json();
       update(s => {
-        s.training.days = tpl.days.map(d => ({ id: uid(), name: d.name, weekday: d.weekday, exercises: d.exercises.map(e => ({ id: uid(), name: e.name, sets: e.sets, repMin: e.repMin, repMax: e.repMax, weight: e.weight, increment: 2.5, targetReps: e.repMin })) }));
+        s.training.days = tpl.days.map(d => ({ id: uid(), name: d.name, weekday: d.weekday, exercises: d.exercises.map(e => ({ id: uid(), name: e.name, sets: e.sets, repMin: e.repMin, repMax: e.repMax, weight: e.weight, equipment: e.equipment || (e.weight == null ? 'bw' : 'kh'), increment: e.increment || 2.5, targetReps: e.repMin })) }));
         s.training.weekTemplate = tpl.weekTemplate;
         s.training.selectedDay = null;
       });
@@ -348,10 +350,11 @@ function openExerciseForm(ex) {
         ${field({ label: 'Reps min', name: 'repMin', type: 'number', value: ex?.repMin ?? 10, attrs: 'min="1" inputmode="numeric"' })}
         ${field({ label: 'Reps max', name: 'repMax', type: 'number', value: ex?.repMax ?? 15, attrs: 'min="1" inputmode="numeric"' })}
       </div>
-      ${toggle({ label: 'Eigengewicht (ohne Zusatzgewicht)', name: 'bodyweight', checked: ex ? ex.weight == null : false })}
+      ${field({ label: 'Gerät', name: 'equipment', value: ex?.equipment || (ex && ex.weight == null ? 'bw' : 'kh'), options: Object.entries(EQUIPMENT).map(([value, label]) => ({ value, label })) })}
+      <div class="hint">Kurzhantel steigert nach deiner Hantelliste. Langhantel und Kabelzug steigern um den Wert unter „Steigerung“. Eigengewicht hat kein Gewicht.</div>
       <div class="field-row" style="margin-top:12px">
         ${field({ label: 'Aktuelles Gewicht (kg)', name: 'weight', type: 'text', value: String(ex?.weight ?? 10).replace('.', ','), attrs: 'inputmode="decimal" autocomplete="off"' })}
-        ${field({ label: 'Steigerung, falls keine Hantelliste (kg)', name: 'increment', type: 'text', value: String(ex?.increment ?? 2.5).replace('.', ','), attrs: 'inputmode="decimal" autocomplete="off"' })}
+        ${field({ label: 'Steigerung (kg)', name: 'increment', type: 'text', value: String(ex?.increment ?? 2.5).replace('.', ','), attrs: 'inputmode="decimal" autocomplete="off"' })}
       </div>
       ${field({ label: 'Aktuelles Rep-Ziel', name: 'targetReps', type: 'number', value: ex?.targetReps ?? ex?.repMin ?? 10, attrs: 'min="1" inputmode="numeric"' })}
       <div class="hint">Das Rep-Ziel gilt für alle Sätze. Sind alle Sätze geschafft, steigt es um eins. Am Maximum der Range geht das Gewicht hoch und das Ziel zurück auf Minimum.</div>
@@ -359,13 +362,14 @@ function openExerciseForm(ex) {
     onSubmit(d) {
       const name = d.name.trim(); if (!name) return false;
       const sets = Math.max(1, parseInt(d.sets) || 3), repMin = Math.max(1, parseInt(d.repMin) || 10), repMax = Math.max(repMin, parseInt(d.repMax) || repMin);
-      const weight = d.bodyweight ? null : (num(d.weight) || 0);
-      const increment = num(d.increment) || 2.5;
+      const equipment = EQUIPMENT[d.equipment] ? d.equipment : 'kh';
+      const weight = equipment === 'bw' ? null : (num(d.weight) || 0);
+      const increment = num(d.increment) || (equipment === 'lh' ? 4 : equipment === 'kabel' ? 2 : 2.5);
       const targetReps = Math.min(repMax, Math.max(repMin, parseInt(d.targetReps) || repMin));
       update(s => {
         const day = selectedDay(s);
-        if (ex) Object.assign(day.exercises.find(e => e.id === ex.id), { name, sets, repMin, repMax, weight, increment, targetReps });
-        else day.exercises.push({ id: uid(), name, sets, repMin, repMax, weight, increment, targetReps });
+        if (ex) Object.assign(day.exercises.find(e => e.id === ex.id), { name, sets, repMin, repMax, weight, increment, targetReps, equipment });
+        else day.exercises.push({ id: uid(), name, sets, repMin, repMax, weight, increment, targetReps, equipment });
       });
     },
   });

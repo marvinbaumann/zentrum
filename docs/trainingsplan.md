@@ -1,117 +1,112 @@
-# Trainingsplan Zuhause – Entwurf 2
+# Trainingsplan Zuhause – Entwurf 3 (Rack, Kabelzug, Langhantel)
 
-Ziel: definiert und muskulös, dabei beweglich, ausdauernd und gesund. 45 bis 60 Minuten pro Tag, jeden Tag Bewegung, Garage oder freies Zimmer, Ausdauer über zügiges Gehen mit Gewichtsweste.
+Ziel: definiert und muskulös, beweglich, ausdauernd, gesund. 45 bis 60 Minuten pro Tag, jeden Tag Bewegung, Garage.
 
-Deine Basis: mehrere Jahre Hypertrophie-Training, aktuell 5 saubere Klimmzüge und 30 saubere Liegestütze, keine Verletzungen, Apple Watch vorhanden.
+Deine Ausstattung: Power Rack 900 mit Kabelzug, Bench 900, Langhantel 2 m (9,75 kg, max. 160 kg), Scheiben 28 mm (2 × 2, 2 × 5, 2 × 10, 2 × 20 kg), Kurzhanteln 2 × 5, 2 × 10, 2 × 20 kg, Holzringe, Latex-Bänder, Gewichtsweste 20 kg, Trizeps-Seil, 2 D-Griffe, Apple Watch.
+
+Deine Basis: Jahre Hypertrophie im Gym, aktuell 5 saubere Klimmzüge, 30 Liegestütze, keine Verletzungen.
 
 ## Prinzipien
 
-- **Galpins neun Anpassungen**: Kraft, Hypertrophie, Muskelausdauer, Power, Speed, anaerobe Kapazität, VO2max, Grundlagenausdauer, Skill/Mobilität. Der Plan bedient alle, nicht nur Hypertrophie.
-- **Hubermans Foundational Fitness Protocol** als Gerüst: 3 Krafttage, 3 Ausdauertage (lang Zone 2, VO2max, moderat), 1 aktive Erholung.
-- **Volumen**: 10 bis 16 harte Sätze pro Muskelgruppe pro Woche, verteilt auf drei Tage. Reicht nachweislich für Aufbau.
-- **Progression**: Doppelprogression wie in Zentrum. Hypertrophie-Tage 8–15, Krafttag 5–8, Eigengewicht bis 15–20 und dann schwerere Variante oder Weste.
-- **Zone 2**: 150 bis 180 Minuten pro Woche. Bei dir: zügiges Gehen mit Weste, Steigungen, Treppen. Puls 60 bis 70 Prozent des Maximums, Nasenatmung möglich, unterhaltungsfähig. Apple Watch: Zone 2 in der Trainings-App anzeigen lassen.
-- **VO2max** einmal pro Woche hart, ohne Joggen: Steigungs- oder Treppenintervalle mit Weste, Airbike oder Kettlebell-Swing-Intervalle.
-- **Mobilität täglich 10 Minuten**, an Krafttagen als Aufwärmen integriert.
-- **Erholung**: Schlaf, Eiweiß 1,6 bis 2,2 g pro kg Körpergewicht, ein ruhiger Tag pro Woche, 10.000 Schritte täglich als Grundrauschen.
+- **Galpins neun Anpassungen** statt nur Hypertrophie: Kraft, Hypertrophie, Muskelausdauer, Power, VO2max, Grundlagenausdauer, Mobilität.
+- **Hubermans Wochengerüst**: 3 Krafttage, 3 Ausdauertage (lang Zone 2, VO2max, moderat), 1 aktive Erholung.
+- **Volumen**: 10 bis 16 harte Sätze pro Muskelgruppe pro Woche.
+- **Progression**: Doppelprogression wie in Zentrum. Kurzhanteln steigen nach deiner Hantelliste, Langhantel in 4-kg-Schritten (2 × 2 kg), Kabelzug in 2-kg-Schritten, Eigengewicht über Weste oder schwerere Variante.
+- **Zone 2** per Rucking mit Weste, 150 bis 180 Minuten pro Woche. **VO2max** einmal pro Woche hart. **Mobilität** täglich 10 Minuten.
+- **Sicherheit im Rack**: Sicherheitsablagen bei Kniebeuge und Bankdrücken immer auf Höhe knapp unter dem tiefsten Punkt. Dann kannst du allein an die Grenze gehen.
 
-## Ausstattung für unter 1.000 Euro
-
-| Priorität | Gerät | Empfehlung | Preis ca. |
-|---|---|---|---|
-| 1 | **Verstellbare Kurzhanteln** 2 × 2–32 kg | ATX oder Bowflex 1090 (bis 41 kg, Einzelstück), alternativ Powerblock Elite | 350–450 € |
-| 2 | **Gewichtsweste** 10 kg, verstellbar in 1-kg-Schritten | Für Rucking, Klimmzüge, Dips, Liegestütze | 70–110 € |
-| 3 | **Verstellbare Hantelbank** flach bis 85°, min. 250 kg belastbar | Bankdrücken, Schräg, Rudern, Split Squats, Hip Thrust | 120–200 € |
-| 4 | **Klimmzugstange** Wand oder Decke (Garage: perfekt) | Stabil, breiter als Türrahmen, erlaubt Weste und Ringe | 50–90 € |
-| 5 | **Turnringe** aus Holz mit Gurten | Dips, Ringrudern, Ring-Liegestütze, hängen an der Stange | 35–50 € |
-| 6 | **Widerstandsbänder-Set** 4 Stärken | Assistierte Klimmzüge, Face Pulls, Aktivierung, Mobility | 25–40 € |
-| 7 | **Kettlebell 20 kg** | Swings, Carries, Get-ups, Intervalle | 60–80 € |
-| 8 | **Matte, Faszienrolle, Springseil** | Core, Mobility, Koordination | 50 € |
-| | **Summe** | | **760–1.070 €** |
-
-Wenn es knapp wird: Kettlebell weglassen, Swings gehen auch mit einer Kurzhantel. Später als Stufe 2: Airbike oder Rudergerät für wetterunabhängige Intervalle (300 bis 900 Euro), aktuell nicht nötig.
-
-## Die Woche auf einen Blick
+## Die Woche
 
 | Tag | Fokus | Dauer |
 |---|---|---|
-| **Mo** | Unterkörper: Kraft + Hypertrophie | 50 min |
+| **Mo** | Unterkörper: Langhantel + Kurzhantel | 50 min |
 | **Di** | Rucking Zone 2 + Mobility | 50 min |
-| **Mi** | Oberkörper: Push + Pull | 55 min |
+| **Mi** | Oberkörper: Push + Pull mit Kabelzug | 55 min |
 | **Do** | VO2max-Intervalle + Mobility | 40 min |
-| **Fr** | Ganzkörper: Kraft + Power | 50 min |
-| **Sa** | Langes Rucking oder Wanderung, optional Arme | 60 min |
+| **Fr** | Ganzkörper: Kraft + Power, schwer | 50 min |
+| **Sa** | Langes Rucking + Kabel-Armblock | 60 min |
 | **So** | Mobility-Flow + Spaziergang | 40 min |
+
+Täglich zusätzlich 10.000 Schritte. Hantelrechnung: Langhantel 10 kg plus Scheiben. 50 kg heißt Stange plus 2 × 20 kg.
 
 ### Montag – Unterkörper (50 min)
 
-Aufwärmen 8 min: Hüftkreisen, Cossack Squats 2 × 8, Beinschwünge, Kniebeugen ohne Gewicht 2 × 10.
+Aufwärmen 8 min: Hüftkreisen, Cossack Squats 2 × 8, Beinschwünge, Kniebeugen mit leerer Stange 2 × 10.
 
-| Übung | Sätze × Range | Start | Pause |
-|---|---|---|---|
-| Goblet Squat (KH vor der Brust) | 4 × 8–12 | 24 kg | 90 s |
-| Rumänisches Kreuzheben, 2 KH | 4 × 8–12 | 2 × 22 kg | 90 s |
-| Bulgarian Split Squat, Bank | 3 × 8–12 je Seite | 2 × 10 kg | 75 s |
-| Hip Thrust, Rücken an Bank, KH auf Hüfte | 3 × 10–15 | 24 kg | 75 s |
-| Wadenheben einbeinig auf Stufe | 3 × 12–20 | Eigengewicht, dann KH | 60 s |
-| Hängende Beinheber | 3 × 8–15 | Eigengewicht | 60 s |
+| Übung | Sätze × Range | Start | Gerät | Pause |
+|---|---|---|---|---|
+| Langhantel-Kniebeuge im Rack | 4 × 8–12 | 50 kg | LH | 120 s |
+| Rumänisches Kreuzheben, Langhantel | 4 × 8–12 | 60 kg | LH | 90 s |
+| Bulgarian Split Squat, Bench | 3 × 8–12 je Seite | 2 × 10 kg | KH | 75 s |
+| Hip Thrust, Rücken an Bench, KH auf Hüfte | 3 × 10–15 | 20 kg | KH | 75 s |
+| Wadenheben einbeinig, Stufe oder Scheibe | 3 × 12–20 | Eigengewicht | BW | 60 s |
+| Hängende Beinheber am Rack | 3 × 8–15 | Eigengewicht | BW | 60 s |
 
 ### Dienstag – Rucking Zone 2 (50 min)
 
-40 Minuten zügig gehen mit Weste, Start 8 kg, später 10 kg, gern mit Steigung. Puls 60 bis 70 Prozent Maximum. Danach 10 Minuten Mobility: Couch Stretch 2 × 45 s, 90/90-Hüfte 2 × 45 s je Seite, Waden an der Wand.
+40 Minuten zügig gehen mit Weste, Start 8 kg, nach zwei Wochen 10 kg, gern Steigung. Puls 60 bis 70 Prozent Maximum, Nasenatmung, unterhaltungsfähig. Danach 10 Minuten Mobility: Couch Stretch, 90/90-Hüfte, Waden.
 
 ### Mittwoch – Oberkörper Push + Pull (55 min)
 
-Aufwärmen 8 min: Band Pull-aparts 2 × 15, Schulterkreisen mit Band, Dead Hang 2 × 20 s, Liegestütze 1 × 10 locker.
+Aufwärmen 8 min: Band Pull-aparts 2 × 15, Schulterkreisen mit Band, Dead Hang 2 × 20 s, Liegestütze 1 × 10.
 
-| Übung | Sätze × Range | Start | Pause |
-|---|---|---|---|
-| Klimmzüge | 4 × 5–10 | Eigengewicht, Band bei Bedarf ab Satz 3 | 120 s |
-| KH Bankdrücken, leicht schräg | 4 × 8–12 | 2 × 18 kg | 90 s |
-| Einarmiges KH Rudern, Bank | 4 × 8–12 je Seite | 22 kg | 75 s |
-| KH Schulterdrücken sitzend | 3 × 8–12 | 2 × 12 kg | 90 s |
-| Ring-Dips oder Dips an Bank | 3 × 8–15 | Eigengewicht | 75 s |
-| Face Pulls mit Band | 3 × 15–20 | mittleres Band | 45 s |
+| Übung | Sätze × Range | Start | Gerät | Pause |
+|---|---|---|---|---|
+| Klimmzüge | 4 × 5–10 | Eigengewicht, Band ab Satz 3 | BW | 120 s |
+| KH Bankdrücken schräg 30° | 4 × 8–12 | 2 × 20 kg | KH | 90 s |
+| Latzug am Kabel, Triangel oder Stange | 3 × 10–15 | 30 kg | Kabel | 75 s |
+| KH Schulterdrücken sitzend | 3 × 8–12 | 2 × 10 kg | KH | 90 s |
+| Ring-Dips | 3 × 8–15 | Eigengewicht | BW | 75 s |
+| Face Pulls am Seil | 3 × 15–20 | 10 kg | Kabel | 45 s |
+| Kabel-Seitheben einarmig, D-Griff | 3 × 12–15 | 4 kg | Kabel | 45 s |
 
-Liegestütze sind bei 30 sauberen zu leicht für Hypertrophie, deshalb Ring-Dips und Bankdrücken. Als Finisher optional 1 Satz Liegestütze mit Weste bis nahe Versagen.
+Falls 2 × 20 kg schräg zu schwer ist: Langhantel-Bankdrücken schräg mit 30 bis 40 kg, bis 2 × 15 kg Kurzhanteln da sind.
 
 ### Donnerstag – VO2max + Mobility (40 min)
 
-Aufwärmen 8 min zügig gehen. Dann im Wochenwechsel:
+Aufwärmen 8 min zügig gehen. Im Wochenwechsel:
 
-- **Woche A, Norweger-Intervalle**: 4 × 4 Minuten hart, 3 Minuten locker. Steigung oder Treppe mit Weste, so schnell, dass Sprechen unmöglich ist. Alternativ Airbike, später.
-- **Woche B, Kettlebell-Intervalle**: 10 Runden: 20 Swings + 5 Burpees, dann 1 Minute Pause. Oder 8 × 1 Minute Springseil sehr schnell, 1 Minute locker.
+- **Woche A**: 4 × 4 Minuten hart, 3 Minuten locker. Steigung oder Treppe mit Weste.
+- **Woche B**: 10 Runden: 15 KH-Swings mit 20 kg + 5 Burpees, 1 Minute Pause. Oder 8 × 1 Minute Springseil.
 
 Danach 10 Minuten Mobility: Sprunggelenke, Hüftbeuger, Brustwirbelsäule.
 
 ### Freitag – Ganzkörper Kraft + Power (50 min)
 
-Schwerer, engere Range, längere Pausen. Der Tag, der dich stark macht, nicht nur groß.
+Schwer, engere Range, Pausen 2 bis 3 Minuten. Sicherheitsablagen setzen.
 
-| Übung | Sätze × Range | Start | Pause |
+| Übung | Sätze × Range | Start | Gerät | Pause |
+|---|---|---|---|---|
+| Langhantel-Bankdrücken flach im Rack | 4 × 5–8 | 50 kg | LH | 150 s |
+| Klimmzüge mit Weste | 4 × 3–6 | Weste 5 kg | BW | 150 s |
+| Kreuzheben von den Sicherheitsablagen, Kniehöhe | 4 × 5–8 | 60 kg | LH | 150 s |
+| KH-Swings | 4 × 12–15 | 20 kg | KH | 90 s |
+| Farmer's Carry | 3 × 40 m | 2 × 20 kg | KH | 90 s |
+| Box Jumps auf die Bench oder Sprungkniebeugen | 3 × 5 explosiv | Eigengewicht | BW | 90 s |
+
+Die 28-mm-Scheiben sind klein, deshalb Kreuzheben von den Ablagen statt vom Boden. Das schont den Rücken und nutzt das Rack.
+
+### Samstag – Langes Rucking + Arme (60 min)
+
+45 Minuten Rucking draußen mit Weste, gern Höhenmeter. Danach 15 Minuten Kabel-Armblock:
+
+| Übung | Sätze × Range | Start | Gerät |
 |---|---|---|---|
-| Kettlebell-Swings | 4 × 12–15 | 20 kg | 90 s |
-| KH Bankdrücken flach, schwer | 4 × 5–8 | 2 × 22 kg | 150 s |
-| Klimmzüge mit Weste oder langsame Negative | 4 × 3–6 | Eigengewicht, dann Weste 5 kg | 150 s |
-| KH Kniebeuge, Hanteln an der Schulter, schwer | 4 × 5–8 | 2 × 22 kg | 150 s |
-| Farmer's Carry | 3 × 40 m | 2 × 28 kg | 90 s |
-| Sprungkniebeugen oder Box Jumps | 3 × 5 explosiv | Eigengewicht | 90 s |
-
-### Samstag – Langes Rucking (60 min)
-
-60 Minuten Gehen mit Weste draußen, Wanderung oder Stadt, gern mit Höhenmetern. Optional danach 12 Minuten: Bizeps-Curls 3 × 10–15 (2 × 10 kg), Trizeps Overhead 3 × 10–15 (14 kg), Nacken mit Band 2 × 15.
+| Kabel-Curls, Stange oder D-Griffe | 3 × 10–15 | 14 kg | Kabel |
+| Trizeps am Seil | 3 × 10–15 | 14 kg | Kabel |
+| Hammer-Curls am Seil | 2 × 10–15 | 10 kg | Kabel |
+| Kabel-Seitheben | 2 × 12–15 | 4 kg | Kabel |
 
 ### Sonntag – Mobility-Flow + Spaziergang (40 min)
 
-25 Minuten Flow: Katze-Kuh, Weltbester Stretch, 90/90-Hüfte, Couch Stretch, Brustwirbelsäulen-Rotation, Schulter-CARs, Deep Squat Hold, Dead Hang. 15 Minuten lockerer Spaziergang ohne Weste. Optional Sauna oder kalte Dusche.
+25 Minuten Flow: Katze-Kuh, Weltbester Stretch, 90/90-Hüfte, Couch Stretch, Brustwirbelsäulen-Rotation, Schulter-CARs, Deep Squat Hold mit leerer Stange, Dead Hang. 15 Minuten lockerer Spaziergang ohne Weste.
 
-## Klimmzüge von 5 auf 12 in drei Monaten
+## Klimmzüge von 5 auf 12
 
-Mittwoch Volumen, Freitag Intensität, dazwischen nichts an der Stange. Wenn 4 × 10 ohne Band steht, Weste 5 kg und zurück auf 4 × 5. Zusätzlich an Erholungstagen 2 × 30 s Dead Hang für Griff und Schulter.
+Mittwoch Volumen mit Band, Freitag schwer mit Weste, Latzug am Mittwoch baut den Rücken zusätzlich auf. Ab 4 × 10 ohne Band: Weste auf 7,5 kg und zurück auf 4 × 5.
 
 ## Wie wir weitermachen
 
-1. Ausstattung bestellen. Solange sie nicht da ist, gelten Eigengewicht, Bänder und was vorhanden ist.
-2. Den Plan in Zentrum laden: Training, „Plan“, „Vorlage laden“. Die drei Krafttage kommen mit allen Übungen, Ranges und Startgewichten. Die anderen vier Tage erscheinen auf der Heute-Seite als Tagesaufgabe und werden als freies Training abgehakt.
-3. Erste Woche als Test: Startgewichte anpassen, wo es zu leicht oder zu schwer ist. Die App übernimmt danach die Steigerung.
-4. Nach vier Wochen Bilanz: Fortschritt, Zeit, Gefühl. Dann Feinschliff.
+1. In Zentrum: Training, „Plan“, „Vorlage laden“. Entwurf 3 kommt mit allen Übungen, Ranges, Startgewichten und dem passenden Gerät je Übung.
+2. Erste Woche testen, Startgewichte anpassen. Danach steigert die App.
+3. Nach vier Wochen Bilanz und Feinschliff.
