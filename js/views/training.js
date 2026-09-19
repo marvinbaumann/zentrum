@@ -160,6 +160,24 @@ function weekOverview(s) {
       <div class="grow"><div class="title">${esc(t.title)}</div><div class="meta">${t.minutes ? `${t.minutes} min · ` : ''}${isPlan ? 'Plan-Tag' : esc(t.kind)}${wd === todayWd ? ' · heute' : ''}</div></div>
       <span class="chev">${icons.chevron}</span></div>`; }).join('')}</div>`;
 }
+function guidesCard(s) {
+  const g = s.training.guides; if (!g) return '';
+  return `${sectionLabel('Anleitungen')}<div class="card">${Object.entries(g).map(([cat, items]) => `<div class="row link" data-action="guideCat" data-cat="${esc(cat)}"><div class="grow"><div class="title">${esc(cat)}</div><div class="meta">${items.length} ${items.length === 1 ? 'Anleitung' : 'Anleitungen'}</div></div><span class="chev">${icons.chevron}</span></div>`).join('')}</div>`;
+}
+export function openGuideCat(cat) {
+  const items = state.training.guides?.[cat]; if (!items) return;
+  openSheet({ title: cat, html: `<div class="summary-list">${items.map((g, i) => `<div class="row link" data-action="guideItem" data-cat="${esc(cat)}" data-i="${i}"><div class="grow"><div class="title">${esc(g.name)}</div><div class="meta">${esc(g.dauer || '')}</div></div><span class="chev">${icons.chevron}</span></div>`).join('')}</div>`,
+    actions: { guideItem: el => openGuide(el.dataset.cat, Number(el.dataset.i)) } });
+}
+export function openGuide(cat, i) {
+  const g = state.training.guides?.[cat]?.[i]; if (!g) return;
+  openSheet({ title: g.name, html: `${g.dauer ? `<div class="pill" style="--c:var(--orange);margin-bottom:12px">${esc(g.dauer)}</div>` : ''}
+    ${g.ziel ? `<div class="info-block"><div class="info-label">Ziel</div><div>${esc(g.ziel)}</div></div>` : ''}
+    ${g.how?.length ? `<div class="info-block"><div class="info-label">Ablauf</div><ol class="info-list">${g.how.map(x => `<li>${esc(x)}</li>`).join('')}</ol></div>` : ''}
+    ${g.fehler ? `<div class="info-block"><div class="info-label">Häufiger Fehler</div><div class="note">${esc(g.fehler)}</div></div>` : ''}
+    <div class="stack"><button type="button" class="btn btn-soft" data-action="guideBack" data-cat="${esc(cat)}">Zurück zur Liste</button></div>`,
+    actions: { guideBack: el => openGuideCat(el.dataset.cat) } });
+}
 export function openDayInfo(wd) {
   const t = state.training.weekTemplate?.[String(wd)]; if (!t) return;
   const planDay = t.kind === 'plan' ? state.training.days.find(d => d.weekday === wd || d.name === t.dayName) : null;
@@ -170,9 +188,11 @@ export function openDayInfo(wd) {
       ${t.how?.length ? `<div class="info-block"><div class="info-label">So läuft es</div><ol class="info-list">${t.how.map(x => `<li>${esc(x)}</li>`).join('')}</ol></div>` : ''}
       ${planDay ? `<div class="info-block"><div class="info-label">Übungen</div><div class="note">${planDay.exercises.map(e => `${esc(e.name)} ${e.sets}×${e.repMin}–${e.repMax}${e.weight != null ? ` · ${fmtKg(e.weight)} kg` : ''}`).join('<br>')}</div></div>` : ''}
       ${t.why ? `<div class="info-block"><div class="info-label">Warum</div><div class="note">${esc(t.why)}</div></div>` : ''}
+      ${state.training.guides ? `<div class="stack" style="padding-bottom:0"><button type="button" class="btn btn-soft" data-action="dayGuides">Anleitungen zu den Übungen</button></div>` : ''}
       <div class="stack">${planDay ? `<button type="button" class="btn btn-primary" data-action="openPlanDay" data-id="${planDay.id}" style="background:linear-gradient(135deg,#FF9F0A,#FF5E3A)">Plan-Tag öffnen</button>` : ''}
         ${t.kind !== 'plan' || t.extra ? `<button type="button" class="btn ${planDay ? 'btn-soft' : 'btn-primary'}" data-action="logDay" data-wd="${wd}" ${planDay ? '' : 'style="background:linear-gradient(135deg,#FF9F0A,#FF5E3A)"'}>${isToday ? 'Heute als erledigt eintragen' : 'Als freies Training eintragen'}</button>` : ''}</div>`,
     actions: {
+      dayGuides: () => { const cats = Object.keys(state.training.guides || {}); const pick = t.kind === 'plan' ? cats.find(c => /Tägliche/.test(c)) : cats.find(c => (t.kind === 'Mobility' && /Tägliche/.test(c)) || (/Rucking/.test(c) && /Ausdauer|Spaziergang/.test(t.kind) && /Rucking/.test(t.title)) || (/VO2/.test(c) && /VO2/.test(t.title))) || cats[0]; openGuideCat(pick); },
       openPlanDay: el => { closeSheet(); update(s => { s.training.selectedDay = el.dataset.id; }); location.hash = '#training'; },
       logDay: el => { const tt = state.training.weekTemplate[el.dataset.wd]; closeSheet(); setTimeout(() => openFreeWorkout(null, { kind: tt.kind === 'plan' ? 'Spaziergang' : tt.kind, minutes: tt.kind === 'plan' ? 45 : tt.minutes, note: tt.extra || tt.title }), 320); },
     } });
@@ -198,6 +218,7 @@ export function render(s) {
     ` : `<div class="card"><div class="empty">Noch kein Trainingsplan. Tippe auf „Plan“ und lege einen Tag an.</div></div>`}
 
     ${editMode ? '' : weekOverview(s)}
+    ${editMode ? '' : guidesCard(s)}
 
     ${sessions.length ? `
       ${sectionLabel('Letzte Trainings')}
@@ -292,6 +313,7 @@ export const actions = {
   toggleEdit() { editMode = !editMode; stopRest(); update(() => {}); },
   freeWorkout() { const t = todayTemplate(state); openFreeWorkout(null, t && t.kind !== 'plan' ? { kind: t.kind, minutes: t.minutes, note: t.title } : (t?.extra ? { kind: 'Spaziergang', minutes: 45, note: t.extra } : null)); },
   dayInfo(el) { openDayInfo(Number(el.dataset.wd)); },
+  guideCat(el) { openGuideCat(el.dataset.cat); },
   async loadTemplate() {
     if (!confirm('Den aktuellen Plan durch die Vorlage ersetzen? Dein Trainingsverlauf bleibt erhalten.')) return;
     try {
@@ -300,7 +322,9 @@ export const actions = {
       update(s => {
         s.training.days = tpl.days.map(d => ({ id: uid(), name: d.name, weekday: d.weekday, exercises: d.exercises.map(e => ({ id: uid(), name: e.name, sets: e.sets, repMin: e.repMin, repMax: e.repMax, weight: e.weight, equipment: e.equipment || (e.weight == null ? 'bw' : 'kh'), increment: e.increment || 2.5, targetReps: e.repMin })) }));
         s.training.weekTemplate = tpl.weekTemplate;
+        s.training.guides = tpl.guides || null;
         s.training.selectedDay = null;
+        for (const h of tpl.habits || []) if (!s.habits.some(x => x.name.toLowerCase() === h.name.toLowerCase())) s.habits.push({ id: uid(), name: h.name, area: h.area || 'other', schedule: h.schedule || { type: 'daily' }, slot: h.slot || '', dose: '' });
         if (tpl.equipment) { if (tpl.equipment.weights) s.settings.weights = tpl.equipment.weights; if (tpl.equipment.plates) s.settings.plates = tpl.equipment.plates; if (tpl.equipment.barWeight) s.settings.barWeight = tpl.equipment.barWeight; }
       });
       editMode = false; update(() => {});

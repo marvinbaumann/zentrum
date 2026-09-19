@@ -127,6 +127,13 @@ Die schwere Kniebeuge am Freitag ergänzt die Hypertrophie-Kniebeuge vom Montag.
 
 Mittwoch Volumen mit Band, Freitag schwer mit Weste, Latzug am Mittwoch baut den Rücken zusätzlich auf. Ab 4 × 10 ohne Band: Weste auf 7,5 kg und zurück auf 4 × 5.
 
+## Mobility täglich, Anleitungen und Fortschritt
+
+- **„Mobility 10 min“ ist ein täglicher Standard** auf der Heute-Seite und zählt zum perfekten Tag. Welche 10 Minuten: nach Unterkörper-Tagen Hüfte und Sprunggelenke, nach Oberkörper-Tagen Schultern und Brustwirbelsäule, nach Ausdauer-Tagen Hüftbeuger und Waden, sonntags der 25-Minuten-Flow. Die vier Abläufe stehen in der App unter Training, „Anleitungen“, „Tägliche 10 Minuten“.
+- **Jede Übung ist erklärt**: Ziel, Ablauf Schritt für Schritt, häufigster Fehler. Elf Mobility- und Balance-Übungen, Rucking mit Pulszonen und Apple-Watch-Einstellung, beide VO2max-Protokolle. Alles unter Training, „Anleitungen“, und aus jeder Tagesansicht über „Anleitungen zu den Übungen“ erreichbar.
+- **Freies Training** speichert jetzt Dauer, Strecke, Ø-Puls und Zusatzgewicht. So siehst du beim Rucking, ob du bei gleichem Puls schneller wirst.
+- **Monats-Test** im Tab Körper: Deep Squat Hold, Dead Hang, Fingerspitzen zum Boden, Einbeinstand mit geschlossenen Augen, Klimmzüge, Liegestütze, VO2max von der Apple Watch, Ruhepuls. Einmal im Monat eintragen, die App zeigt jeden Wert mit Veränderung zum Vormonat und erinnert, wenn der nächste Test fällig ist. Bei drei oder mehr Verbesserungen gibt es Konfetti.
+
 ## Wo du die Nicht-Plan-Tage in der App findest
 
 Im Tab Training steht unter dem Plan die Karte „Deine Woche“ mit allen sieben Tagen. Ein Tipp auf einen Tag zeigt Ziel, Ablauf Schritt für Schritt, bei Plan-Tagen die Übungen, und den Grund dahinter. Von dort trägst du Rucking, Intervalle oder Mobility direkt als freies Training ein, vorausgefüllt mit Art, Dauer und Notiz. Auf der Heute-Seite öffnet ein Tipp auf die Trainingszeile dieselben Details für den aktuellen Tag.

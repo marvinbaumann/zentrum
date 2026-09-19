@@ -340,5 +340,264 @@
     "weights": "5, 10, 20",
     "plates": "2, 2, 5, 5, 10, 10, 20, 20",
     "barWeight": 10
+  },
+  "habits": [
+    {
+      "name": "Mobility 10 min",
+      "area": "other",
+      "schedule": {
+        "type": "daily"
+      },
+      "slot": ""
+    }
+  ],
+  "guides": {
+    "Mobility – die Übungen": [
+      {
+        "name": "Couch Stretch",
+        "dauer": "45–60 s je Seite",
+        "ziel": "Hüftbeuger und vorderer Oberschenkel, der wichtigste Ausgleich zu Sitzen und Kniebeugen.",
+        "how": [
+          "Kniend vor Wand oder Bench: ein Knie am Boden dicht an der Wand, Schienbein senkrecht an der Wand hoch, Fußrücken an der Wand.",
+          "Anderes Bein vorn aufstellen, Fuß flach.",
+          "Bauch anspannen, Gesäß anspannen, Becken nach hinten kippen, so dass der untere Rücken gerade bleibt.",
+          "Oberkörper langsam aufrichten, bis es vorn in Hüfte und Oberschenkel zieht. Dort ruhig atmen."
+        ],
+        "fehler": "Hohlkreuz statt Dehnung. Wenn der Rücken hohl wird, weniger aufrichten und Gesäß fester anspannen."
+      },
+      {
+        "name": "90/90-Hüfte",
+        "dauer": "45 s je Seite, dann 5 Wechsel",
+        "ziel": "Innen- und Außenrotation der Hüfte, macht tiefe Kniebeugen und Ausfallschritte frei.",
+        "how": [
+          "Sitzen: vorderes Bein 90° gebeugt vor dir, hinteres Bein 90° gebeugt zur Seite, beide Knie am Boden.",
+          "Oberkörper aufrecht, dann mit geradem Rücken über das vordere Schienbein nach vorn beugen, 45 s halten.",
+          "Aufrichten, dann ohne Hände die Knie zur anderen Seite kippen und die Position spiegeln. 5 langsame Wechsel."
+        ],
+        "fehler": "Runder Rücken beim Vorbeugen. Lieber weniger weit und gerade."
+      },
+      {
+        "name": "Katze-Kuh",
+        "dauer": "10 langsame Wiederholungen",
+        "ziel": "Wirbelsäule Segment für Segment bewegen, Aufwärmen für Rücken und Nacken.",
+        "how": [
+          "Vierfüßlerstand, Hände unter Schultern, Knie unter Hüfte.",
+          "Einatmen: Rücken durchhängen lassen, Brust nach vorn, Blick leicht hoch (Kuh).",
+          "Ausatmen: Rücken rund nach oben schieben, Kinn zur Brust, Bauchnabel einziehen (Katze).",
+          "Langsam, mit dem Atem, jede Wiederholung 4 bis 5 Sekunden."
+        ],
+        "fehler": "Zu schnell. Das ist keine Kräftigung, sondern Mobilisation."
+      },
+      {
+        "name": "Weltbester Stretch",
+        "dauer": "5 je Seite",
+        "ziel": "Hüfte, Brustwirbelsäule und hintere Kette in einer Bewegung. Perfektes Aufwärmen.",
+        "how": [
+          "Großer Ausfallschritt, hinteres Bein gestreckt, beide Hände neben dem vorderen Fuß auf dem Boden.",
+          "Ellbogen der vorderen Seite Richtung Boden neben dem Fuß schieben, 2 Sekunden.",
+          "Dann denselben Arm zur Decke drehen, Brust öffnen, Blick folgt der Hand, 2 Sekunden.",
+          "Zurück, Wiederholung. Nach 5 Seite wechseln."
+        ],
+        "fehler": "Vorderes Knie fällt nach innen. Knie über dem Fuß halten."
+      },
+      {
+        "name": "Brustwirbelsäulen-Rotation",
+        "dauer": "8 je Seite",
+        "ziel": "Rotation im oberen Rücken, entlastet Schultern und Lendenwirbelsäule.",
+        "how": [
+          "Seitlage, Knie 90° angewinkelt übereinander, Arme gestreckt vor dir, Handflächen aufeinander.",
+          "Oberen Arm wie ein Buch öffnen, über den Körper zur anderen Seite bis zum Boden, Blick folgt der Hand.",
+          "Knie bleiben zusammen am Boden. 2 Sekunden halten, zurück."
+        ],
+        "fehler": "Knie heben ab. Dann rotiert die Lendenwirbelsäule statt der Brustwirbelsäule."
+      },
+      {
+        "name": "Schulter-CARs",
+        "dauer": "5 je Richtung je Seite",
+        "ziel": "Kontrollierte Gelenkrotation der Schulter, hält den vollen Bewegungsumfang.",
+        "how": [
+          "Aufrecht stehen, Rumpf fest anspannen, ein Arm gestreckt.",
+          "Arm ganz langsam vorn hoch, über den Kopf, Handfläche dabei nach außen drehen, hinten herum nach unten. Größtmöglicher Kreis.",
+          "10 Sekunden pro Kreis. Dann Richtung wechseln."
+        ],
+        "fehler": "Rumpf hilft mit, Oberkörper kippt. Nur die Schulter arbeitet."
+      },
+      {
+        "name": "Deep Squat Hold",
+        "dauer": "60 s",
+        "ziel": "Sprunggelenke, Hüfte und Rücken in der tiefen Hocke. Der beste Einzeltest für Beweglichkeit.",
+        "how": [
+          "Füße schulterbreit, Zehen leicht nach außen. So tief wie möglich in die Hocke, Fersen bleiben am Boden.",
+          "Ellbogen innen an die Knie, Knie sanft nach außen drücken, Brust aufrecht.",
+          "Ruhig atmen, 60 Sekunden. Wenn die Fersen abheben, an einem Rack-Pfosten festhalten oder eine Scheibe unter die Fersen."
+        ],
+        "fehler": "Fersen hoch, Rücken rund. Erst Halt suchen, dann tiefer."
+      },
+      {
+        "name": "Dead Hang",
+        "dauer": "2 × 20–30 s",
+        "ziel": "Schultern dekomprimieren, Griffkraft, Vorbereitung auf Klimmzüge.",
+        "how": [
+          "An die Klimmzugstange hängen, Griff schulterbreit.",
+          "Schultern aktiv: leicht nach unten von den Ohren wegziehen, nicht komplett durchhängen.",
+          "Ruhig atmen. Steigern bis 45 s."
+        ],
+        "fehler": "Schultern komplett passiv hochgezogen. Ein bisschen Spannung halten."
+      },
+      {
+        "name": "Tibialis Raises",
+        "dauer": "2 × 20",
+        "ziel": "Schienbeinmuskel, schützt Knie und Sprunggelenke, Huberman-Empfehlung.",
+        "how": [
+          "Rücken an die Wand, Füße etwa 30 cm vor der Wand, Beine gestreckt.",
+          "Zehen und Vorfuß so hoch wie möglich anheben, Fersen bleiben am Boden, 1 Sekunde oben halten, langsam ab.",
+          "20 Wiederholungen, kurze Pause, nochmal."
+        ],
+        "fehler": "Zu nah an der Wand, dann ist es zu leicht."
+      },
+      {
+        "name": "Waden an der Wand",
+        "dauer": "45 s je Seite",
+        "ziel": "Sprunggelenk-Beweglichkeit für tiefe Kniebeugen.",
+        "how": [
+          "Fußballen an die Wand, Ferse am Boden, Fuß etwa 10 cm vor der Wand.",
+          "Knie langsam Richtung Wand schieben, Ferse bleibt unten.",
+          "Halten, ruhig atmen."
+        ],
+        "fehler": "Ferse hebt ab. Fuß näher an die Wand."
+      },
+      {
+        "name": "Einbeinstand (Balance)",
+        "dauer": "3 × 30 s je Seite",
+        "ziel": "Gleichgewicht und Fußstabilität. Bryan Johnson macht das täglich, ab 30 verliert man es sonst schleichend.",
+        "how": [
+          "Auf einem Bein stehen, Knie leicht gebeugt, Blick auf einen festen Punkt.",
+          "30 Sekunden halten. Wenn das leicht ist: Augen schließen.",
+          "Noch schwerer: auf der Puzzlematte oder mit Kopfdrehungen."
+        ],
+        "fehler": "Hüfte kippt zur Seite. Becken gerade halten."
+      }
+    ],
+    "Tägliche 10 Minuten": [
+      {
+        "name": "Nach Unterkörper-Tagen (Mo, Fr)",
+        "dauer": "10 min",
+        "ziel": "Hüfte und Sprunggelenke wieder öffnen.",
+        "how": [
+          "Couch Stretch 60 s je Seite",
+          "90/90-Hüfte 45 s je Seite",
+          "Waden an der Wand 45 s je Seite",
+          "Deep Squat Hold 60 s",
+          "Katze-Kuh 10 Wiederholungen"
+        ],
+        "fehler": ""
+      },
+      {
+        "name": "Nach Oberkörper-Tagen (Mi, Sa)",
+        "dauer": "10 min",
+        "ziel": "Schultern und Brustwirbelsäule frei machen.",
+        "how": [
+          "Dead Hang 2 × 30 s",
+          "Schulter-CARs 5 je Richtung je Seite",
+          "Brustwirbelsäulen-Rotation 8 je Seite",
+          "Weltbester Stretch 5 je Seite",
+          "Katze-Kuh 10 Wiederholungen"
+        ],
+        "fehler": ""
+      },
+      {
+        "name": "Nach Ausdauer-Tagen (Di, Do)",
+        "dauer": "10 min",
+        "ziel": "Hüftbeuger und Waden nach dem Gehen lösen.",
+        "how": [
+          "Couch Stretch 45 s je Seite",
+          "Waden an der Wand 45 s je Seite",
+          "90/90-Hüfte 45 s je Seite",
+          "Einbeinstand 30 s je Seite",
+          "Tibialis Raises 20"
+        ],
+        "fehler": ""
+      },
+      {
+        "name": "Sonntag Flow",
+        "dauer": "25 min",
+        "ziel": "Alles einmal durchbewegen, ruhig und ohne Druck.",
+        "how": [
+          "Katze-Kuh 10",
+          "Weltbester Stretch 5 je Seite",
+          "90/90-Hüfte 45 s je Seite plus 5 Wechsel",
+          "Couch Stretch 60 s je Seite",
+          "Brustwirbelsäulen-Rotation 8 je Seite",
+          "Schulter-CARs 5 je Richtung je Seite",
+          "Deep Squat Hold 2 × 60 s",
+          "Dead Hang 2 × 30 s",
+          "Einbeinstand 3 × 30 s je Seite, gern Augen zu",
+          "Danach 15 min lockerer Spaziergang"
+        ],
+        "fehler": ""
+      }
+    ],
+    "Rucking und Zone 2": [
+      {
+        "name": "Rucking: So geht es",
+        "dauer": "40–60 min",
+        "ziel": "Zone 2: langsam genug, um sich zu unterhalten, schnell genug, dass es Arbeit ist.",
+        "how": [
+          "Weste eng anlegen, alle Gurte fest, Gewicht hoch am Rücken. Start 8 kg, ab Woche 3 10 kg, später bis 12–15 kg. Nie mehr als 15 % Körpergewicht für Zone 2.",
+          "Apple Watch: Training „Gehen im Freien“ starten, Herzfrequenzzonen anzeigen lassen. Ziel ist Zone 2, grob 60–70 % vom Maximalpuls. Faustregel für den Maximalpuls: 220 minus Alter.",
+          "Tempo zügig, aufrechte Haltung, Arme schwingen, Schritte etwas länger als beim Spazieren. Flach etwa 6 km/h, mit Steigung langsamer.",
+          "Atmung: Test alle paar Minuten, ob du nur durch die Nase atmen kannst. Wenn nicht, langsamer.",
+          "Danach 10 Minuten Mobility für Ausdauer-Tage."
+        ],
+        "fehler": "Zu schnell, weil es sich zu leicht anfühlt. Zone 2 soll leicht wirken. Die Wirkung kommt über die Dauer."
+      },
+      {
+        "name": "Fortschritt messen",
+        "dauer": "monatlich",
+        "ziel": "Zone 2 wird besser, wenn du bei gleichem Puls schneller wirst oder bei gleichem Tempo weniger Puls hast.",
+        "how": [
+          "Einmal im Monat dieselbe Strecke mit demselben Gewicht gehen und Ø-Puls plus Zeit im freien Training eintragen.",
+          "Im Monats-Test unter Körper den Ruhepuls und den VO2max-Wert der Apple Watch (Health, Cardiofitness) notieren."
+        ],
+        "fehler": ""
+      }
+    ],
+    "VO2max-Intervalle": [
+      {
+        "name": "Woche A: Norweger 4×4",
+        "dauer": "36 min",
+        "ziel": "Herzvolumen und Sauerstoffaufnahme steigern. Der Goldstandard aus der Forschung.",
+        "how": [
+          "8 min locker aufwärmen, zügig gehen.",
+          "4 Minuten hart: Steigung oder Treppe mit Weste so schnell hoch, dass Sprechen unmöglich ist, Puls 90–95 % vom Maximum, Apple Watch Zone 4 bis 5. Die ersten 60 Sekunden bewusst nicht zu schnell starten.",
+          "3 Minuten ganz locker gehen.",
+          "Viermal wiederholen. Danach 5 min ausgehen.",
+          "Ohne Steigung: Airbike, Rad oder auf der Stelle Burpees und Springseil im Wechsel."
+        ],
+        "fehler": "Erstes Intervall zu hart, dann bricht das dritte ein. Alle vier sollen gleich schnell sein."
+      },
+      {
+        "name": "Woche B: Swing-Runden",
+        "dauer": "30 min",
+        "ziel": "Anaerobe Kapazität und Ganzkörper-Power, Galpins Anpassung Nummer 7.",
+        "how": [
+          "8 min aufwärmen: Gehen, Hüftkreisen, 10 leichte Swings.",
+          "10 Runden: 15 Kurzhantel-Swings mit 20 kg, dann 5 Burpees, dann 1 Minute Pause.",
+          "Swings: Hüfte schnappt, Arme sind nur Seile, Hantel bis Brusthöhe, Rücken gerade.",
+          "Alternative ohne Swings: 8 × 1 Minute Springseil so schnell wie möglich, 1 Minute Pause."
+        ],
+        "fehler": "Swings aus den Armen heben statt aus der Hüfte. Die Kraft kommt aus dem Hüftstrecken."
+      },
+      {
+        "name": "Fortschritt messen",
+        "dauer": "monatlich",
+        "ziel": "VO2max steigt langsam, 1 bis 2 Punkte pro Quartal sind sehr gut.",
+        "how": [
+          "Apple Watch schätzt VO2max aus Geh- und Laufeinheiten im Freien. Wert in Health unter Cardiofitness, einmal im Monat in den Test eintragen.",
+          "Zweiter Marker: Puls eine Minute nach dem letzten Intervall. Je schneller er fällt, desto fitter."
+        ],
+        "fehler": ""
+      }
+    ]
   }
 }

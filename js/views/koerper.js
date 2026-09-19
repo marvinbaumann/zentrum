@@ -1,6 +1,7 @@
 import { state, update, dateKey, addDays, parseKey } from '../store.js';
 import { esc, header, sectionLabel, icons, relDay, fmtKg, fmtNum, fmtDM } from '../ui.js';
 import { openSheet, field } from '../sheet.js';
+import { haptic, celebrate } from '../fx.js';
 
 // Geglätteter Trend (exponentiell, wie Happy Scale): Tagesrauschen raus, Richtung rein.
 export function trendSeries(w) {
@@ -16,6 +17,32 @@ export function trendInfo(t) {
   const dir = perWeek < 0 ? 'sinkend' : 'steigend';
   const label = a < 0.1 ? 'stabil' : a < 0.4 ? `leicht ${dir}` : `deutlich ${dir}`;
   return { perWeek, label, weekRef: ref.trend };
+}
+
+// Monats-Test: einfache, wiederholbare Messungen für Beweglichkeit, Kraft und Ausdauer
+export const TESTS = [
+  { key: 'squatHold', name: 'Deep Squat Hold', unit: 's', better: 'up', hint: 'Sekunden in der tiefen Hocke, Fersen unten' },
+  { key: 'deadHang', name: 'Dead Hang', unit: 's', better: 'up', hint: 'Sekunden an der Stange' },
+  { key: 'toeTouch', name: 'Fingerspitzen zum Boden', unit: 'cm', better: 'down', hint: 'Abstand mit gestreckten Beinen, 0 = Boden berührt' },
+  { key: 'balance', name: 'Einbeinstand, Augen zu', unit: 's', better: 'up', hint: 'Sekunden, schwächere Seite' },
+  { key: 'pullups', name: 'Klimmzüge am Stück', unit: '', better: 'up', hint: 'saubere Wiederholungen' },
+  { key: 'pushups', name: 'Liegestütze am Stück', unit: '', better: 'up', hint: 'saubere Wiederholungen' },
+  { key: 'vo2', name: 'VO2max (Apple Watch)', unit: '', better: 'up', hint: 'Health → Cardiofitness' },
+  { key: 'rhr', name: 'Ruhepuls', unit: 'bpm', better: 'down', hint: 'Health → Ruheherzfrequenz, 7-Tage-Schnitt' },
+];
+function testsCard(s) {
+  const list = [...(s.tests || [])].sort((a, b) => a.date.localeCompare(b.date));
+  const last = list[list.length - 1], prev = list[list.length - 2];
+  const daysSince = last ? Math.round((parseKey(dateKey()) - parseKey(last.date)) / 864e5) : null;
+  const due = last ? Math.max(0, 30 - daysSince) : 0;
+  const fmtV = (t, v) => v == null || v === '' ? '–' : `${String(v).replace('.', ',')}${t.unit ? ` ${t.unit}` : ''}`;
+  return `${sectionLabel('Monats-Test', `<button class="link-btn" data-action="addTest">+ Test</button>`)}
+  <div class="card">
+    ${last ? `<div class="row" style="border-bottom:1px solid var(--sep)"><div class="grow"><div class="title">Letzter Test ${relDay(last.date)}</div><div class="meta">${due > 0 ? `Nächster Test in ${due} Tagen` : 'Nächster Test ist fällig'}</div></div>${due === 0 ? '<span class="pill" style="--c:var(--orange)">fällig</span>' : ''}</div>
+      ${TESTS.map(t => { const v = last.values?.[t.key], pv = prev?.values?.[t.key]; let d = ''; if (v != null && v !== '' && pv != null && pv !== '') { const diff = Number(v) - Number(pv); const good = t.better === 'up' ? diff > 0 : diff < 0; d = diff === 0 ? '<span class="trail">=</span>' : `<span class="trail" style="color:${good ? 'var(--green)' : 'var(--orange)'};font-weight:600">${diff > 0 ? '+' : ''}${String(Math.round(diff * 10) / 10).replace('.', ',')}</span>`; }
+        return `<div class="row"><div class="grow"><div class="title" style="font-size:16px">${esc(t.name)}</div></div><span class="trail" style="color:var(--text);font-weight:600">${fmtV(t, v)}</span>${d}</div>`; }).join('')}`
+    : `<div class="empty">Noch kein Test. Miss einmal im Monat Beweglichkeit, Kraft und Ausdauer, dann siehst du hier deinen Fortschritt.<br><span style="font-size:13px">Dauert 10 Minuten, am besten am Sonntag nach dem Flow.</span></div>`}
+  </div>`;
 }
 
 export function render(s) {
@@ -66,6 +93,7 @@ export function render(s) {
         <div class="stat"><div class="v">${fmtNum(Math.max(...last14.map(x => x.v)))}</div><div class="l">Bestwert</div></div>
       </div>
     </div>
+    ${testsCard(s)}
     <div class="card pad"><div class="note"><strong style="color:var(--text)">Automatisch übertragen.</strong> Ein Kurzbefehl auf dem iPhone schickt Schritte und das Gewicht deiner Waage aus Apple Health hierher.${s.lastImport ? ` Letzter Import: ${new Date(s.lastImport).toLocaleString('de-DE', { day: 'numeric', month: 'numeric', hour: '2-digit', minute: '2-digit' })} Uhr.` : ' Noch kein Import angekommen.'}</div></div>
   `;
 }
@@ -106,6 +134,22 @@ function stepsChart(days, goal) {
 }
 
 export const actions = {
+  addTest() {
+    const list = [...(state.tests || [])].sort((a, b) => a.date.localeCompare(b.date)); const last = list[list.length - 1];
+    openSheet({ title: 'Monats-Test', submitLabel: 'Speichern',
+      html: `<div class="note" style="padding:0 2px 12px">Trag ein, was du gemessen hast. Leere Felder sind okay. Immer gleiche Bedingungen: ausgeruht, nach dem Aufwärmen.</div>
+        ${field({ label: 'Datum', name: 'date', type: 'date', value: dateKey() })}
+        ${TESTS.map(t => field({ label: `${t.name}${t.unit ? ` (${t.unit})` : ''}`, name: t.key, type: 'text', value: '', placeholder: last?.values?.[t.key] != null && last.values[t.key] !== '' ? `zuletzt ${String(last.values[t.key]).replace('.', ',')}` : t.hint, attrs: 'inputmode="decimal" autocomplete="off"' })).join('')}`,
+      onSubmit(d) {
+        const values = {}; let any = false;
+        for (const t of TESTS) { const v = parseFloat(String(d[t.key] || '').replace(',', '.')); if (!isNaN(v)) { values[t.key] = v; any = true; } }
+        if (!any) { alert('Bitte mindestens einen Wert eintragen.'); return false; }
+        const date = d.date || dateKey();
+        update(s => { s.tests = (s.tests || []).filter(x => x.date !== date); s.tests.push({ date, values }); });
+        haptic();
+        if (last) { const improved = TESTS.filter(t => values[t.key] != null && last.values?.[t.key] != null && (t.better === 'up' ? values[t.key] > last.values[t.key] : values[t.key] < last.values[t.key])).length; if (improved >= 3) celebrate(['#34C759', '#00C7BE', '#FFD60A', '#FFFFFF']); }
+      } });
+  },
   addWeight() {
     openSheet({ title: 'Gewicht eintragen',
       html: `${field({ label: 'Gewicht (kg)', name: 'kg', type: 'text', placeholder: 'z. B. 78,4', attrs: 'inputmode="decimal" autocomplete="off" required', autofocus: true })}${field({ label: 'Datum', name: 'date', type: 'date', value: dateKey() })}`,

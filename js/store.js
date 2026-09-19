@@ -49,6 +49,7 @@ function defaultState() {
     },
     appointments: [], // [{ id, date, time, title }]
     freeWorkouts: {}, // { 'YYYY-MM-DD': { kind, minutes, note } }
+    tests: [],        // [{ date, values: { squatHold, deadHang, ... } }]
     checkins: {},     // { 'YYYY-MM-DD': { valence, emotions, tags, good, note, at } }
     people: [],       // [{ id, name, intervalDays, lastContact, birthday, note }]
     vision: [],       // [{ id, caption, area, step, addedAt }] – Bilddaten liegen in IndexedDB + Daten-Repo
