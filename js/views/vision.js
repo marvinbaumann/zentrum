@@ -14,11 +14,16 @@ export function pickToday(s) {
   return list[seed % list.length];
 }
 
+const SEEN_KEY = 'zentrum.visionDay';
+export function visionSeenToday() { try { return localStorage.getItem(SEEN_KEY) === dateKey(); } catch { return false; } }
+
+// Erscheint nur beim ersten Öffnen des Tages: eine Visualisierung für den Tag, nicht bei jedem Aufruf.
 export async function showVision(s, onDone) {
   const v = pickToday(s);
-  if (!v || document.querySelector('.vision')) { onDone?.(); return; }
+  if (!v || visionSeenToday() || document.querySelector('.vision')) { onDone?.(); return; }
   const url = await imgUrl(v.id);
   if (!url) { onDone?.(); return; }
+  try { localStorage.setItem(SEEN_KEY, dateKey()); } catch {}
   const el = document.createElement('div');
   el.className = 'vision';
   el.innerHTML = `
