@@ -69,4 +69,13 @@ if ('serviceWorker' in navigator && (location.protocol === 'https:' || location.
   navigator.serviceWorker.register('./sw.js').catch(() => {});
 }
 
+// Statusleiste auf dem iPhone an Hell/Dunkel anpassen (iOS liest die Farbe aus theme-color).
+function syncThemeColor() {
+  const dark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+  const meta = document.querySelector('meta[name="theme-color"]');
+  if (meta) meta.setAttribute('content', dark ? '#000000' : '#F2F2F7');
+}
+syncThemeColor();
+window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', syncThemeColor);
+
 render();
