@@ -116,7 +116,7 @@ export async function importInbox() {
       if (type === 'workout' || type === 'training') {
         // workout,<datum>,<Art>,<Minuten>,<Ø Puls>,<km>
         const date = normalizeDate(parts[1], fileDay); if (!date) continue;
-        const kindRaw = (parts[2] || '').trim(); const minutes = Math.round(parseNum(parts[3] || '')) || 0;
+        const kindRaw = (parts[2] || '').trim(); const minutes = Math.round(parseDurationMin(parts[3] || '')) || 0;
         const avgHr = Math.round(parseNum(parts[4] || '')) || 0; const km = Math.round((parseNum(parts[5] || '') || 0) * 100) / 100;
         if (minutes >= 5) workouts.push({ date, kind: mapWorkoutKind(kindRaw), minutes, avgHr, km, note: `Apple Watch: ${kindRaw}` });
         continue;
@@ -128,7 +128,7 @@ export async function importInbox() {
       if (!date || !(val >= 0)) continue;
       if (type.startsWith('step') || type.startsWith('schritt')) steps[date] = Math.max(steps[date] || 0, Math.round(val));
       else if (type.startsWith('weight') || type.startsWith('gewicht')) weight[date] = Math.round(val * 10) / 10;
-      else if (type.startsWith('sleep') || type.startsWith('schlaf')) (health[date] ||= {}).sleep = Math.round((val > 20 ? val / 60 : val) * 100) / 100; // Minuten oder Stunden
+      else if (type.startsWith('sleep') || type.startsWith('schlaf')) { const raw = parts.slice(2).join(','); const mins = /:/.test(raw) || /min|std|\bh\b|sek|\bs\b/i.test(raw) ? parseDurationMin(raw) : (val > 20 ? val : val * 60); (health[date] ||= {}).sleep = Math.round(mins / 60 * 100) / 100; }
       else if (type === 'rhr' || type.startsWith('ruhepuls') || type.startsWith('resting')) (health[date] ||= {}).rhr = Math.round(val);
       else if (type === 'hrv' || type.startsWith('hrv')) (health[date] ||= {}).hrv = Math.round(val);
       else if (type.startsWith('vo2')) (health[date] ||= {}).vo2 = Math.round(val * 10) / 10;
@@ -155,6 +155,18 @@ export async function importInbox() {
     await gh(`/repos/${sync.owner}/${sync.repo}/contents/${encodeURIComponent('inbox/' + f.name)}`, { method: 'DELETE', body: JSON.stringify({ message: 'verarbeitet', sha: f.sha }) });
   }
   return !!any;
+}
+// Dauer robust in Minuten: „45 min“, „0:45:12“, „45:12“, „1 h 20 min“, „2700 s“, „7,4 h“
+function parseDurationMin(t) {
+  t = String(t || '').trim().toLowerCase();
+  if (!t) return NaN;
+  if (/:/.test(t)) { const p = t.split(':').map(x => parseFloat(x) || 0); if (p.length === 3) return p[0] * 60 + p[1] + p[2] / 60; if (p.length === 2) return p[0] + p[1] / 60; }
+  let total = 0, found = false;
+  const h = t.match(/([\d.,]+)\s*(h|std|hour|hr)/); if (h) { total += parseFloat(h[1].replace(',', '.')) * 60; found = true; }
+  const m = t.match(/([\d.,]+)\s*(min|m\b)/); if (m) { total += parseFloat(m[1].replace(',', '.')); found = true; }
+  const sec = t.match(/([\d.,]+)\s*(sek|sec|s\b)/); if (sec) { total += parseFloat(sec[1].replace(',', '.')) / 60; found = true; }
+  if (found) return total;
+  const n = parseNum(t); return n > 600 ? n / 60 : n; // nackte Zahl: über 600 → Sekunden, sonst Minuten
 }
 function mapWorkoutKind(raw) {
   const t = String(raw).toLowerCase();
