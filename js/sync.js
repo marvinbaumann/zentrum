@@ -94,7 +94,7 @@ export async function importInbox() {
   if (!r.ok) throw new Error(`Inbox ${r.status}`);
   const files = (await r.json()).filter(f => f.type === 'file');
   if (!files.length) return false;
-  const steps = {}, weight = {};
+  const steps = {}, weight = {}, health = {}, workouts = [];
   const processed = [];
   for (const f of files) {
     const path = encodeURIComponent('inbox/' + f.name);
@@ -111,27 +111,61 @@ export async function importInbox() {
     }
     for (const line of text.split(/\r?\n/)) {
       let parts = line.trim().split(/[,;]\s*/);
+      if (parts.length < 2) continue;
+      const type = parts[0].toLowerCase().trim();
+      if (type === 'workout' || type === 'training') {
+        // workout,<datum>,<Art>,<Minuten>,<Ø Puls>,<km>
+        const date = normalizeDate(parts[1], fileDay); if (!date) continue;
+        const kindRaw = (parts[2] || '').trim(); const minutes = Math.round(parseNum(parts[3] || '')) || 0;
+        const avgHr = Math.round(parseNum(parts[4] || '')) || 0; const km = Math.round((parseNum(parts[5] || '') || 0) * 100) / 100;
+        if (minutes >= 5) workouts.push({ date, kind: mapWorkoutKind(kindRaw), minutes, avgHr, km, note: `Apple Watch: ${kindRaw}` });
+        continue;
+      }
       if (parts.length === 2) parts = [parts[0], 'heute', parts[1]]; // Zeile ohne Datum: Tag der Übertragung
       if (parts.length < 3) continue;
-      const type = parts[0].toLowerCase().trim();
       const date = normalizeDate(parts[1], fileDay);
       const val = parseNum(parts.slice(2).join(','));
       if (!date || !(val >= 0)) continue;
       if (type.startsWith('step') || type.startsWith('schritt')) steps[date] = Math.max(steps[date] || 0, Math.round(val));
-      if (type.startsWith('weight') || type.startsWith('gewicht')) weight[date] = Math.round(val * 10) / 10;
+      else if (type.startsWith('weight') || type.startsWith('gewicht')) weight[date] = Math.round(val * 10) / 10;
+      else if (type.startsWith('sleep') || type.startsWith('schlaf')) (health[date] ||= {}).sleep = Math.round((val > 20 ? val / 60 : val) * 100) / 100; // Minuten oder Stunden
+      else if (type === 'rhr' || type.startsWith('ruhepuls') || type.startsWith('resting')) (health[date] ||= {}).rhr = Math.round(val);
+      else if (type === 'hrv' || type.startsWith('hrv')) (health[date] ||= {}).hrv = Math.round(val);
+      else if (type.startsWith('vo2')) (health[date] ||= {}).vo2 = Math.round(val * 10) / 10;
     }
     processed.push(f);
   }
-  const any = Object.keys(steps).length || Object.keys(weight).length;
+  const any = Object.keys(steps).length || Object.keys(weight).length || Object.keys(health).length || workouts.length;
   if (any) update(s => {
     for (const [d, v] of Object.entries(steps)) if (v > 0) s.steps[d] = v;
     for (const [d, kg] of Object.entries(weight)) if (kg > 20 && kg < 400) { s.weight = s.weight.filter(x => x.date !== d); s.weight.push({ date: d, kg }); }
+    for (const [d, h] of Object.entries(health)) { s.health ||= {}; s.health[d] = { ...(s.health[d] || {}), ...h }; }
+    // Trainings von der Watch: nur eintragen, wenn an dem Tag noch nichts steht; längstes Training des Tages gewinnt
+    for (const w of workouts) {
+      const hasPlan = (s.training?.sessions || []).some(x => x.date === w.date);
+      const existing = s.freeWorkouts?.[w.date];
+      if (hasPlan) continue;
+      if (existing && !(existing.note || '').startsWith('Apple Watch') ) continue;
+      if (existing && existing.minutes >= w.minutes) continue;
+      (s.freeWorkouts ||= {})[w.date] = { kind: w.kind, minutes: w.minutes, avgHr: w.avgHr, km: w.km, load: 0, note: w.note, at: new Date().toISOString() };
+    }
     s.lastImport = new Date().toISOString();
   });
   for (const f of processed) {
     await gh(`/repos/${sync.owner}/${sync.repo}/contents/${encodeURIComponent('inbox/' + f.name)}`, { method: 'DELETE', body: JSON.stringify({ message: 'verarbeitet', sha: f.sha }) });
   }
   return !!any;
+}
+function mapWorkoutKind(raw) {
+  const t = String(raw).toLowerCase();
+  if (/walk|geh|wander|hik|ruck/.test(t)) return 'Spaziergang';
+  if (/run|lauf|jog/.test(t)) return 'Laufen';
+  if (/cycl|rad|bike/.test(t)) return 'Radfahren';
+  if (/swim|schwimm/.test(t)) return 'Schwimmen';
+  if (/strength|kraft|functional|core/.test(t)) return 'Kraft';
+  if (/hiit|interval|cardio|elliptical|rower|rudern|stair|treppe/.test(t)) return 'Ausdauer';
+  if (/yoga|flex|mobility|stretch|cooldown|pilates/.test(t)) return 'Mobility';
+  return 'Sport';
 }
 function dateKeyLocal(d = new Date()) { return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`; }
 function shiftDay(k, n) { const [y, m, d] = k.split('-').map(Number); const x = new Date(y, m - 1, d + n); return dateKeyLocal(x); }

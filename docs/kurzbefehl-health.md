@@ -42,3 +42,29 @@ Schritte 1–4 ersetzen durch: **Health-Werte suchen** (Schritte, „Startdatum 
 - **App** → **Renpho** → „wird geschlossen“ → „Zentrum Sync“ → „Sofort ausführen“. So kommt das Gewicht direkt nach dem Wiegen an.
 
 Hinweis: Apple Health lässt sich nur lesen, solange das iPhone entsperrt ist. Läuft eine Automation bei gesperrtem Handy ins Leere, holt der nächste Lauf die Schritte von gestern nach.
+
+## Apple Watch: Schlaf, Ruhepuls, HRV, VO2max und Trainings (Erweiterung)
+
+Die App versteht zusätzlich diese Zeilen in derselben Datei:
+
+```
+sleep,heute,7.4          Schlafdauer der letzten Nacht in Stunden (oder Minuten, wird erkannt)
+rhr,heute,54             Ruhepuls
+hrv,heute,62             Herzratenvariabilität (SDNN, ms)
+vo2,heute,44.5           VO2max-Schätzung der Watch
+workout,heute,Gehen,45,128,4.8    Training: Art, Minuten, Ø Puls, km
+```
+
+Trainings von der Watch tragen sich als freies Training ein, aber nur, wenn an dem Tag noch kein Plan-Training und kein manueller Eintrag steht. Schlaf, Ruhepuls und HRV erscheinen im Körper-Tab unter „Erholung“, VO2max und Ruhepuls werden im Monats-Test vorbelegt.
+
+### Zusätzliche Aktionen im Kurzbefehl „Zentrum Sync“
+
+Vor der Text-Aktion einfügen, jeweils eine Zeile mehr im Text:
+
+1. **Ruhepuls:** Health-Messungen suchen → Typ **Ruheherzfrequenz**, Sortieren nach Startdatum, Neueste zuerst, Limit 1. Textzeile: `rhr,heute,` + Health-Messungen.
+2. **HRV:** Health-Messungen suchen → Typ **Herzfrequenzvariabilität**, Neueste zuerst, Limit 1. Textzeile: `hrv,heute,` + Health-Messungen.
+3. **VO2max:** Health-Messungen suchen → Typ **VO2 max**, Neueste zuerst, Limit 1. Textzeile: `vo2,heute,` + Health-Messungen.
+4. **Schlaf:** Health-Messungen suchen → Typ **Schlafanalyse**, Filter „Startdatum ist innerhalb der letzten 1 Tag“ und „Wert ist Schlaf“ (bei Bedarf „Kernschlaf“, „Tiefschlaf“, „REM“ zusammen). Danach **Statistik berechnen → Summe** über die **Dauer**. Textzeile: `sleep,heute,` + Summe. Kommt die Summe in Minuten, rechnet die App automatisch um.
+5. **Trainings:** **Trainings suchen** (Find Workouts) → Filter „Startdatum ist heute“, Neueste zuerst, Limit 1. Textzeile: `workout,heute,` + Trainingstyp + `,` + Dauer (Minuten) + `,` + Durchschnittliche Herzfrequenz + `,` + Distanz (km). Die Werte holst du über „Details von Training abrufen“ oder direkt über das Kästchen des Trainings und Auswahl der Eigenschaft.
+
+Tipp: Wenn ein Wert an einem Tag fehlt, bleibt die Zeile leer und die App ignoriert sie. Nichts geht kaputt.

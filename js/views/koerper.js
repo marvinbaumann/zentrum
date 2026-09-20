@@ -30,6 +30,31 @@ export const TESTS = [
   { key: 'vo2', name: 'VO2max (Apple Watch)', unit: '', better: 'up', hint: 'Health → Cardiofitness' },
   { key: 'rhr', name: 'Ruhepuls', unit: 'bpm', better: 'down', hint: 'Health → Ruheherzfrequenz, 7-Tage-Schnitt' },
 ];
+// Erholung aus Apple Health (per Kurzbefehl): Schlaf, Ruhepuls, HRV, VO2max
+function latestHealth(s, key) { const days = Object.keys(s.health || {}).filter(d => s.health[d][key] != null).sort(); const d = days[days.length - 1]; return d ? { date: d, value: s.health[d][key] } : null; }
+function avgHealth(s, key, n = 7) { const vals = Object.entries(s.health || {}).filter(([, h]) => h[key] != null).sort((a, b) => a[0].localeCompare(b[0])).slice(-n).map(([, h]) => h[key]); return vals.length ? vals.reduce((a, b) => a + b, 0) / vals.length : null; }
+function fmtH(h) { const m = Math.round(h * 60); return `${Math.floor(m / 60)}:${String(m % 60).padStart(2, '0')}`; }
+function recoveryCard(s) {
+  if (!s.health || !Object.keys(s.health).length) return `${sectionLabel('Erholung')}<div class="card pad"><div class="note"><strong style="color:var(--text)">Apple Watch anbinden.</strong> Erweitere den Kurzbefehl „Zentrum Sync“ um Schlaf, Ruhepuls, HRV, VO2max und Trainings, dann erscheinen sie hier automatisch. Anleitung in docs/kurzbefehl-health.md, Abschnitt Apple Watch.</div></div>`;
+  const sleep = latestHealth(s, 'sleep'), rhr = latestHealth(s, 'rhr'), hrv = latestHealth(s, 'hrv'), vo2 = latestHealth(s, 'vo2');
+  const sleepAvg = avgHealth(s, 'sleep'), rhrAvg = avgHealth(s, 'rhr'), hrvAvg = avgHealth(s, 'hrv');
+  const today = dateKey();
+  const last14 = Array.from({ length: 14 }, (_, i) => { const k = addDays(today, i - 13); return { k, v: s.health[k]?.sleep || 0 }; });
+  const W = 320, H = 70, gap = 5, bw = (W - gap * 13) / 14, max = Math.max(9, ...last14.map(x => x.v));
+  const chart = `<svg class="chart" viewBox="0 0 ${W} ${H}" style="height:70px">${last14.map((d, i) => `<rect x="${(i * (bw + gap)).toFixed(1)}" y="${(H - d.v / max * (H - 6)).toFixed(1)}" width="${bw.toFixed(1)}" height="${(d.v / max * (H - 6)).toFixed(1)}" rx="4" fill="${d.v >= 7 ? 'var(--indigo)' : d.v > 0 ? 'color-mix(in srgb, var(--indigo) 45%, transparent)' : 'var(--field)'}"/>`).join('')}<line x1="0" x2="${W}" y1="${(H - 7 / max * (H - 6)).toFixed(1)}" y2="${(H - 7 / max * (H - 6)).toFixed(1)}" stroke="var(--indigo)" stroke-width="1.5" stroke-dasharray="4 4" opacity=".7"/></svg><div class="chart-foot"><span>${fmtDM(last14[0].k)}</span><span>Schlaf, Linie = 7 h</span><span>Heute</span></div>`;
+  const delta = (v, avg, goodDown) => { if (v == null || avg == null) return ''; const d = v - avg; if (Math.abs(d) < 0.5) return '<small style="color:var(--text2)">= Ø</small>'; const good = goodDown ? d < 0 : d > 0; return `<small style="color:${good ? 'var(--green)' : 'var(--orange)'}">${d > 0 ? '+' : ''}${Math.round(d)} zu Ø</small>`; };
+  return `${sectionLabel('Erholung', '<span class="pill" style="--c:var(--indigo)">Apple Watch</span>')}
+  <div class="card">
+    <div class="stats" style="padding-top:14px">
+      <div class="stat"><div class="v">${sleep ? fmtH(sleep.value) : '–'}<small>h</small></div><div class="l">Schlaf ${sleep ? relDay(sleep.date) : ''}${sleepAvg ? ` · Ø ${fmtH(sleepAvg)}` : ''}</div></div>
+      <div class="stat"><div class="v">${rhr ? rhr.value : '–'}</div><div class="l">Ruhepuls ${rhr ? delta(rhr.value, rhrAvg, true) : ''}</div></div>
+      <div class="stat"><div class="v">${hrv ? hrv.value : '–'}</div><div class="l">HRV ms ${hrv ? delta(hrv.value, hrvAvg, false) : ''}</div></div>
+    </div>
+    ${vo2 ? `<div class="row" style="border-bottom:0;padding-top:0"><div class="grow"><div class="title">VO2max ${String(vo2.value).replace('.', ',')}</div><div class="meta">Apple Watch Schätzung, Stand ${relDay(vo2.date)}</div></div></div>` : ''}
+    ${chart}
+  </div>`;
+}
+
 function testsCard(s) {
   const list = [...(s.tests || [])].sort((a, b) => a.date.localeCompare(b.date));
   const last = list[list.length - 1], prev = list[list.length - 2];
@@ -93,6 +118,7 @@ export function render(s) {
         <div class="stat"><div class="v">${fmtNum(Math.max(...last14.map(x => x.v)))}</div><div class="l">Bestwert</div></div>
       </div>
     </div>
+    ${recoveryCard(s)}
     ${testsCard(s)}
     <div class="card pad"><div class="note"><strong style="color:var(--text)">Automatisch übertragen.</strong> Ein Kurzbefehl auf dem iPhone schickt Schritte und das Gewicht deiner Waage aus Apple Health hierher.${s.lastImport ? ` Letzter Import: ${new Date(s.lastImport).toLocaleString('de-DE', { day: 'numeric', month: 'numeric', hour: '2-digit', minute: '2-digit' })} Uhr.` : ' Noch kein Import angekommen.'}</div></div>
   `;
@@ -139,7 +165,7 @@ export const actions = {
     openSheet({ title: 'Monats-Test', submitLabel: 'Speichern',
       html: `<div class="note" style="padding:0 2px 12px">Trag ein, was du gemessen hast. Leere Felder sind okay. Immer gleiche Bedingungen: ausgeruht, nach dem Aufwärmen.</div>
         ${field({ label: 'Datum', name: 'date', type: 'date', value: dateKey() })}
-        ${TESTS.map(t => field({ label: `${t.name}${t.unit ? ` (${t.unit})` : ''}`, name: t.key, type: 'text', value: '', placeholder: last?.values?.[t.key] != null && last.values[t.key] !== '' ? `zuletzt ${String(last.values[t.key]).replace('.', ',')}` : t.hint, attrs: 'inputmode="decimal" autocomplete="off"' })).join('')}`,
+        ${TESTS.map(t => { const auto = t.key === 'vo2' ? latestHealth(state, 'vo2')?.value : t.key === 'rhr' ? (avgHealth(state, 'rhr') != null ? Math.round(avgHealth(state, 'rhr')) : null) : null; return field({ label: `${t.name}${t.unit ? ` (${t.unit})` : ''}${auto != null ? ' · aus Apple Watch' : ''}`, name: t.key, type: 'text', value: auto != null ? String(auto).replace('.', ',') : '', placeholder: last?.values?.[t.key] != null && last.values[t.key] !== '' ? `zuletzt ${String(last.values[t.key]).replace('.', ',')}` : t.hint, attrs: 'inputmode="decimal" autocomplete="off"' }); }).join('')}`,
       onSubmit(d) {
         const values = {}; let any = false;
         for (const t of TESTS) { const v = parseFloat(String(d[t.key] || '').replace(',', '.')); if (!isNaN(v)) { values[t.key] = v; any = true; } }
