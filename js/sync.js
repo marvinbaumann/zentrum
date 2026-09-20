@@ -132,6 +132,7 @@ export async function importInbox() {
       else if (type === 'rhr' || type.startsWith('ruhepuls') || type.startsWith('resting')) (health[date] ||= {}).rhr = Math.round(val);
       else if (type === 'hrv' || type.startsWith('hrv')) (health[date] ||= {}).hrv = Math.round(val);
       else if (type.startsWith('vo2')) (health[date] ||= {}).vo2 = Math.round(val * 10) / 10;
+      else if (type.startsWith('exercise') || type.startsWith('trainingsmin') || type.startsWith('aktiv')) { const mins = Math.round(parseDurationMin(parts.slice(2).join(','))) || 0; (health[date] ||= {}).exercise = mins; if (mins >= 30) workouts.push({ date, kind: 'Ausdauer', minutes: mins, avgHr: 0, km: 0, note: 'Apple Watch: Trainingsminuten', fallback: true }); }
     }
     processed.push(f);
   }
@@ -147,6 +148,7 @@ export async function importInbox() {
       if (hasPlan) continue;
       if (existing && !(existing.note || '').startsWith('Apple Watch') ) continue;
       if (existing && existing.minutes >= w.minutes) continue;
+      if (w.fallback && existing && !(existing.note || '').includes('Trainingsminuten')) continue;
       (s.freeWorkouts ||= {})[w.date] = { kind: w.kind, minutes: w.minutes, avgHr: w.avgHr, km: w.km, load: 0, note: w.note, at: new Date().toISOString() };
     }
     s.lastImport = new Date().toISOString();

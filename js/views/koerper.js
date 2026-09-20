@@ -51,6 +51,7 @@ function recoveryCard(s) {
       <div class="stat"><div class="v">${hrv ? hrv.value : '–'}</div><div class="l">HRV ms ${hrv ? delta(hrv.value, hrvAvg, false) : ''}</div></div>
     </div>
     ${vo2 ? `<div class="row" style="border-bottom:0;padding-top:0"><div class="grow"><div class="title">VO2max ${String(vo2.value).replace('.', ',')}</div><div class="meta">Apple Watch Schätzung, Stand ${relDay(vo2.date)}</div></div></div>` : ''}
+    ${s.health[today]?.exercise ? `<div class="row" style="border-bottom:0;padding-top:0"><div class="grow"><div class="title">${s.health[today].exercise} Trainingsminuten heute</div><div class="meta">Apple Watch, Ring „Trainieren“</div></div></div>` : ''}
     ${chart}
   </div>`;
 }
