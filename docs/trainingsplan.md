@@ -2,9 +2,9 @@
 
 Ziel: definiert und muskulös, beweglich, ausdauernd, gesund. 45 bis 60 Minuten pro Tag, jeden Tag Bewegung, Garage.
 
-Deine Ausstattung: Power Rack 900 mit Kabelzug, Bench 900, Langhantel 2 m (9,75 kg, max. 160 kg), Scheiben 28 mm (2 × 2,5, 2 × 5, 2 × 10, 2 × 20 kg), Kurzhanteln 2 × 5, 2 × 10, 2 × 20 kg, Gewichtsweste 20 kg, Trizeps-Seil, 2 D-Griffe, Apple Watch. Optional später: Dip-Kit fürs Rack, Bänder.
+Deine Ausstattung: Power Rack 900 mit Kabelzug, Bench 900, Langhantel 2 m (9,75 kg, max. 160 kg), Scheiben 28 mm (2 × 2, 2 × 5, 2 × 10, 2 × 20 kg), Kurzhanteln 2 × 5, 2 × 10, 2 × 20 kg, Gewichtsweste 20 kg, Trizeps-Seil, 2 D-Griffe, Apple Watch. Optional später: Dip-Kit fürs Rack, Bänder.
 
-**Gewichte und Beladung.** Alle Startgewichte im Plan sind mit genau dieser Ausstattung beladbar. Langhantel (Stange gerundet 10 kg) symmetrisch: 10, 15, 20, 25, 30, 35, 40, 45, 50, 55, 60, 65, 70, 75, 80, 85 kg. Kabelzug: jede Scheibenkombination, ab 2,5 kg in 2,5-kg-Schritten. Kurzhanteln: 5, 10, 20 kg. Die App kennt Hanteln, Scheiben und Stange (Training, Zahnrad) und schlägt nur beladbare Gewichte vor. In der App unter Training, Zahnrad: Hanteln „5, 10, 20“, Scheiben „2.5, 2.5, 5, 5, 10, 10, 20, 20“, Stange 10 kg. Die Vorlage 3.1 trägt das beim Laden automatisch ein.
+**Gewichte und Beladung.** Alle Startgewichte im Plan sind mit genau dieser Ausstattung beladbar. Langhantel (Stange gerundet 10 kg) symmetrisch: 10, 14, 20, 24, 30, 34, 40, 44, 50, 54, 60, 64, 70, 74, 80, 84 kg. Kabelzug: jede Scheibenkombination, ab 2 kg in 1- bis 3-kg-Schritten. Kurzhanteln: 5, 10, 20 kg. Die App kennt Hanteln, Scheiben und Stange (Training, Zahnrad) und schlägt nur beladbare Gewichte vor. Solltest du nur eine 20-kg-Scheibe kaufen, trage in der App „2, 2, 5, 5, 10, 10, 20“ ein; dann endet die Langhantel bei 44 kg und die Startgewichte für Kniebeuge, Kreuzheben und Bankdrücken sinken auf 40 bis 44 kg.
 
 Deine Basis: Jahre Hypertrophie im Gym, aktuell 5 saubere Klimmzüge, 30 Liegestütze, keine Verletzungen.
 
@@ -13,7 +13,7 @@ Deine Basis: Jahre Hypertrophie im Gym, aktuell 5 saubere Klimmzüge, 30 Liegest
 - **Galpins neun Anpassungen** statt nur Hypertrophie: Kraft, Hypertrophie, Muskelausdauer, Power, VO2max, Grundlagenausdauer, Mobilität.
 - **Hubermans Wochengerüst**: 3 Krafttage, 3 Ausdauertage (lang Zone 2, VO2max, moderat), 1 aktive Erholung.
 - **Volumen**: 10 bis 16 harte Sätze pro Muskelgruppe pro Woche.
-- **Progression**: Doppelprogression wie in Zentrum. Kurzhanteln steigen nach deiner Hantelliste, Langhantel in 5-kg-Schritten (2 × 2,5 kg), Kabelzug in 2,5-kg-Schritten, Eigengewicht über Weste oder schwerere Variante.
+- **Progression**: Doppelprogression wie in Zentrum. Kurzhanteln steigen nach deiner Hantelliste, Langhantel in 4-kg-Schritten (2 × 2 kg), Kabelzug in 2-kg-Schritten, Eigengewicht über Weste oder schwerere Variante.
 - **Zone 2** per Rucking mit Weste, 150 bis 180 Minuten pro Woche. **VO2max** einmal pro Woche hart. **Mobilität** täglich 10 Minuten.
 - **Sicherheit im Rack**: Sicherheitsablagen bei Kniebeuge und Bankdrücken immer auf Höhe knapp unter dem tiefsten Punkt. Dann kannst du allein an die Grenze gehen.
 - **Nähe zum Versagen** (Galpin): Hypertrophie-Sätze mit 1 bis 2 Wiederholungen Reserve, Kraftsätze mit 2 Reserve, nie bis zum technischen Zusammenbruch.
@@ -100,10 +100,10 @@ Die schwere Kniebeuge am Freitag ergänzt die Hypertrophie-Kniebeuge vom Montag.
 
 | Übung | Sätze × Range | Start | Gerät |
 |---|---|---|---|
-| Kabel-Curls, Seil oder Triangel | 3 × 10–15 | 15 kg | Kabel |
-| Trizeps am Seil | 3 × 10–15 | 15 kg | Kabel |
+| Kabel-Curls, Stange oder D-Griffe | 3 × 10–15 | 14 kg | Kabel |
+| Trizeps am Seil | 3 × 10–15 | 14 kg | Kabel |
 | Hammer-Curls am Seil | 2 × 10–15 | 10 kg | Kabel |
-| Kabel-Seitheben | 3 × 12–15 | 5 kg | Kabel |
+| Kabel-Seitheben | 3 × 12–15 | 4 kg | Kabel |
 | Pallof Press am Kabel, Anti-Rotation | 2 × 10 je Seite | 10 kg | Kabel |
 
 ### Sonntag – Mobility-Flow + Spaziergang (40 min)

@@ -110,7 +110,7 @@
           "repMax": 12,
           "weight": 50,
           "equipment": "lh",
-          "increment": 5
+          "increment": 4
         },
         {
           "name": "Rumänisches Kreuzheben (LH)",
@@ -119,7 +119,7 @@
           "repMax": 12,
           "weight": 60,
           "equipment": "lh",
-          "increment": 5
+          "increment": 4
         },
         {
           "name": "Bulgarian Split Squat (je Seite)",
@@ -182,7 +182,7 @@
           "repMax": 15,
           "weight": 30,
           "equipment": "kabel",
-          "increment": 2.5
+          "increment": 2
         },
         {
           "name": "KH Schulterdrücken sitzend",
@@ -215,7 +215,7 @@
           "repMax": 20,
           "weight": 10,
           "equipment": "kabel",
-          "increment": 2.5
+          "increment": 2
         }
       ]
     },
@@ -224,7 +224,7 @@
       "weekday": 5,
       "exercises": [
         {
-          "name": "Sprungkniebeugen / Box Jumps",
+          "name": "Box Jumps / Sprungkniebeugen",
           "sets": 3,
           "repMin": 5,
           "repMax": 5,
@@ -238,7 +238,7 @@
           "repMax": 8,
           "weight": 60,
           "equipment": "lh",
-          "increment": 5
+          "increment": 4
         },
         {
           "name": "Langhantel-Bankdrücken flach (Rack)",
@@ -247,10 +247,10 @@
           "repMax": 8,
           "weight": 50,
           "equipment": "lh",
-          "increment": 5
+          "increment": 4
         },
         {
-          "name": "Klimmzüge schwer (Weste/Gürtel, sonst langsam)",
+          "name": "Klimmzüge mit Weste",
           "sets": 4,
           "repMin": 3,
           "repMax": 6,
@@ -264,7 +264,7 @@
           "repMax": 8,
           "weight": 60,
           "equipment": "lh",
-          "increment": 5
+          "increment": 4
         },
         {
           "name": "Woche B: KH-Swings",
@@ -292,18 +292,18 @@
           "sets": 3,
           "repMin": 10,
           "repMax": 15,
-          "weight": 15,
+          "weight": 14,
           "equipment": "kabel",
-          "increment": 2.5
+          "increment": 2
         },
         {
           "name": "Trizeps am Seil",
           "sets": 3,
           "repMin": 10,
           "repMax": 15,
-          "weight": 15,
+          "weight": 14,
           "equipment": "kabel",
-          "increment": 2.5
+          "increment": 2
         },
         {
           "name": "Hammer-Curls am Seil",
@@ -312,16 +312,16 @@
           "repMax": 15,
           "weight": 10,
           "equipment": "kabel",
-          "increment": 2.5
+          "increment": 2
         },
         {
           "name": "Kabel-Seitheben",
           "sets": 3,
           "repMin": 12,
           "repMax": 15,
-          "weight": 5,
+          "weight": 4,
           "equipment": "kabel",
-          "increment": 2.5
+          "increment": 2
         },
         {
           "name": "Pallof Press (je Seite)",
@@ -330,7 +330,7 @@
           "repMax": 10,
           "weight": 10,
           "equipment": "kabel",
-          "increment": 2.5
+          "increment": 2
         }
       ],
       "weekday": 6
@@ -338,7 +338,7 @@
   ],
   "equipment": {
     "weights": "5, 10, 20",
-    "plates": "2.5, 2.5, 5, 5, 10, 10, 20, 20",
+    "plates": "2, 2, 5, 5, 10, 10, 20, 20",
     "barWeight": 10
   },
   "habits": [
