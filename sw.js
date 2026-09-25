@@ -1,4 +1,4 @@
-const CACHE = 'zentrum-v3';
+const CACHE = 'zentrum-v28';
 const ASSETS = [
   './', './index.html', './styles.css', './manifest.json', './greetings.json', './plans/zuhause-v2.json', './plans/zuhause-v3.json', './plans/standards-v1.json',
   './js/app.js', './js/store.js', './js/ui.js', './js/sheet.js', './js/habits.js', './js/fx.js', './js/sync.js',
