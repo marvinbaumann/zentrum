@@ -100,62 +100,6 @@
   },
   "days": [
     {
-      "name": "Sa · Unterkörper",
-      "weekday": 6,
-      "exercises": [
-        {
-          "name": "Langhantel-Kniebeuge (Rack)",
-          "sets": 4,
-          "repMin": 8,
-          "repMax": 12,
-          "weight": 50,
-          "equipment": "lh",
-          "increment": 4
-        },
-        {
-          "name": "Rumänisches Kreuzheben (LH)",
-          "sets": 4,
-          "repMin": 8,
-          "repMax": 12,
-          "weight": 60,
-          "equipment": "lh",
-          "increment": 4
-        },
-        {
-          "name": "Bulgarian Split Squat (je Seite)",
-          "sets": 3,
-          "repMin": 8,
-          "repMax": 12,
-          "weight": 10,
-          "equipment": "kh"
-        },
-        {
-          "name": "Hip Thrust (KH auf Hüfte)",
-          "sets": 3,
-          "repMin": 10,
-          "repMax": 15,
-          "weight": 20,
-          "equipment": "kh"
-        },
-        {
-          "name": "Wadenheben einbeinig",
-          "sets": 3,
-          "repMin": 12,
-          "repMax": 20,
-          "weight": null,
-          "equipment": "bw"
-        },
-        {
-          "name": "Hängende Beinheber (Rack)",
-          "sets": 3,
-          "repMin": 8,
-          "repMax": 15,
-          "weight": null,
-          "equipment": "bw"
-        }
-      ]
-    },
-    {
       "name": "Mo · Oberkörper",
       "weekday": 1,
       "exercises": [
@@ -334,6 +278,62 @@
         }
       ],
       "weekday": 5
+    },
+    {
+      "name": "Sa · Unterkörper",
+      "weekday": 6,
+      "exercises": [
+        {
+          "name": "Langhantel-Kniebeuge (Rack)",
+          "sets": 4,
+          "repMin": 8,
+          "repMax": 12,
+          "weight": 50,
+          "equipment": "lh",
+          "increment": 4
+        },
+        {
+          "name": "Rumänisches Kreuzheben (LH)",
+          "sets": 4,
+          "repMin": 8,
+          "repMax": 12,
+          "weight": 60,
+          "equipment": "lh",
+          "increment": 4
+        },
+        {
+          "name": "Bulgarian Split Squat (je Seite)",
+          "sets": 3,
+          "repMin": 8,
+          "repMax": 12,
+          "weight": 10,
+          "equipment": "kh"
+        },
+        {
+          "name": "Hip Thrust (KH auf Hüfte)",
+          "sets": 3,
+          "repMin": 10,
+          "repMax": 15,
+          "weight": 20,
+          "equipment": "kh"
+        },
+        {
+          "name": "Wadenheben einbeinig",
+          "sets": 3,
+          "repMin": 12,
+          "repMax": 20,
+          "weight": null,
+          "equipment": "bw"
+        },
+        {
+          "name": "Hängende Beinheber (Rack)",
+          "sets": 3,
+          "repMin": 8,
+          "repMax": 15,
+          "weight": null,
+          "equipment": "bw"
+        }
+      ]
     }
   ],
   "equipment": {

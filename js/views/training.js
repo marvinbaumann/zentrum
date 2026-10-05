@@ -24,6 +24,8 @@ document.addEventListener('input', e => {
   d.values[el.name] = el.value; saveDraft(d);
 });
 
+// Tage in Wochenreihenfolge Mo → So, Tage ohne Wochentag ans Ende
+function orderedDays(s) { const rank = d => d.weekday == null ? 99 : (d.weekday === 0 ? 7 : d.weekday); return [...(s.training.days || [])].sort((a, b) => rank(a) - rank(b)); }
 function selectedDay(s) {
   const days = s.training.days;
   return days.find(d => d.id === s.training.selectedDay) || todayPlanDay(s) || days[0] || null;
@@ -224,7 +226,7 @@ export function render(s) {
     ${header('Training', 'Progressive Overload', `<button class="icon-btn" data-action="trainingSettings" aria-label="Hanteln und Pause">${icons.gear}</button><button class="link-btn ${editMode ? 'bold' : ''}" data-action="toggleEdit">${editMode ? 'Fertig' : 'Plan'}</button>`)}
     ${editMode ? '' : trainingHero(s)}
     ${editMode ? '' : `<div class="stack" style="padding:0 0 14px"><button type="button" class="btn btn-soft" data-action="freeWorkout">${todayWorkout(s).done ? 'Weiteres Training eintragen' : 'Heute anders trainiert? Frei eintragen'}</button></div>`}
-    ${s.training.days.length ? segmented(s.training.days, day?.id, 'selectDay') : ''}
+    ${s.training.days.length ? segmented(orderedDays(s), day?.id, 'selectDay') : ''}
     ${editMode ? `<div class="stack" style="padding:0 0 12px"><button class="btn btn-soft" data-action="loadTemplate">Vorlage laden: Zuhause-Plan (Entwurf 3.2, Fußball Di)</button></div><div class="btn-row"><button class="btn btn-soft btn-sm" data-action="addDay">${icons.plus.replace('<svg', '<svg style="width:15px;height:15px"')} Tag</button>${day ? `<button class="btn btn-soft btn-sm" data-action="renameDay">Umbenennen</button><button class="btn btn-danger btn-sm" data-action="delDay">Tag löschen</button>` : ''}</div>` : ''}
 
     ${day ? `
@@ -437,7 +439,7 @@ export const actions = {
       const d = selectedDay(s);
       for (const u of updates) { const ex = d.exercises.find(e => e.id === u.id); ex.targetReps = u.next.targetReps; ex.weight = u.next.weight; if (u.next.repMax) ex.repMax = u.next.repMax; }
       s.training.sessions.unshift(session);
-      s.training.selectedDay = s.training.days[(s.training.days.findIndex(x => x.id === day.id) + 1) % s.training.days.length]?.id || day.id;
+      { const od = orderedDays(s); s.training.selectedDay = od[(od.findIndex(x => x.id === day.id) + 1) % od.length]?.id || day.id; }
     });
     clearDraftFor(day);
     const totalPRs = entries.reduce((n, e) => n + e.prs.length, 0);
