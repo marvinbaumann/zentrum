@@ -1,8 +1,10 @@
-# Trainingsplan Zuhause – Entwurf 3.1 (final geprüft)
+# Trainingsplan Zuhause – Entwurf 3.2 (final, mit Fußball am Dienstag)
 
 Ziel: definiert und muskulös, beweglich, ausdauernd, gesund. 45 bis 60 Minuten pro Tag, jeden Tag Bewegung, Garage.
 
 Deine Ausstattung: Power Rack 900 mit Kabelzug, Bench 900, Langhantel 2 m (9,75 kg, max. 160 kg), Scheiben 28 mm (2 × 2, 2 × 5, 2 × 10, 2 × 20 kg), Kurzhanteln 2 × 5, 2 × 10, 2 × 20 kg, Gewichtsweste 20 kg, Trizeps-Seil, 2 D-Griffe, Apple Watch. Optional später: Dip-Kit fürs Rack, Bänder.
+
+**Was die Zahl bedeutet:** Kurzhantel = Gewicht pro Hantel. Langhantel = Gesamtgewicht inklusive Stange (10 kg Stange + Scheiben auf beiden Seiten). Kabelzug = Gewicht am Zug. Die App zeigt das bei jeder Übung an.
 
 **Gewichte und Beladung.** Alle Startgewichte im Plan sind mit genau dieser Ausstattung beladbar. Langhantel (Stange gerundet 10 kg) symmetrisch: 10, 14, 20, 24, 30, 34, 40, 44, 50, 54, 60, 64, 70, 74, 80, 84 kg. Kabelzug: jede Scheibenkombination, ab 2 kg in 1- bis 3-kg-Schritten. Kurzhanteln: 5, 10, 20 kg. Die App kennt Hanteln, Scheiben und Stange (Training, Zahnrad) und schlägt nur beladbare Gewichte vor. Solltest du nur eine 20-kg-Scheibe kaufen, trage in der App „2, 2, 5, 5, 10, 10, 20“ ein; dann endet die Langhantel bei 44 kg und die Startgewichte für Kniebeuge, Kreuzheben und Bankdrücken sinken auf 40 bis 44 kg.
 
@@ -23,19 +25,23 @@ Deine Basis: Jahre Hypertrophie im Gym, aktuell 5 saubere Klimmzüge, 30 Liegest
 
 ## Die Woche
 
+Fix ist nur das Fußballspiel am Dienstagmorgen, alles andere ist darum herum gebaut.
+
 | Tag | Fokus | Dauer |
 |---|---|---|
-| **Mo** | Unterkörper: Langhantel + Kurzhantel | 50 min |
-| **Di** | Rucking Zone 2 + Mobility | 50 min |
-| **Mi** | Oberkörper: Push + Pull mit Kabelzug | 55 min |
-| **Do** | VO2max-Intervalle + Mobility | 40 min |
-| **Fr** | Ganzkörper: Kraft + Power, schwer | 50 min |
-| **Sa** | Rucking 45 min + Arme & Schultern am Kabel (fester Plan-Tag) | 60 min |
+| **Mo** | Oberkörper: Push + Pull mit Kabelzug | 55 min |
+| **Di** | Fußball 60 min = VO2max (fällt es aus: 4×4 Intervalle) | 60 min |
+| **Mi** | Rucking Zone 2 + Mobility, Erholung nach Fußball | 50 min |
+| **Do** | Ganzkörper: Kraft + Power, schwer | 55 min |
+| **Fr** | Rucking 45 min + Arme & Schultern am Kabel | 60 min |
+| **Sa** | Unterkörper: Langhantel + Kurzhantel | 50 min |
 | **So** | Mobility-Flow + Spaziergang | 40 min |
+
+**Warum diese Reihenfolge:** Fußball mit einem Puls-Schnitt über 180 ist Zone 4 bis 5 und damit deine VO2max-Einheit. Am Tag davor keine schweren Beine, deshalb Montag Oberkörper. Mittwoch lockeres Rucking als aktive Erholung. Donnerstag, rund 60 Stunden nach dem Spiel, schwere Kniebeugen und Sprünge. Samstag Beinvolumen mit 72 Stunden Abstand zum nächsten Spiel.
 
 Täglich zusätzlich 10.000 Schritte. Hantelrechnung: Langhantel 10 kg plus Scheiben. 50 kg heißt Stange plus 2 × 20 kg.
 
-### Montag – Unterkörper (50 min)
+### Samstag – Unterkörper (50 min)
 
 Aufwärmen 8 min: Hüftkreisen, Cossack Squats 2 × 8, Tibialis Raises an der Wand 2 × 20 (Knie- und Schienbeinschutz nach Huberman/Knees over Toes), Kniebeugen mit leerer Stange 2 × 10.
 
@@ -48,11 +54,11 @@ Aufwärmen 8 min: Hüftkreisen, Cossack Squats 2 × 8, Tibialis Raises an der Wa
 | Wadenheben einbeinig, Stufe oder Scheibe | 3 × 12–20 | Eigengewicht | BW | 60 s |
 | Hängende Beinheber am Rack | 3 × 8–15 | Eigengewicht | BW | 60 s |
 
-### Dienstag – Rucking Zone 2 (50 min)
+### Mittwoch – Rucking Zone 2 (50 min)
 
 40 Minuten zügig gehen mit Weste, Start 8 kg, nach zwei Wochen 10 kg, gern Steigung. Puls 60 bis 70 Prozent Maximum, Nasenatmung, unterhaltungsfähig. Danach 10 Minuten Mobility: Couch Stretch, 90/90-Hüfte, Waden.
 
-### Mittwoch – Oberkörper Push + Pull (55 min)
+### Montag – Oberkörper Push + Pull (55 min)
 
 Aufwärmen 8 min: Face Pulls am Kabel 2 × 15 mit 5 kg, Schulterkreisen, Dead Hang 2 × 20 s, Liegestütze 1 × 10.
 
@@ -70,16 +76,16 @@ Warum Rudern statt Seitheben: Ohne horizontales Ziehen fehlt dem Plan der obere 
 
 Falls 2 × 20 kg schräg zu schwer ist: Langhantel-Bankdrücken schräg mit 30 bis 40 kg, bis 2 × 15 kg Kurzhanteln da sind.
 
-### Donnerstag – VO2max + Mobility (40 min)
+### Dienstag – Fußball, Ersatz VO2max-Intervalle (60 min)
 
-Aufwärmen 8 min zügig gehen. Im Wochenwechsel:
+Normalerweise Fußball 60 Minuten, das ist deine VO2max-Einheit. Fällt es aus, Aufwärmen 8 min zügig gehen, dann im Wochenwechsel:
 
 - **Woche A**: 4 × 4 Minuten hart, 3 Minuten locker. Steigung oder Treppe mit Weste.
 - **Woche B**: 10 Runden: 15 KH-Swings mit 20 kg + 5 Burpees, 1 Minute Pause. Oder 8 × 1 Minute Springseil.
 
 Danach 10 Minuten Mobility: Sprunggelenke, Hüftbeuger, Brustwirbelsäule.
 
-### Freitag – Ganzkörper Kraft + Power (55 min)
+### Donnerstag – Ganzkörper Kraft + Power (55 min)
 
 Schwer, engere Range, Pausen 2 bis 3 Minuten. Sicherheitsablagen setzen. Reihenfolge ist Absicht: Power zuerst, dann Kraft, dann Ergänzung.
 
@@ -94,7 +100,7 @@ Schwer, engere Range, Pausen 2 bis 3 Minuten. Sicherheitsablagen setzen. Reihenf
 
 Die schwere Kniebeuge am Freitag ergänzt die Hypertrophie-Kniebeuge vom Montag. So bekommen die Beine beide Reize, Kraft und Volumen, und die Quadrizeps-Sätze steigen von 7 auf 11 pro Woche. Kreuzheben und Swings wechseln wöchentlich, in der App trägst du einfach nur die Übung ein, die dran war, die andere bleibt leer.
 
-### Samstag – Rucking + Arme & Schultern (60 min, fester Plan-Tag)
+### Freitag – Rucking + Arme & Schultern (60 min, fester Plan-Tag)
 
 45 Minuten Rucking draußen mit Weste, gern Höhenmeter, als freies Training eintragen. Danach 15 Minuten Kabel-Block als Plan-Tag in der App:
 

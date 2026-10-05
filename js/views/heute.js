@@ -17,6 +17,9 @@ import { MONTHS } from '../ui.js';
 const WD = ['Mo', 'Di', 'Mi', 'Do', 'Fr', 'Sa', 'So'];
 const WD_IDX = [1, 2, 3, 4, 5, 6, 0];
 let firstMount = true;
+// Nachtragen: Standards, Schritte und Training für gestern abhaken (zählt für die Serie). Springt nach 10 Minuten zurück auf heute.
+let viewYesterday = false, viewYesterdayAt = 0;
+function viewKey() { if (viewYesterday && Date.now() - viewYesterdayAt > 10 * 60 * 1000) viewYesterday = false; return viewYesterday ? addDays(dateKey(), -1) : dateKey(); }
 let lastPop = null;
 
 function greeting(h) {
@@ -76,13 +79,14 @@ function weekStrip(s, today) {
 export function render(s) {
   const today = dateKey();
   const d = dayItems(s, today);
+  const vKey = viewKey(); const isPast = vKey !== today; const vd = isPast ? dayItems(s, vKey) : d;
   const st = streak(s, today);
   const best = bestStreak(s);
   const groups = {};
   const slotOrder = { am: 0, '': 1, undefined: 1, pm: 2 };
-  for (const r of [...d.required].sort((a, b) => (slotOrder[a.habit.slot] ?? 1) - (slotOrder[b.habit.slot] ?? 1))) (groups[r.habit.area] ||= []).push(r);
-  const slotItems = d.required.filter(r => r.habit.slot === 'am' || r.habit.slot === 'pm');
-  const slotSummary = slotItems.length ? ['am', 'pm'].map(sl => { const items = d.required.filter(r => r.habit.slot === sl); if (!items.length) return ''; const open = items.filter(r => !r.done); return `<span class="slot-chip ${open.length ? '' : 'done'}">${sl === 'am' ? '☀️' : '🌙'} ${sl === 'am' ? 'Morgens' : 'Abends'} ${items.length - open.length}/${items.length}</span>`; }).join('') : '';
+  for (const r of [...vd.required].sort((a, b) => (slotOrder[a.habit.slot] ?? 1) - (slotOrder[b.habit.slot] ?? 1))) (groups[r.habit.area] ||= []).push(r);
+  const slotItems = vd.required.filter(r => r.habit.slot === 'am' || r.habit.slot === 'pm');
+  const slotSummary = slotItems.length ? ['am', 'pm'].map(sl => { const items = vd.required.filter(r => r.habit.slot === sl); if (!items.length) return ''; const open = items.filter(r => !r.done); return `<span class="slot-chip ${open.length ? '' : 'done'}">${sl === 'am' ? '☀️' : '🌙'} ${sl === 'am' ? 'Morgens' : 'Abends'} ${items.length - open.length}/${items.length}</span>`; }).join('') : '';
 
   const trainedToday = s.training.sessions.find(x => x.date === today);
   const nextDay = nextTrainingDay(s);
@@ -115,30 +119,32 @@ export function render(s) {
     </div>
 
     ${sectionLabel('Tages-Standards', `<button class="link-btn" data-action="manageHabits">Bearbeiten</button>`)}
-    <div class="card">
+    <div class="card ${isPast ? 'past-card' : ''}">
+      <div class="day-switch"><button type="button" class="${isPast ? '' : 'on'}" data-action="viewDay" data-v="today">Heute</button><button type="button" class="${isPast ? 'on' : ''}" data-action="viewDay" data-v="yesterday">Gestern nachtragen</button></div>
+      ${isPast ? `<div class="draft-note" style="margin:8px 0 2px">Du trägst für ${esc(fmtLong(vKey))} nach. Zählt voll für deine Serie.</div>` : ''}
       ${slotSummary ? `<div class="slot-row">${slotSummary}</div>` : ''}
       ${Object.entries(groups).map(([area, items]) => `
         <div class="group-title">${tile(AREAS[area]?.icon || 'sparkles', AREAS[area]?.color || 'var(--blue)')}${esc(AREAS[area]?.name || 'Sonstiges')}</div>
-        ${items.map(r => habitRow(s, r.habit, r.done, today, pop)).join('')}
+        ${items.map(r => habitRow(s, r.habit, r.done, vKey, pop)).join('')}
       `).join('')}
-      ${d.weekly.length ? `
+      ${vd.weekly.length ? `
         <div class="group-title">${tile('sparkles', 'var(--purple)')}Wochenziele</div>
-        ${d.weekly.map(w => `
+        ${vd.weekly.map(w => `
           <div class="row ${w.done ? 'done' : ''}">
             ${check(w.done, AREAS[w.habit.area]?.color || 'var(--purple)', `data-action="toggleHabit" data-id="${w.habit.id}"`)}
             <div class="grow"><div class="title">${esc(w.habit.name)}</div><div class="meta">${w.count} von ${w.times}× diese Woche</div></div>
             <span class="pill ${w.count >= w.times ? '' : 'gray'}" style="--c:var(--green)">${w.count >= w.times ? 'Geschafft' : `${w.times - w.count} offen`}</span>
           </div>`).join('')}
       ` : ''}
-      ${d.stepsItem ? `
+      ${vd.stepsItem ? `
         <div class="group-title">${tile('steps', 'var(--green)')}Bewegung</div>
-        <div class="row ${d.stepsItem.done ? 'done' : ''}" style="flex-wrap:wrap">
-          ${check(d.stepsItem.done, 'var(--green)', 'data-action="goSteps"')}
-          <div class="grow"><div class="title">${fmtNum(d.stepsItem.goal)} Schritte</div><div class="meta">${d.stepsItem.done ? 'Ziel erreicht' : `${fmtNum(Math.max(0, d.stepsItem.goal - d.stepsItem.steps))} fehlen noch`}</div></div>
-          <div class="inline-input"><input type="number" inputmode="numeric" value="${d.stepsItem.steps || ''}" placeholder="0" data-change="setSteps" aria-label="Schritte heute"></div>
-          <div style="width:100%;padding:6px 0 2px 39px"><div class="bar" style="--c:var(--green)"><i style="width:${Math.min(100, d.stepsItem.steps / d.stepsItem.goal * 100)}%"></i></div></div>
+        <div class="row ${vd.stepsItem.done ? 'done' : ''}" style="flex-wrap:wrap">
+          ${check(vd.stepsItem.done, 'var(--green)', 'data-action="goSteps"')}
+          <div class="grow"><div class="title">${fmtNum(vd.stepsItem.goal)} Schritte</div><div class="meta">${vd.stepsItem.done ? 'Ziel erreicht' : `${fmtNum(Math.max(0, vd.stepsItem.goal - vd.stepsItem.steps))} fehlen noch`}</div></div>
+          <div class="inline-input"><input type="number" inputmode="numeric" value="${vd.stepsItem.steps || ''}" placeholder="0" data-change="setSteps" aria-label="Schritte"></div>
+          <div style="width:100%;padding:6px 0 2px 39px"><div class="bar" style="--c:var(--green)"><i style="width:${Math.min(100, vd.stepsItem.steps / vd.stepsItem.goal * 100)}%"></i></div></div>
         </div>` : ''}
-      ${!d.required.length && !d.weekly.length && !d.stepsItem ? `<div class="empty">Noch keine Standards. Tippe auf „Bearbeiten“.</div>` : ''}
+      ${!vd.required.length && !vd.weekly.length && !vd.stepsItem ? `<div class="empty">Noch keine Standards. Tippe auf „Bearbeiten“.</div>` : ''}
     </div>
 
     ${sectionLabel('Abend-Check-in')}
@@ -146,13 +152,13 @@ export function render(s) {
 
     ${(() => { const due = duePeople(s, 7); const bd = upcomingBirthdays(s, 14).filter(x => !due.includes(x.p)); if (!due.length && !bd.length) return ''; return `${sectionLabel('Menschen', `<a class="link-btn" href="#listen" data-action="goPeople" style="font-size:14px">Alle</a>`)}<div class="card">${due.map(p => personRow(p)).join('')}${bd.map(x => personRow(x.p)).join('')}</div>`; })()}
 
-    ${sectionLabel('Training', `<a class="link-btn" href="#training" style="font-size:14px">Zum Plan</a>`)}
+    ${sectionLabel(isPast ? 'Training · gestern' : 'Training', `<a class="link-btn" href="#training" style="font-size:14px">Zum Plan</a>`)}
     <div class="card">
-      ${d.trainingItem ? `<div class="row ${d.trainingItem.done ? 'done' : ''}">
-        ${check(d.trainingItem.done, 'var(--orange)', 'data-action="toggleTraining"')}
-        <div class="grow" data-action="todayInfo" role="button"><div class="title">${d.trainingItem.done ? esc(workoutText(d.trainingItem)) : 'Training heute'}</div>
-        <div class="meta">${d.trainingItem.done ? (d.trainingItem.plan ? `${d.trainingItem.plan.entries.length} Übungen · ${summarizeSession(d.trainingItem.plan)}` : 'Freies Training, zählt voll') : (() => { const pd = todayPlanDay(s), tpl = todayTemplate(s); if (pd) return `Heute: ${esc(tpl?.title || pd.name)}${tpl?.minutes ? ` · ${tpl.minutes} min` : ''} · Details`; if (tpl) return `Heute: ${esc(tpl.title)}${tpl.minutes ? ` · ${tpl.minutes} min` : ''} · Details`; return nextDay ? `Plan: ${esc(nextDay.name)} · oder frei eintragen` : 'Plan-Training oder frei eintragen'; })()}</div></div>
-        ${!d.trainingItem.done ? `<button type="button" class="btn btn-tint btn-sm" style="--c:var(--orange)" data-action="freeWorkout">Frei</button>` : (d.trainingItem.free ? `<button type="button" class="mini-btn" data-action="editWorkout">${icons.pencil}</button>` : '')}
+      ${vd.trainingItem ? `<div class="row ${vd.trainingItem.done ? 'done' : ''}">
+        ${check(vd.trainingItem.done, 'var(--orange)', 'data-action="toggleTraining"')}
+        <div class="grow" data-action="todayInfo" role="button"><div class="title">${vd.trainingItem.done ? esc(workoutText(vd.trainingItem)) : isPast ? 'Training gestern' : 'Training heute'}</div>
+        <div class="meta">${vd.trainingItem.done ? (vd.trainingItem.plan ? `${vd.trainingItem.plan.entries.length} Übungen · ${summarizeSession(vd.trainingItem.plan)}` : 'Freies Training, zählt voll') : (() => { const pd = todayPlanDay(s, vKey), tpl = todayTemplate(s, vKey); if (pd) return `Heute: ${esc(tpl?.title || pd.name)}${tpl?.minutes ? ` · ${tpl.minutes} min` : ''} · Details`; if (tpl) return `Heute: ${esc(tpl.title)}${tpl.minutes ? ` · ${tpl.minutes} min` : ''} · Details`; return nextDay ? `Plan: ${esc(nextDay.name)} · oder frei eintragen` : 'Plan-Training oder frei eintragen'; })()}</div></div>
+        ${!vd.trainingItem.done ? `<button type="button" class="btn btn-tint btn-sm" style="--c:var(--orange)" data-action="freeWorkout">Frei</button>` : (vd.trainingItem.free ? `<button type="button" class="mini-btn" data-action="editWorkout">${icons.pencil}</button>` : '')}
       </div>` : `<a class="row link" href="#training" style="color:inherit">${tile('dumbbell', 'var(--orange)', 36)}<div class="grow"><div class="title">${trainedToday ? `${esc(trainedToday.dayName)} absolviert` : nextDay ? `Nächstes Training: ${esc(nextDay.name)}` : 'Kein Trainingsplan'}</div><div class="meta">${lastTrainingText(s)}</div></div><span class="chev">${icons.chevron}</span></a>`}
     </div>
 
@@ -221,15 +227,17 @@ function summarizeSession(se) {
 
 export const actions = {
   toggleHabit(el) {
-    const id = el.dataset.id, today = dateKey();
+    const id = el.dataset.id, key = viewKey(), today = dateKey();
+    if (key !== today) viewYesterdayAt = Date.now();
     lastPop = id;
     haptic();
-    const before = isPerfectDay(state, today);
+    const before = isPerfectDay(state, key);
     const stBefore = streak(state, today);
-    update(s => { const day = s.log[today] ||= {}; if (day[id]) delete day[id]; else day[id] = true; });
-    if (!before && isPerfectDay(state, today)) celebrate();
+    update(s => { const day = s.log[key] ||= {}; if (day[id]) delete day[id]; else day[id] = true; });
+    if (!before && isPerfectDay(state, key)) celebrate();
     checkMilestones(stBefore);
   },
+  viewDay(el) { viewYesterday = el.dataset.v === 'yesterday'; viewYesterdayAt = Date.now(); haptic(); update(() => {}); },
   toggleTask(el) {
     haptic();
     update(s => { const t = s.lists[el.dataset.list].today.find(x => x.id === el.dataset.id); if (t) t.done = !t.done; });
@@ -244,25 +252,25 @@ export const actions = {
   manageHabits() { openHabitManager(); },
   openCheckin() { checkin.openCheckin(); },
   toggleTraining() {
-    const w = dayItems(state, dateKey()).trainingItem; if (!w) return;
+    const key = viewKey(); const w = dayItems(state, key).trainingItem; if (!w) return;
     if (w.plan) { location.hash = '#training'; return; }
-    if (w.free) { removeFreeWorkout(); return; }
-    const t = todayTemplate(state); openFreeWorkout(null, t && t.kind !== 'plan' ? { kind: t.kind, minutes: t.minutes, note: t.title } : null);
+    if (w.free) { removeFreeWorkout(key); return; }
+    const t = todayTemplate(state, key); openFreeWorkout(null, t && t.kind !== 'plan' ? { kind: t.kind, minutes: t.minutes, note: t.title } : null, key);
   },
-  freeWorkout() { const t = todayTemplate(state); openFreeWorkout(null, t && t.kind !== 'plan' ? { kind: t.kind, minutes: t.minutes, note: t.title } : (t?.extra ? { kind: 'Spaziergang', minutes: 45, note: t.extra } : null)); },
+  freeWorkout() { const key = viewKey(); const t = todayTemplate(state, key); openFreeWorkout(null, t && t.kind !== 'plan' ? { kind: t.kind, minutes: t.minutes, note: t.title } : (t?.extra ? { kind: 'Spaziergang', minutes: 45, note: t.extra } : null), key); },
   todayInfo() { if (state.training.weekTemplate) openDayInfo(new Date().getDay()); else location.hash = '#training'; },
-  editWorkout() { openFreeWorkout(state.freeWorkouts?.[dateKey()] || null); },
+  editWorkout() { const key = viewKey(); openFreeWorkout(state.freeWorkouts?.[key] || null, null, key); },
   goPeople(el, e) { e.preventDefault(); sessionStorage.setItem('zentrum.listTab', 'people'); location.hash = '#listen'; },
   ...peopleActions,
 };
 
 export const changes = {
   setSteps(el) {
-    const v = parseInt(el.value, 10);
-    const before = isPerfectDay(state, dateKey());
+    const v = parseInt(el.value, 10); const key = viewKey();
+    const before = isPerfectDay(state, key);
     const stBefore = streak(state, dateKey());
-    update(s => { if (v > 0) s.steps[dateKey()] = v; else delete s.steps[dateKey()]; });
-    if (!before && isPerfectDay(state, dateKey())) celebrate();
+    update(s => { if (v > 0) s.steps[key] = v; else delete s.steps[key]; });
+    if (!before && isPerfectDay(state, key)) celebrate();
     checkMilestones(stBefore);
   },
 };

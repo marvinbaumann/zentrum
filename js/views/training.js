@@ -8,6 +8,22 @@ import { checkMilestones } from './milestone.js';
 
 let editMode = false;
 
+/* ---------- Entwurf: jede Eingabe wird sofort zwischengespeichert ----------
+   Bleibt erhalten, wenn die App geschlossen oder neu geladen wird. Gilt für den
+   aktuellen Tag; final gespeichert wird erst mit „Training abschließen“. */
+const DRAFT_KEY = 'zentrum.trainingDraft';
+function loadDraft() { try { const d = JSON.parse(localStorage.getItem(DRAFT_KEY) || 'null'); return d && d.date === dateKey() ? d : null; } catch { return null; } }
+function saveDraft(d) { try { localStorage.setItem(DRAFT_KEY, JSON.stringify(d)); } catch {} }
+function draftVal(name) { const d = loadDraft(); return d && d.values[name] != null ? d.values[name] : undefined; }
+function draftHasDay(day) { const d = loadDraft(); if (!d) return false; return day.exercises.some(ex => Object.keys(d.values).some(k => (k === `w-${ex.id}` || k.startsWith(`r-${ex.id}-`)) && String(d.values[k]).trim() !== '')); }
+function clearDraftFor(day) { const d = loadDraft(); if (!d) return; for (const ex of day.exercises) for (const k of Object.keys(d.values)) if (k === `w-${ex.id}` || k.startsWith(`r-${ex.id}-`)) delete d.values[k]; saveDraft(d); }
+document.addEventListener('input', e => {
+  const el = e.target;
+  if (!el || !el.name || !/^(r|w)-/.test(el.name) || !el.closest('.exercise')) return;
+  const d = loadDraft() || { date: dateKey(), values: {} };
+  d.values[el.name] = el.value; saveDraft(d);
+});
+
 function selectedDay(s) {
   const days = s.training.days;
   return days.find(d => d.id === s.training.selectedDay) || todayPlanDay(s) || days[0] || null;
@@ -34,6 +50,9 @@ export function availableWeights(s) {
   return String(s.settings.weights || '').split(/[,;\s]+/).map(x => parseFloat(x.replace(',', '.'))).filter(x => x > 0).sort((a, b) => a - b);
 }
 export const EQUIPMENT = { kh: 'Kurzhantel', lh: 'Langhantel', kabel: 'Kabelzug', bw: 'Eigengewicht' };
+// Worauf sich die Zahl bezieht: Kurzhantel = pro Hantel, Langhantel = gesamt inkl. Stange, Kabel = Gewicht am Zug
+export const EQ_HINT = { kh: 'pro Hantel', lh: 'gesamt inkl. Stange', kabel: 'am Zug' };
+const EQ_LABEL = { kh: 'kg/Hantel', lh: 'kg gesamt', kabel: 'kg Zug' };
 function parseList(str) { return String(str || '').split(/[,;\s]+/).map(x => parseFloat(x.replace(',', '.'))).filter(x => x > 0); }
 function subsetSums(items) { let sums = new Set([0]); for (const p of items) { const next = new Set(sums); for (const v of sums) next.add(round(v + p)); sums = next; } return [...sums].sort((a, b) => a - b); }
 // Langhantel: pro Seite je ein Stück jedes Scheibenpaars, Gesamt = Stange + 2 × Seite
@@ -206,10 +225,11 @@ export function render(s) {
     ${editMode ? '' : trainingHero(s)}
     ${editMode ? '' : `<div class="stack" style="padding:0 0 14px"><button type="button" class="btn btn-soft" data-action="freeWorkout">${todayWorkout(s).done ? 'Weiteres Training eintragen' : 'Heute anders trainiert? Frei eintragen'}</button></div>`}
     ${s.training.days.length ? segmented(s.training.days, day?.id, 'selectDay') : ''}
-    ${editMode ? `<div class="stack" style="padding:0 0 12px"><button class="btn btn-soft" data-action="loadTemplate">Vorlage laden: Zuhause-Plan (Entwurf 3.1, final)</button></div><div class="btn-row"><button class="btn btn-soft btn-sm" data-action="addDay">${icons.plus.replace('<svg', '<svg style="width:15px;height:15px"')} Tag</button>${day ? `<button class="btn btn-soft btn-sm" data-action="renameDay">Umbenennen</button><button class="btn btn-danger btn-sm" data-action="delDay">Tag löschen</button>` : ''}</div>` : ''}
+    ${editMode ? `<div class="stack" style="padding:0 0 12px"><button class="btn btn-soft" data-action="loadTemplate">Vorlage laden: Zuhause-Plan (Entwurf 3.2, Fußball Di)</button></div><div class="btn-row"><button class="btn btn-soft btn-sm" data-action="addDay">${icons.plus.replace('<svg', '<svg style="width:15px;height:15px"')} Tag</button>${day ? `<button class="btn btn-soft btn-sm" data-action="renameDay">Umbenennen</button><button class="btn btn-danger btn-sm" data-action="delDay">Tag löschen</button>` : ''}</div>` : ''}
 
     ${day ? `
-    ${sectionLabel(`${day.name} · ${day.exercises.length} Übungen`, editMode ? `<button class="link-btn" data-action="addExercise">+ Übung</button>` : '')}
+    ${sectionLabel(`${day.name} · ${day.exercises.length} Übungen`, editMode ? `<button class="link-btn" data-action="addExercise">+ Übung</button>` : (draftHasDay(day) ? `<button class="link-btn" data-action="discardDraft" style="font-size:13px">Zwischenstand löschen</button>` : ''))}
+    ${!editMode && draftHasDay(day) ? `<div class="draft-note">✓ Zwischenstand gesichert. Final gespeichert wird mit „Training abschließen“.</div>` : ''}
     <div class="card">
       ${day.exercises.map((ex, i) => exerciseBlock(s, ex, i, day.exercises.length)).join('')}
       ${!day.exercises.length ? '<div class="empty">Noch keine Übungen. Tippe oben auf „Plan“.</div>' : ''}
@@ -237,7 +257,7 @@ function exerciseBlock(s, ex, i, n) {
     <div class="ex-head">
       <div class="grow">
         <button type="button" class="ex-name" data-action="history" data-id="${ex.id}">${esc(ex.name)}</button>
-        <div class="ex-target">Ziel: <b>${ex.sets} × ${target}</b> · ${wTxt(ex.weight)}${ex.equipment && ex.equipment !== 'bw' && ex.weight != null ? ` <span class="eq">${EQUIPMENT[ex.equipment] || ''}</span>` : ''} <span style="color:var(--text3)">·</span> Range ${ex.repMin}–${ex.repMax}</div>
+        <div class="ex-target">Ziel: <b>${ex.sets} × ${target}</b> · ${wTxt(ex.weight)}${ex.equipment && ex.equipment !== 'bw' && ex.weight != null ? ` <span class="eq">${EQUIPMENT[ex.equipment] || ''} · ${EQ_HINT[ex.equipment] || ''}</span>` : ''} <span style="color:var(--text3)">·</span> Range ${ex.repMin}–${ex.repMax}</div>
       </div>
       ${editMode ? `<div class="ex-edit">
         ${i > 0 ? `<button type="button" class="mini-btn" data-action="moveEx" data-id="${ex.id}" data-dir="-1">${icons.up}</button>` : ''}
@@ -248,8 +268,8 @@ function exerciseBlock(s, ex, i, n) {
     </div>
     ${!editMode ? `
     <div class="ex-sets" style="--n:${ex.sets}">
-      <label>Gewicht${ex.weight == null ? `<span class="bw">Eigengew.</span>` : `<input type="text" inputmode="decimal" autocomplete="off" name="w-${ex.id}" value="${String(ex.weight).replace('.', ',')}">`}</label>
-      ${Array.from({ length: ex.sets }, (_, k) => `<label>Satz ${k + 1}<input type="number" inputmode="numeric" name="r-${ex.id}-${k}" placeholder="${last?.reps?.[k] ?? target}" data-change="setInput" data-ex="${ex.id}" data-k="${k}"></label>`).join('')}
+      <label>${EQ_LABEL[ex.equipment] || 'Gewicht'}${ex.weight == null ? `<span class="bw">Eigengew.</span>` : `<input type="text" inputmode="decimal" autocomplete="off" name="w-${ex.id}" value="${esc(draftVal(`w-${ex.id}`) ?? String(ex.weight).replace('.', ','))}">`}</label>
+      ${Array.from({ length: ex.sets }, (_, k) => `<label>Satz ${k + 1}<input type="number" inputmode="numeric" name="r-${ex.id}-${k}" value="${esc(draftVal(`r-${ex.id}-${k}`) ?? '')}" placeholder="${last?.reps?.[k] ?? target}" data-change="setInput" data-ex="${ex.id}" data-k="${k}"></label>`).join('')}
     </div>
     <div class="ex-last">${last ? `<span>Zuletzt (${relDay(last.date)}): ${last.reps.join(' / ')} · ${wTxt(last.weight)}</span>${resultPill(last.result)}${(last.prs || []).map(p => `<span class="pill" style="--c:var(--orange)">🏆 ${esc(p)}</span>`).join('')}` : '<span>Erstes Mal. Grau sind die Zielwerte, trage deine Wiederholungen ein.</span>'}<span class="ex-live"></span></div>
     ${(() => { const p = progressSinceStart(s, ex.id); if (!p || p.pct === 0) return ''; return `<div class="ex-progress" style="--c:${p.pct > 0 ? 'var(--green)' : 'var(--text2)'}"><span class="ex-progress-pct">${p.pct > 0 ? '+' : ''}${p.pct} %</span><span>seit ${fmtDM(p.first.date)} · ${progressText(p)}</span></div>`; })()}
@@ -311,16 +331,30 @@ export const changes = {
 
 export const actions = {
   toggleEdit() { editMode = !editMode; stopRest(); update(() => {}); },
+  discardDraft() { const day = selectedDay(state); if (!day) return; if (!confirm('Eingetragene Werte dieses Tages löschen?')) return; clearDraftFor(day); update(() => {}); },
   freeWorkout() { const t = todayTemplate(state); openFreeWorkout(null, t && t.kind !== 'plan' ? { kind: t.kind, minutes: t.minutes, note: t.title } : (t?.extra ? { kind: 'Spaziergang', minutes: 45, note: t.extra } : null)); },
   dayInfo(el) { openDayInfo(Number(el.dataset.wd)); },
   guideCat(el) { openGuideCat(el.dataset.cat); },
   async loadTemplate() {
-    if (!confirm('Den aktuellen Plan durch die Vorlage ersetzen? Dein Trainingsverlauf bleibt erhalten.')) return;
+    if (!confirm('Plan nach Vorlage aktualisieren? Verlauf, aktuelle Gewichte und Ziele deiner Übungen bleiben erhalten.')) return;
     try {
       const r = await fetch(`plans/zuhause-v3.json?t=${Date.now()}`); if (!r.ok) throw new Error(r.status);
       const tpl = await r.json();
       update(s => {
-        s.training.days = tpl.days.map(d => ({ id: uid(), name: d.name, weekday: d.weekday, exercises: d.exercises.map(e => ({ id: uid(), name: e.name, sets: e.sets, repMin: e.repMin, repMax: e.repMax, weight: e.weight, equipment: e.equipment || (e.weight == null ? 'bw' : 'kh'), increment: e.increment || 2.5, targetReps: e.repMin })) }));
+        const norm = n => String(n || '').toLowerCase().replace(/\s+/g, ' ').trim();
+        const oldEx = new Map(); for (const od of s.training.days || []) for (const e of od.exercises) oldEx.set(norm(e.name), e);
+        const usedDays = new Set();
+        s.training.days = tpl.days.map(d => {
+          // bisherigen Tag mit den meisten gleichen Übungen wiederverwenden (ID bleibt, Verlauf bleibt verknüpft)
+          let best = null, bestN = 0;
+          for (const od of s.training.days || []) { if (usedDays.has(od.id)) continue; const n = od.exercises.filter(e => d.exercises.some(t => norm(t.name) === norm(e.name))).length; if (n > bestN) { best = od; bestN = n; } }
+          if (best) usedDays.add(best.id);
+          return { id: best?.id || uid(), name: d.name, weekday: d.weekday, exercises: d.exercises.map(e => {
+            const o = oldEx.get(norm(e.name));
+            const base = { name: e.name, sets: e.sets, repMin: e.repMin, repMax: e.repMax, weight: e.weight, equipment: e.equipment || (e.weight == null ? 'bw' : 'kh'), increment: e.increment || 2.5, targetReps: e.repMin };
+            return o ? { ...base, id: o.id, weight: o.weight, targetReps: o.targetReps ?? base.targetReps, repMax: Math.max(o.repMax || 0, e.repMax) } : { ...base, id: uid() };
+          }) };
+        });
         s.training.weekTemplate = tpl.weekTemplate;
         s.training.guides = tpl.guides || null;
         s.training.selectedDay = null;
@@ -328,14 +362,14 @@ export const actions = {
         if (tpl.equipment) { if (tpl.equipment.weights) s.settings.weights = tpl.equipment.weights; if (tpl.equipment.plates) s.settings.plates = tpl.equipment.plates; if (tpl.equipment.barWeight) s.settings.barWeight = tpl.equipment.barWeight; }
       });
       editMode = false; update(() => {});
-      alert(`„${tpl.name}“ geladen: ${tpl.days.length} Plan-Tage mit ${tpl.days.reduce((n, d) => n + d.exercises.length, 0)} Übungen, Wochenübersicht mit allen 7 Tagen, Hanteln und Scheiben eingetragen.`);
+      alert(`„${tpl.name}“ geladen: ${tpl.days.length} Plan-Tage mit ${tpl.days.reduce((n, d) => n + d.exercises.length, 0)} Übungen, Wochenübersicht mit allen 7 Tagen, Hanteln und Scheiben eingetragen. Deine bisherigen Gewichte und Fortschritte bleiben erhalten.`);
     } catch (e) { alert('Vorlage konnte nicht geladen werden. Bist du online?'); }
   },
   selectDay(el) { update(s => { s.training.selectedDay = el.dataset.id; }); },
   fillLast(el) {
     const last = lastEntry(state, el.dataset.id); if (!last) return;
-    last.reps.forEach((r, k) => { const i = document.querySelector(`[name="r-${el.dataset.id}-${k}"]`); if (i) i.value = r || ''; });
-    const w = document.querySelector(`[name="w-${el.dataset.id}"]`); if (w && last.weight != null) w.value = String(last.weight).replace('.', ',');
+    last.reps.forEach((r, k) => { const i = document.querySelector(`[name="r-${el.dataset.id}-${k}"]`); if (i) { i.value = r || ''; i.dispatchEvent(new Event('input', { bubbles: true })); } });
+    const w = document.querySelector(`[name="w-${el.dataset.id}"]`); if (w && last.weight != null) { w.value = String(last.weight).replace('.', ','); w.dispatchEvent(new Event('input', { bubbles: true })); }
     haptic();
   },
   trainingSettings() {
@@ -405,6 +439,7 @@ export const actions = {
       s.training.sessions.unshift(session);
       s.training.selectedDay = s.training.days[(s.training.days.findIndex(x => x.id === day.id) + 1) % s.training.days.length]?.id || day.id;
     });
+    clearDraftFor(day);
     const totalPRs = entries.reduce((n, e) => n + e.prs.length, 0);
     openSheet({ title: 'Training gespeichert', html: `${totalPRs ? `<div class="pr-banner">🏆 ${totalPRs === 1 ? 'Ein neuer Rekord' : `${totalPRs} neue Rekorde`}</div>` : ''}<div class="summary-list">${entries.map(e => `<div class="row"><div class="grow"><div class="title">${esc(e.name)}</div><div class="meta">${e.reps.join(' / ')} · ${wTxt(e.weight)}${e.prs.length ? ` · 🏆 ${e.prs.join(', ')}` : ''}</div><div class="session-res res-${e.result === 'extend' ? 'progress' : e.result}">${esc(e.message)}</div></div></div>`).join('')}</div>
       <div class="stack"><button type="button" class="btn btn-primary" data-action="__closeSheet" style="background:linear-gradient(135deg,#FF9F0A,#FF5E3A)">Stark! Weiter</button></div>` });
