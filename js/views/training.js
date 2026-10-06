@@ -227,7 +227,7 @@ export function render(s) {
     ${editMode ? '' : trainingHero(s)}
     ${editMode ? '' : `<div class="stack" style="padding:0 0 14px"><button type="button" class="btn btn-soft" data-action="freeWorkout">${todayWorkout(s).done ? 'Weiteres Training eintragen' : 'Heute anders trainiert? Frei eintragen'}</button></div>`}
     ${s.training.days.length ? segmented(orderedDays(s), day?.id, 'selectDay') : ''}
-    ${editMode ? `<div class="stack" style="padding:0 0 12px"><button class="btn btn-soft" data-action="loadTemplate">Vorlage laden: Zuhause-Plan (Entwurf 3.2, Fußball Di)</button></div><div class="btn-row"><button class="btn btn-soft btn-sm" data-action="addDay">${icons.plus.replace('<svg', '<svg style="width:15px;height:15px"')} Tag</button>${day ? `<button class="btn btn-soft btn-sm" data-action="renameDay">Umbenennen</button><button class="btn btn-danger btn-sm" data-action="delDay">Tag löschen</button>` : ''}</div>` : ''}
+    ${editMode ? `<div class="stack" style="padding:0 0 12px"><button class="btn btn-soft" data-action="loadTemplate">Vorlage laden: Zuhause-Plan (Entwurf 3.3)</button></div><div class="btn-row"><button class="btn btn-soft btn-sm" data-action="addDay">${icons.plus.replace('<svg', '<svg style="width:15px;height:15px"')} Tag</button>${day ? `<button class="btn btn-soft btn-sm" data-action="renameDay">Umbenennen</button><button class="btn btn-danger btn-sm" data-action="delDay">Tag löschen</button>` : ''}</div>` : ''}
 
     ${day ? `
     ${sectionLabel(`${day.name} · ${day.exercises.length} Übungen`, editMode ? `<button class="link-btn" data-action="addExercise">+ Übung</button>` : (draftHasDay(day) ? `<button class="link-btn" data-action="discardDraft" style="font-size:13px">Zwischenstand löschen</button>` : ''))}
@@ -259,6 +259,7 @@ function exerciseBlock(s, ex, i, n) {
     <div class="ex-head">
       <div class="grow">
         <button type="button" class="ex-name" data-action="history" data-id="${ex.id}">${esc(ex.name)}</button>
+        ${ex.hint && !editMode ? `<div class="ex-hint">${esc(ex.hint)}</div>` : ''}
         <div class="ex-target">Ziel: <b>${ex.sets} × ${target}</b> · ${wTxt(ex.weight)}${ex.equipment && ex.equipment !== 'bw' && ex.weight != null ? ` <span class="eq">${EQUIPMENT[ex.equipment] || ''} · ${EQ_HINT[ex.equipment] || ''}</span>` : ''} <span style="color:var(--text3)">·</span> Range ${ex.repMin}–${ex.repMax}</div>
       </div>
       ${editMode ? `<div class="ex-edit">
@@ -352,9 +353,15 @@ export const actions = {
           for (const od of s.training.days || []) { if (usedDays.has(od.id)) continue; const n = od.exercises.filter(e => d.exercises.some(t => norm(t.name) === norm(e.name))).length; if (n > bestN) { best = od; bestN = n; } }
           if (best) usedDays.add(best.id);
           return { id: best?.id || uid(), name: d.name, weekday: d.weekday, exercises: d.exercises.map(e => {
-            const o = oldEx.get(norm(e.name));
-            const base = { name: e.name, sets: e.sets, repMin: e.repMin, repMax: e.repMax, weight: e.weight, equipment: e.equipment || (e.weight == null ? 'bw' : 'kh'), increment: e.increment || 2.5, targetReps: e.repMin };
-            return o ? { ...base, id: o.id, weight: o.weight, targetReps: o.targetReps ?? base.targetReps, repMax: Math.max(o.repMax || 0, e.repMax) } : { ...base, id: uid() };
+            const o = [e.name, ...(e.aliases || [])].map(n => oldEx.get(norm(n))).find(Boolean);
+            const base = { name: e.name, sets: e.sets, repMin: e.repMin, repMax: e.repMax, weight: e.weight, equipment: e.equipment || (e.weight == null ? 'bw' : 'kh'), increment: e.increment || 2.5, targetReps: e.repMin, hint: e.hint || '' };
+            if (!o) return { ...base, id: uid() };
+            if ((o.equipment || (o.weight == null ? 'bw' : 'kh')) !== base.equipment) {
+              // Gerät gewechselt (z. B. Kurzhantel → Kabel): Verlauf bleibt, Gewicht vom letzten Eintrag oder aus der Vorlage
+              const lastW = (s.training.sessions || []).map(se => se.entries.find(x => x.exerciseId === o.id)).find(Boolean)?.weight;
+              return { ...base, id: o.id, weight: base.equipment === 'bw' ? null : (lastW ?? base.weight) };
+            }
+            return { ...base, id: o.id, weight: o.weight, targetReps: o.targetReps ?? base.targetReps, repMax: Math.max(o.repMax || 0, e.repMax) };
           }) };
         });
         s.training.weekTemplate = tpl.weekTemplate;

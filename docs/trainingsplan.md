@@ -1,4 +1,4 @@
-# Trainingsplan Zuhause – Entwurf 3.2 (final, mit Fußball am Dienstag)
+# Trainingsplan Zuhause – Entwurf 3.3 (Fußball Di, deine Kabel-Varianten)
 
 Ziel: definiert und muskulös, beweglich, ausdauernd, gesund. 45 bis 60 Minuten pro Tag, jeden Tag Bewegung, Garage.
 
@@ -68,11 +68,11 @@ Aufwärmen 8 min: Face Pulls am Kabel 2 × 15 mit 5 kg, Schulterkreisen, Dead Ha
 | KH Bankdrücken schräg 30° | 4 × 8–12 | 2 × 20 kg | KH | 90 s |
 | Latzug am Kabel, Triangel oder Stange | 3 × 10–15 | 30 kg | Kabel | 75 s |
 | KH Schulterdrücken sitzend | 3 × 8–12 | 2 × 10 kg | KH | 90 s |
-| Dips am Rack-Dip-Kit, bis dahin enges KH-Bankdrücken | 3 × 8–15 | Eigengewicht / 2 × 20 kg | BW | 75 s |
-| Einarmiges KH-Rudern, Bench | 3 × 8–12 je Seite | 20 kg | KH | 75 s |
-| Face Pulls am Seil | 3 × 15–20 | 10 kg | Kabel | 45 s |
+| Enges KH-Bankdrücken, Neutralgriff | 3 × 8–15 | 2 × 10 kg | KH | 75 s |
+| Kabelrudern sitzend, Kabel unten | 3 × 10–15 | 30 kg | Kabel | 75 s |
+| Face Pulls liegend, Kabel oben über dem Gesicht | 3 × 15–20 | 10 kg | Kabel | 45 s |
 
-Warum Rudern statt Seitheben: Ohne horizontales Ziehen fehlt dem Plan der obere Rücken, und der ist für Haltung und Schultergesundheit wichtiger als ein dritter Seitheben-Satz. Seitheben bleibt im Samstags-Block. Klimmzüge ohne Band: saubere Wiederholungen, dann 2 bis 3 langsame Negative mit 3 bis 5 Sekunden abwärts. Der Latzug liefert das restliche Volumen.
+Dein Kabelzug hat nur oben und unten, deshalb: Rudern sitzend am unteren Kabel, Face Pulls liegend unter dem oberen Kabel, Seitheben kniend am unteren Kabel, Bizeps als Bayesian Curls und Kurzhantel-Hammer-Curls. Alle Varianten sind gleich effektiv wie die Originale. Warum Rudern statt Seitheben am Montag: Ohne horizontales Ziehen fehlt dem Plan der obere Rücken, und der ist für Haltung und Schultergesundheit wichtiger als ein dritter Seitheben-Satz. Seitheben bleibt im Samstags-Block. Klimmzüge ohne Band: saubere Wiederholungen, dann 2 bis 3 langsame Negative mit 3 bis 5 Sekunden abwärts. Der Latzug liefert das restliche Volumen.
 
 Falls 2 × 20 kg schräg zu schwer ist: Langhantel-Bankdrücken schräg mit 30 bis 40 kg, bis 2 × 15 kg Kurzhanteln da sind.
 
@@ -106,10 +106,10 @@ Die schwere Kniebeuge am Freitag ergänzt die Hypertrophie-Kniebeuge vom Montag.
 
 | Übung | Sätze × Range | Start | Gerät |
 |---|---|---|---|
-| Kabel-Curls, Stange oder D-Griffe | 3 × 10–15 | 14 kg | Kabel |
+| Bayesian Curls, Kabel unten, einarmig | 3 × 10–15 | 7 kg pro Arm | Kabel |
 | Trizeps am Seil | 3 × 10–15 | 14 kg | Kabel |
-| Hammer-Curls am Seil | 2 × 10–15 | 10 kg | Kabel |
-| Kabel-Seitheben | 3 × 12–15 | 4 kg | Kabel |
+| KH Hammer-Curls | 3 × 10–15 | 2 × 10 kg | KH |
+| Kabel-Seitheben kniend, Kabel unten | 3 × 12–15 | 5 kg pro Arm | Kabel |
 | Pallof Press am Kabel, Anti-Rotation | 2 × 10 je Seite | 10 kg | Kabel |
 
 ### Sonntag – Mobility-Flow + Spaziergang (40 min)

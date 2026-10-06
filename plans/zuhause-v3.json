@@ -1,5 +1,5 @@
 {
-  "name": "Zuhause – Entwurf 3.2 (mit Fußball am Dienstag)",
+  "name": "Zuhause – Entwurf 3.3 (deine Kabel-Varianten)",
   "weekTemplate": {
     "1": {
       "title": "Oberkörper Push + Pull",
@@ -126,7 +126,8 @@
           "repMax": 15,
           "weight": 30,
           "equipment": "kabel",
-          "increment": 2
+          "increment": 2,
+          "hint": "Kabel oben, kniend oder auf der Bank sitzend. Triangel oder Seil zur oberen Brust ziehen, Schulterblätter nach unten."
         },
         {
           "name": "KH Schulterdrücken sitzend",
@@ -137,29 +138,44 @@
           "equipment": "kh"
         },
         {
-          "name": "Dips (Rack-Dip-Kit) / enges KH-Bankdrücken",
+          "name": "Enges KH-Bankdrücken",
           "sets": 3,
           "repMin": 8,
           "repMax": 15,
-          "weight": null,
-          "equipment": "bw"
+          "weight": 10,
+          "equipment": "kh",
+          "aliases": [
+            "Dips (Rack-Dip-Kit) / enges KH-Bankdrücken",
+            "Ring-Dips",
+            "Ring-Dips / Bank-Dips"
+          ],
+          "hint": "Flach auf der Bank, Hanteln parallel aneinander (Neutralgriff), Ellbogen eng am Körper. Trifft Trizeps und innere Brust wie Dips."
         },
         {
-          "name": "Einarmiges KH-Rudern (je Seite)",
+          "name": "Kabelrudern sitzend (Kabel unten)",
           "sets": 3,
-          "repMin": 8,
-          "repMax": 12,
-          "weight": 20,
-          "equipment": "kh"
+          "repMin": 10,
+          "repMax": 15,
+          "weight": 30,
+          "equipment": "kabel",
+          "increment": 2,
+          "aliases": [
+            "Einarmiges KH-Rudern (je Seite)"
+          ],
+          "hint": "Am unteren Kabel sitzen, Füße gegen den Rack-Fuß. Triangel zum Bauchnabel ziehen, Schulterblätter zusammen, Oberkörper bleibt aufrecht."
         },
         {
-          "name": "Face Pulls (Seil)",
+          "name": "Face Pulls liegend (Kabel oben)",
           "sets": 3,
           "repMin": 15,
           "repMax": 20,
           "weight": 10,
           "equipment": "kabel",
-          "increment": 2
+          "increment": 2,
+          "aliases": [
+            "Face Pulls (Seil)"
+          ],
+          "hint": "Rücken auf der Bank, Kabel oben direkt über dem Gesicht. Seil zur Stirn ziehen, Ellbogen hoch und weit nach außen, am Ende Daumen nach hinten drehen. Langsam zurück."
         }
       ]
     },
@@ -232,13 +248,14 @@
       "name": "Fr · Arme & Schultern",
       "exercises": [
         {
-          "name": "Kabel-Curls",
+          "name": "Bayesian Curls (Kabel unten, einarmig)",
           "sets": 3,
           "repMin": 10,
           "repMax": 15,
-          "weight": 14,
+          "weight": 7,
           "equipment": "kabel",
-          "increment": 2
+          "increment": 2,
+          "hint": "Rücken zum unteren Kabel, einen Schritt nach vorn, der Arm hängt leicht hinter dem Körper. Ellbogen bleibt hinten, nur der Unterarm beugt. Seil-Ende oder Triangel. Gewicht pro Arm."
         },
         {
           "name": "Trizeps am Seil",
@@ -247,25 +264,30 @@
           "repMax": 15,
           "weight": 14,
           "equipment": "kabel",
-          "increment": 2
+          "increment": 2,
+          "hint": "Kabel oben. Ellbogen am Körper fixiert, unten die Seilenden auseinanderziehen, kurz halten."
         },
         {
-          "name": "Hammer-Curls am Seil",
-          "sets": 2,
+          "name": "KH Hammer-Curls",
+          "sets": 3,
           "repMin": 10,
           "repMax": 15,
           "weight": 10,
-          "equipment": "kabel",
-          "increment": 2
+          "equipment": "kh",
+          "hint": "Neutralgriff, Ellbogen bleiben am Körper. Schont den Ellbogen im Vergleich zum Seil von unten."
         },
         {
-          "name": "Kabel-Seitheben",
+          "name": "Kabel-Seitheben kniend (Kabel unten)",
           "sets": 3,
           "repMin": 12,
           "repMax": 15,
-          "weight": 4,
+          "weight": 5,
           "equipment": "kabel",
-          "increment": 2
+          "increment": 2,
+          "aliases": [
+            "Kabel-Seitheben"
+          ],
+          "hint": "Kniend seitlich neben dem unteren Kabel, Kabel vor dem Körper zur anderen Hand. Arm leicht gebeugt bis Schulterhöhe, langsam ablassen. Gewicht pro Arm."
         },
         {
           "name": "Pallof Press (je Seite)",
@@ -274,7 +296,8 @@
           "repMax": 10,
           "weight": 10,
           "equipment": "kabel",
-          "increment": 2
+          "increment": 2,
+          "hint": "Kniend seitlich zum unteren Kabel. Griff an der Brust, Arme gerade nach vorn drücken, 2 s halten. Der Rumpf darf sich nicht mitdrehen."
         }
       ],
       "weekday": 5
