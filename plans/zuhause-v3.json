@@ -255,7 +255,7 @@
           "weight": 7,
           "equipment": "kabel",
           "increment": 2,
-          "hint": "Rücken zum unteren Kabel, einen Schritt nach vorn, der Arm hängt leicht hinter dem Körper. Ellbogen bleibt hinten, nur der Unterarm beugt. Seil-Ende oder Triangel. Gewicht pro Arm."
+          "hint": "Rücken zum unteren Kabel, einen Schritt nach vorn, der Arm hängt leicht hinter dem Körper. Ellbogen bleibt hinten, nur der Unterarm beugt. Mit dem D-Griff. Gewicht pro Arm."
         },
         {
           "name": "Trizeps am Seil",
@@ -287,7 +287,7 @@
           "aliases": [
             "Kabel-Seitheben"
           ],
-          "hint": "Kniend seitlich neben dem unteren Kabel, Kabel vor dem Körper zur anderen Hand. Arm leicht gebeugt bis Schulterhöhe, langsam ablassen. Gewicht pro Arm."
+          "hint": "Kniend seitlich neben dem unteren Kabel, D-Griff in der äußeren Hand, Kabel vor dem Körper zur anderen Hand. Arm leicht gebeugt bis Schulterhöhe, langsam ablassen. Gewicht pro Arm."
         },
         {
           "name": "Pallof Press (je Seite)",
